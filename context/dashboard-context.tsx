@@ -35,6 +35,7 @@ interface DashboardContextType {
   // Stats & States
   stats: OrganizationStats;
   orgName: string;
+  orgEmail: string;
   loading: boolean;
   error: string | null;
   isAdmin: boolean;
@@ -167,6 +168,7 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
   const { user } = useAuth();
 
   const [orgName, setOrgName] = useState('');
+  const [orgEmail, setOrgEmail] = useState('');
   const [activeClassId, setActiveClassId] = useState<string | null>(null);
   const [activeDivisionId, setActiveDivisionId] = useState<string | null>(null);
   const [activeBranchId, setActiveBranchId] = useState<string | null>(null);
@@ -306,6 +308,7 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
 
       if (profile) {
         setOrgName(profile.school_name || profile.office_name || '');
+        setOrgEmail(profile.email || '');
         setRequiredFields(profile?.required_fields || []);
       }
 
@@ -965,6 +968,7 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
       dynamicFieldsList,
       stats,
       orgName,
+      orgEmail,
       loading,
       error,
       isAdmin,

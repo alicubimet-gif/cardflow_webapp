@@ -449,44 +449,53 @@ export function RecordDetailsPage({
         <div className="w-full lg:w-[420px] space-y-6 order-1 lg:order-2 shrink-0">
           
           {/* Card Preview Card */}
-          {previewData?.template_version && (
-            <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-3xs space-y-4">
-              <div className="flex items-center justify-between border-b border-slate-100 pb-2">
-                <h4 className="text-[10px] font-extrabold uppercase tracking-widest text-slate-400">
-                  Real Card Preview
-                </h4>
-                <span className="text-[10px] font-bold text-slate-500">
-                  {previewData?.template_name || "Assigned Layout"}
-                </span>
-              </div>
-              
-              <div className="flex flex-col gap-6 py-5 bg-slate-50 rounded-xl w-full border border-slate-100 shadow-inner items-center overflow-x-auto">
-                <div className="flex flex-col items-center gap-1.5 w-full">
-                  <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Front View</span>
-                  <div className="p-2 bg-white rounded-xl shadow-xs border border-slate-150 record-preview-wrapper">
-                    <IdCardPreview
-                      record={record}
-                      templateVersion={previewData.template_version}
-                      side="FRONT"
-                      className="webapp-card-preview"
-                    />
-                  </div>
+          {previewData?.template_version && (() => {
+            const templateVersion = previewData.template_version;
+            const isSingleSided = String(templateVersion.canvas_json?.sides || templateVersion.sides || '2') === '1' ||
+              String(templateVersion.canvas_json?.sides || templateVersion.sides || '').toLowerCase() === 'single' ||
+              String(templateVersion.cardSides || templateVersion.cardSides || '').toLowerCase() === 'single';
+
+            return (
+              <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-3xs space-y-4">
+                <div className="flex items-center justify-between border-b border-slate-100 pb-2">
+                  <h4 className="text-[10px] font-extrabold uppercase tracking-widest text-slate-400">
+                    Real Card Preview
+                  </h4>
+                  <span className="text-[10px] font-bold text-slate-500">
+                    {previewData?.template_name || "Assigned Layout"}
+                  </span>
                 </div>
                 
-                <div className="flex flex-col items-center gap-1.5 w-full">
-                  <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Back View</span>
-                  <div className="p-2 bg-white rounded-xl shadow-xs border border-slate-150 record-preview-wrapper">
-                    <IdCardPreview
-                      record={record}
-                      templateVersion={previewData.template_version}
-                      side="BACK"
-                      className="webapp-card-preview"
-                    />
+                <div className="flex flex-col gap-6 py-5 bg-slate-50 rounded-xl w-full border border-slate-100 shadow-inner items-center overflow-x-auto">
+                  <div className="flex flex-col items-center gap-1.5 w-full">
+                    <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Front View</span>
+                    <div className="p-2 bg-white rounded-xl shadow-xs border border-slate-150 record-preview-wrapper">
+                      <IdCardPreview
+                        record={record}
+                        templateVersion={previewData.template_version}
+                        side="FRONT"
+                        className="webapp-card-preview"
+                      />
+                    </div>
                   </div>
+                  
+                  {!isSingleSided && (
+                    <div className="flex flex-col items-center gap-1.5 w-full">
+                      <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Back View</span>
+                      <div className="p-2 bg-white rounded-xl shadow-xs border border-slate-150 record-preview-wrapper">
+                        <IdCardPreview
+                          record={record}
+                          templateVersion={previewData.template_version}
+                          side="BACK"
+                          className="webapp-card-preview"
+                        />
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
-            </div>
-          )}
+            );
+          })()}
 
           {/* Assigned Card Design Info & Actions */}
           <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-3xs space-y-4">

@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/auth-context';
 import { useDashboard } from '@/context/dashboard-context';
 import { Briefcase } from 'lucide-react';
@@ -17,7 +18,8 @@ import { BulkUploadModal } from '@/components/records/BulkUploadModal';
 import { RecordForm } from '@/components/records/RecordForm';
 
 export default function DashboardPage() {
-  const { user } = useAuth();
+  const user = useAuth().user;
+  const router = useRouter();
   const {
     stats,
     classesList,
@@ -49,7 +51,6 @@ export default function DashboardPage() {
     isBulkUploadModalOpen,
     handleOpenCreateRecord,
     handleOpenEditRecord,
-    setViewingRecord,
     fetchDashboardData,
     handleDeleteRecord,
     handleSubmitRecord,
@@ -96,9 +97,9 @@ export default function DashboardPage() {
             recordsList={recordsList}
             logsList={logsList}
             loading={loading}
-            onNavigateToSetup={() => {}} // Tab navigation not used now
+            onNavigateToSetup={() => router.push('/records')}
             onOpenBulkUpload={() => setIsBulkUploadModalOpen(true)}
-            onOpenViewRecord={setViewingRecord}
+            onOpenViewRecord={(record) => router.push(`/records/${record.id}`)}
             hasTemplate={resolvedTemplate.has_template}
           />
         </div>
@@ -196,14 +197,14 @@ export default function DashboardPage() {
               onAssignStaff={() => {}}
               onBulkUpload={() => setIsBulkUploadModalOpen(true)}
               onAddRecord={handleOpenCreateRecord}
-              onOpenViewRecord={setViewingRecord}
+              onOpenViewRecord={(record) => router.push(`/records/${record.id}`)}
               onOpenEditRecord={handleOpenEditRecord}
               onDeleteRecord={handleDeleteRecord}
               onSubmitRecord={handleSubmitRecord}
               onApproveRecord={handleApproveRecord}
               onRejectRecord={handleRejectRecord}
               onCorrectionRecord={handleCorrectionRecord}
-              onViewStaff={handleOpenView}
+              onViewStaff={(st) => router.push(`/staff/${st.id}`)}
               templateFields={resolvedTemplate.fields}
             />
           )
@@ -299,7 +300,7 @@ export default function DashboardPage() {
               onAssignStaff={() => {}}
               onBulkUpload={() => setIsBulkUploadModalOpen(true)}
               onAddRecord={handleOpenCreateRecord}
-              onOpenViewRecord={setViewingRecord}
+              onOpenViewRecord={(record) => router.push(`/records/${record.id}`)}
               onOpenEditRecord={handleOpenEditRecord}
               onDeleteRecord={handleDeleteRecord}
               onSubmitRecord={handleSubmitRecord}

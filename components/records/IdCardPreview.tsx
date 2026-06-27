@@ -250,6 +250,15 @@ interface IdCardPreviewProps {
 
 export function IdCardPreview({ record, templateVersion, side, scale, className = '' }: IdCardPreviewProps) {
   const canvas = templateVersion?.canvas_json || {};
+  const isSingleSided = 
+    String(canvas.sides || templateVersion?.sides || '2') === '1' ||
+    String(canvas.sides || templateVersion?.sides || '').toLowerCase() === 'single' ||
+    String(canvas.cardSides || templateVersion?.cardSides || '').toLowerCase() === 'single';
+
+  if (side === 'BACK' && isSingleSided) {
+    return null;
+  }
+
   const orientation = canvas.orientation || 'vertical';
 
   const canvasWidth = Number(canvas.cardWidth || canvas.width || (orientation === 'horizontal' ? 1013 : 638));
@@ -603,17 +612,13 @@ export function IdCardPreview({ record, templateVersion, side, scale, className 
 
           // 4. QR and Barcodes
           if (typeUpper === 'QRCODE' || typeUpper === 'QR_CODE') {
-            const source = el.sourceField || el.source_field || el.source_context || el.dataKey;
+            const source = el.source_field || el.source_context || el.dataKey;
             const qrVal = resolveCodeValue(source, record, 'qr');
-            const qrColor = el.qrColor || '#000000';
-            const qrBg = el.qrBackgroundColor || '#ffffff';
             return (
-              <div key={el.id} style={{ ...getElementStyle(el), backgroundColor: qrBg }} className="p-1 rounded border border-slate-100 flex items-center justify-center shadow-sm">
+              <div key={el.id} style={getElementStyle(el)} className="bg-white p-1 rounded border border-slate-100 flex items-center justify-center shadow-sm">
                 <QRCodeSVG
                   value={qrVal}
                   size={Math.min(el.width, el.height) - 4}
-                  fgColor={qrColor}
-                  bgColor={qrBg}
                   level="M"
                   includeMargin={false}
                 />
@@ -622,12 +627,10 @@ export function IdCardPreview({ record, templateVersion, side, scale, className 
           }
 
           if (typeUpper === 'BARCODE') {
-            const source = el.sourceField || el.source_field || el.source_context || el.dataKey;
+            const source = el.source_field || el.source_context || el.dataKey;
             const barcodeVal = resolveCodeValue(source, record, 'barcode');
-            const barcodeColor = el.qrColor || '#000000';
-            const barcodeBg = el.qrBackgroundColor || '#ffffff';
             return (
-              <div key={el.id} style={{ ...getElementStyle(el), backgroundColor: barcodeBg }} className="p-1 rounded border border-slate-100 flex items-center justify-center overflow-hidden shadow-sm">
+              <div key={el.id} style={getElementStyle(el)} className="bg-white p-1 rounded border border-slate-100 flex items-center justify-center overflow-hidden shadow-sm">
                 <Barcode
                   value={barcodeVal}
                   width={0.8}
@@ -636,8 +639,6 @@ export function IdCardPreview({ record, templateVersion, side, scale, className 
                   displayValue={el.width > 80}
                   margin={0}
                   format={el.barcodeFormat || 'CODE128'}
-                  lineColor={barcodeColor}
-                  background={barcodeBg}
                 />
               </div>
             );

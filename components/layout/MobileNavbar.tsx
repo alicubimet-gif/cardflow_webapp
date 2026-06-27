@@ -25,6 +25,7 @@ export function MobileNavbar({
     const cleanTab = tab.split('?')[0].split('#')[0];
     switch (cleanTab) {
       case 'dashboard': return 'Dashboard';
+      case 'records': return 'Records';
       case 'classes': return 'Classes';
       case 'branches': return 'Branches';
       case 'staff': return 'Staff';
@@ -44,9 +45,9 @@ export function MobileNavbar({
         {/* Left: Empty Spacer for centering */}
         <div className="w-8" />
 
-        {/* Center: Title */}
+        {/* Center: Title / Logo */}
         <span 
-          className="text-[16px] font-medium leading-[1.2] text-[#0B0F19] select-none tracking-tight font-heading" 
+          className="text-base font-extrabold text-[#0B0F19] tracking-[-0.3px]" 
           style={{ fontFamily: 'Sora, sans-serif' }}
         >
           {getTabLabel(currentTab)}
@@ -65,8 +66,12 @@ export function MobileNavbar({
       <header className="hidden md:flex fixed top-0 right-0 z-40 lg:left-64 left-0 h-16 bg-white border-b border-[#DFE4EA] px-6 items-center justify-between shadow-[0_1px_3px_rgba(0,0,0,0.03)]">
         {/* Left: Logo & Title */}
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-xl bg-[#2563EB] flex items-center justify-center text-white shrink-0 shadow-xs lg:hidden">
-            <Shield size={15} />
+          <div className="h-7 w-28 relative shrink-0 lg:hidden">
+            <img
+              src="/branding/logo-light.png"
+              alt="CardFlow"
+              className="h-full w-auto object-contain select-none pointer-events-none"
+            />
           </div>
           <div className="flex flex-col text-left">
             <span className="text-xs font-bold text-[#64748B] uppercase tracking-wider leading-none mb-1">

@@ -17,6 +17,7 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const { 
     orgName, 
+    orgEmail,
     isSchool, 
     isAdmin,
     loading,
@@ -34,7 +35,18 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
     setActiveClassId,
     setActiveDivisionId,
     setActiveBranchId,
-    setActiveDepartmentId
+    setActiveDepartmentId,
+    setViewingStaff,
+    setEditingStaff,
+    setStaffForReset,
+    setIsCreateStaffOpen,
+    setIsEditStaffOpen,
+    setIsResetPasswordOpen,
+    setIsStaffDetailsOpen,
+    setIsAssignStaffModalOpen,
+    setIsRecordModalOpen,
+    setIsAddRecordModalOpen,
+    setIsBulkUploadModalOpen
   } = useDashboard();
   
   const [isMobile, setIsMobile] = useState(false);
@@ -47,6 +59,43 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
+
+  // Route-based state resets
+  useEffect(() => {
+    if (pathname.startsWith('/records')) {
+      setViewingStaff(null);
+      setEditingStaff(null);
+      setStaffForReset(null);
+      setIsCreateStaffOpen(false);
+      setIsEditStaffOpen(false);
+      setIsResetPasswordOpen(false);
+      setIsStaffDetailsOpen(false);
+      setIsAssignStaffModalOpen(false);
+    } else if (pathname.startsWith('/staff')) {
+      setViewingRecord(null);
+      setIsRecordModalOpen(false);
+      setIsAddRecordModalOpen(false);
+      setIsBulkUploadModalOpen(false);
+      setActiveClassId(null);
+      setActiveDivisionId(null);
+      setActiveBranchId(null);
+      setActiveDepartmentId(null);
+    } else {
+      setViewingRecord(null);
+      setViewingStaff(null);
+      setEditingStaff(null);
+      setStaffForReset(null);
+      setIsCreateStaffOpen(false);
+      setIsEditStaffOpen(false);
+      setIsResetPasswordOpen(false);
+      setIsStaffDetailsOpen(false);
+      setIsAssignStaffModalOpen(false);
+      setActiveClassId(null);
+      setActiveDivisionId(null);
+      setActiveBranchId(null);
+      setActiveDepartmentId(null);
+    }
+  }, [pathname, setActiveClassId, setActiveDivisionId, setActiveBranchId, setActiveDepartmentId, setViewingRecord, setViewingStaff, setEditingStaff, setStaffForReset, setIsCreateStaffOpen, setIsEditStaffOpen, setIsResetPasswordOpen, setIsStaffDetailsOpen, setIsAssignStaffModalOpen, setIsRecordModalOpen, setIsAddRecordModalOpen, setIsBulkUploadModalOpen]);
 
   if (authLoading) {
     return (
@@ -68,6 +117,7 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
         setCurrentTab={() => {}} 
         logout={logout}
         orgName={orgName}
+        orgEmail={orgEmail}
         isSchool={isSchool}
         isAdmin={isAdmin}
         setActiveClassId={setActiveClassId}
@@ -141,31 +191,7 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
             </div>
           )}
 
-          {viewingRecord ? (
-            <RecordDetailsPage
-              record={viewingRecord}
-              onBack={() => setViewingRecord(null)}
-              isAdmin={isAdmin}
-              isSchool={isSchool}
-              onEdit={(rec) => {
-                setViewingRecord(null);
-                handleOpenEditRecord(rec);
-              }}
-              onApprove={(id) => handleApproveRecord(id, true)}
-              onReject={handleRejectRecord}
-              onCorrection={handleCorrectionRecord}
-              onSubmit={handleSubmitRecord}
-              onRefreshRecord={async (id) => {
-                const responseData = await recordService.getRecords();
-                const refreshedList = Array.isArray(responseData) ? responseData : (responseData?.results ?? []);
-                return refreshedList.find((r: any) => String(r.id) === String(id));
-              }}
-              hasTemplate={resolvedTemplate.has_template}
-              templateFields={resolvedTemplate.fields}
-            />
-          ) : (
-            children
-          )}
+          {children}
         </div>
       </main>
     </div>

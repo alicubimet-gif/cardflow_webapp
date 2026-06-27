@@ -9,6 +9,7 @@ interface SidebarProps {
   setCurrentTab: (tab: any) => void;
   logout: () => void;
   orgName: string;
+  orgEmail: string;
   isSchool: boolean;
   isAdmin: boolean;
   setActiveClassId: (id: string | null) => void;
@@ -30,6 +31,7 @@ export function Sidebar({
   currentTab,
   logout,
   orgName,
+  orgEmail,
   isSchool,
   isAdmin,
   setActiveClassId,
@@ -45,9 +47,18 @@ export function Sidebar({
     setActiveDepartmentId(null);
   };
 
+  const secondaryText = orgEmail || (user.organization_type 
+    ? (user.organization_type.toLowerCase() === 'school' ? 'School' : 
+       user.organization_type.toLowerCase() === 'office' ? 'Office' : 
+       user.organization_type.toLowerCase() === 'college' ? 'College' : 
+       user.organization_type.toLowerCase() === 'company' ? 'Company' : 
+       user.organization_type)
+    : 'Organization');
+
   return (
     <aside className="desktop-sidebar hidden lg:flex flex-col w-64 bg-white border-r border-[#DFE4EA] shrink-0 fixed top-0 bottom-0 left-0 h-screen z-[1010]">
-      <div className="p-5 border-b border-[#DFE4EA] flex items-center gap-2.5">
+      <div className="px-6 pt-7 pb-6 flex flex-col gap-6">
+        {/* Logo container */}
         <div className="h-8 w-28 relative shrink-0">
           <img
             src="/branding/logo-light.png"
@@ -55,7 +66,18 @@ export function Sidebar({
             className="h-full w-auto object-contain select-none pointer-events-none"
           />
         </div>
+
+        {/* Organization Information */}
+        <div className="space-y-1">
+          <h2 className="font-extrabold text-sm text-[#0B0F19] tracking-tight leading-snug font-heading" style={{ fontFamily: 'Sora, sans-serif' }}>
+            {orgName || user.organization_name || 'CardFlow'}
+          </h2>
+          <p className="text-[11px] font-semibold text-[#64748B] truncate leading-none">
+            {secondaryText}
+          </p>
+        </div>
       </div>
+      <div className="border-b border-[#DFE4EA] mx-6 mb-2" />
 
       <nav className="flex-1 px-4 py-6 space-y-1 overflow-y-auto">
         {isAdmin ? (
