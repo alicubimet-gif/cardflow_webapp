@@ -17,6 +17,8 @@ export function PhotoUploader({
   const [zoom, setZoom] = useState<number>(1.0);
   const [rotation, setRotation] = useState<number>(0);
   const [brightness, setBrightness] = useState<number>(100);
+  const [isFlipped, setIsFlipped] = useState(false);
+  const [isOptionsOpen, setIsOptionsOpen] = useState(false);
   
   const videoRef = useRef<HTMLVideoElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -49,6 +51,11 @@ export function PhotoUploader({
       ctx.translate(canvas.width / 2, canvas.height / 2);
       ctx.rotate((rotation * Math.PI) / 180);
       
+      // Apply mirroring
+      if (isFlipped) {
+        ctx.scale(-1, 1);
+      }
+      
       // Apply brightness filter
       ctx.filter = `brightness(${brightness}%)`;
       
@@ -68,7 +75,7 @@ export function PhotoUploader({
       // Restore canvas context
       ctx.restore();
     };
-  }, [previewImageUrl, zoom, rotation, brightness, canvasRef]);
+  }, [previewImageUrl, zoom, rotation, brightness, isFlipped, canvasRef]);
 
   // Camera Management
   const startCamera = async () => {
@@ -113,6 +120,7 @@ export function PhotoUploader({
             setZoom(1.0);
             setRotation(0);
             setBrightness(100);
+            setIsFlipped(false);
             
             // Invoke callback if photo was selected
             if (onPhotoSelected) {
@@ -135,6 +143,7 @@ export function PhotoUploader({
       setZoom(1.0);
       setRotation(0);
       setBrightness(100);
+      setIsFlipped(false);
       
       if (onPhotoSelected) {
         onPhotoSelected(file);
@@ -146,57 +155,33 @@ export function PhotoUploader({
     setZoom(1.0);
     setRotation(0);
     setBrightness(100);
+    setIsFlipped(false);
   };
 
   return (
-    <div className="space-y-4">
-      <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">
-        Profile Photo Capture & Edit
-      </label>
+    <div className="flex flex-col items-center justify-center w-full">
+      <style dangerouslySetInnerHTML={{ __html: `
+        @keyframes slideUp {
+          from { transform: translateY(100%); }
+          to { transform: translateY(0); }
+        }
+        .animate-slide-up {
+          animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+      `}} />
+      
+      <input 
+        type="file"
+        ref={fileInputRef}
+        onChange={handleFileChange}
+        accept="image/*"
+        className="hidden"
+      />
 
-      {/* Input Source Choice */}
-      <div className="flex gap-2 mb-3">
-        {!isCameraActive ? (
-          <button
-            type="button"
-            onClick={startCamera}
-            className="flex-1 py-2 bg-slate-100 hover:bg-slate-200/80 text-slate-700 text-xs font-bold rounded-xl transition-colors cursor-pointer flex items-center justify-center gap-1.5 border border-slate-200"
-          >
-            <Camera size={14} className="text-blue-500" />
-            <span>Use Camera</span>
-          </button>
-        ) : (
-          <button
-            type="button"
-            onClick={stopCamera}
-            className="flex-1 py-2 bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-bold rounded-xl transition-colors cursor-pointer flex items-center justify-center gap-1.5 border border-rose-200"
-          >
-            <VideoOff size={14} />
-            <span>Close Camera</span>
-          </button>
-        )}
-
-        <button
-          type="button"
-          onClick={() => fileInputRef.current?.click()}
-          className="flex-1 py-2 bg-slate-100 hover:bg-slate-200/80 text-slate-700 text-xs font-bold rounded-xl transition-colors cursor-pointer flex items-center justify-center gap-1.5 border border-slate-200"
-        >
-          <Upload size={14} className="text-blue-500" />
-          <span>Upload File</span>
-        </button>
-        <input 
-          type="file"
-          ref={fileInputRef}
-          onChange={handleFileChange}
-          accept="image/*"
-          className="hidden"
-        />
-      </div>
-
-      {/* Capture Stream / Canvas Display */}
-      <div className="flex flex-col items-center justify-center">
+      <div className="flex flex-col items-center justify-center w-full">
+        {/* Camera stream view */}
         {isCameraActive ? (
-          <div className="relative border border-slate-200 rounded-2xl overflow-hidden bg-black w-[300px] h-[300px] flex items-center justify-center shadow-3xs">
+          <div className="relative border border-slate-200 rounded-2xl overflow-hidden bg-black w-[280px] h-[280px] sm:w-[300px] sm:h-[300px] flex items-center justify-center shadow-3xs">
             <video 
               ref={videoRef} 
               autoPlay 
@@ -212,33 +197,57 @@ export function PhotoUploader({
             </button>
           </div>
         ) : (
-          <div className="flex flex-col items-center gap-3">
-            <div className="relative border border-slate-200 rounded-2xl overflow-hidden bg-slate-50 w-[300px] h-[300px] flex items-center justify-center shadow-3xs">
-              <canvas 
-                ref={canvasRef} 
-                className="w-full h-full object-cover"
-              />
-              {!previewImageUrl && (
-                <span className="text-slate-400 font-semibold text-xs italic text-center p-6">
-                  No image selected. Please capture or upload a file.
-                </span>
-              )}
-              {/* Crop box overlay */}
-              {previewImageUrl && (
-                <div className="absolute inset-4 border border-dashed border-white/80 pointer-events-none rounded-xl shadow-[0_0_0_9999px_rgba(0,0,0,0.4)] flex items-center justify-center">
-                  <span className="text-[9px] font-extrabold text-white uppercase tracking-widest bg-black/45 px-2 py-0.5 rounded-sm">
-                    Cropped Output
-                  </span>
+          <div className="flex flex-col items-center justify-center">
+            {previewImageUrl ? (
+              // Selected preview container
+              <div className="flex flex-col items-center">
+                <div className="relative border border-slate-200 rounded-2xl overflow-hidden bg-slate-50 w-[280px] h-[280px] sm:w-[300px] sm:h-[300px] flex items-center justify-center shadow-3xs">
+                  <canvas 
+                    ref={canvasRef} 
+                    className="w-full h-full object-cover"
+                  />
                 </div>
-              )}
-            </div>
+                
+                {/* Quick actions for chosen photo */}
+                <div className="flex gap-3 w-[280px] sm:w-[300px] mt-4">
+                  <button
+                    type="button"
+                    onClick={() => setIsOptionsOpen(true)}
+                    className="flex-1 py-2.5 bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1.5 border border-slate-200 shadow-2xs"
+                  >
+                    <Upload size={14} className="text-slate-500" />
+                    <span>Replace Photo</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setIsFlipped(prev => !prev)}
+                    className="flex-1 py-2.5 bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1.5 border border-slate-200 shadow-2xs"
+                  >
+                    <RotateCw size={14} className="text-slate-500" />
+                    <span>Flip Photo</span>
+                  </button>
+                </div>
+              </div>
+            ) : (
+              // Empty state: Tap to upload modern card
+              <div 
+                onClick={() => setIsOptionsOpen(true)}
+                className="flex flex-col items-center justify-center border-2 border-dashed border-slate-300 hover:border-blue-500 hover:bg-blue-50/10 bg-slate-50/40 rounded-2xl w-[280px] h-[280px] sm:w-[300px] sm:h-[300px] cursor-pointer transition-all duration-200 shadow-3xs p-6 text-center select-none active:scale-[0.98]"
+              >
+                <div className="p-4 bg-white rounded-full shadow-3xs text-slate-400">
+                  <Camera size={36} />
+                </div>
+                <span className="text-xs font-bold text-slate-700 mt-4">Tap to Upload Photo</span>
+                <span className="text-[10px] font-semibold text-slate-400 mt-1.5 uppercase tracking-wider">Camera • Gallery</span>
+              </div>
+            )}
           </div>
         )}
       </div>
 
       {/* Editor Sliders & Controls */}
       {previewImageUrl && !isCameraActive && (
-        <div className="bg-slate-50 rounded-2xl p-4 border border-slate-150 space-y-3.5 shadow-3xs mt-2">
+        <div className="bg-slate-50 rounded-2xl p-4 border border-slate-150 space-y-3.5 shadow-3xs mt-5 w-[280px] sm:w-[300px]">
           <div className="flex items-center justify-between border-b border-slate-200 pb-2">
             <span className="text-[10px] font-extrabold text-slate-500 uppercase tracking-wider block">
               Image Adjustments
@@ -314,7 +323,51 @@ export function PhotoUploader({
           </div>
         </div>
       )}
+
+      {/* Bottom Option Sheet */}
+      {isOptionsOpen && (
+        <div className="fixed inset-0 z-[2000] flex items-end justify-center bg-black/60 backdrop-blur-xs transition-opacity duration-300">
+          <div className="absolute inset-0" onClick={() => setIsOptionsOpen(false)} />
+          
+          <div className="relative w-full max-w-sm bg-white rounded-t-3xl shadow-xl overflow-hidden p-6 space-y-4 border-t border-slate-100 animate-slide-up" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
+            <div className="w-12 h-1.5 bg-slate-200 rounded-full mx-auto mb-2" />
+            <h3 className="text-center font-bold text-sm text-slate-800 tracking-tight">Select Photo Source</h3>
+            <div className="space-y-2 pt-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setIsOptionsOpen(false);
+                  startCamera();
+                }}
+                className="w-full py-3 bg-blue-50 hover:bg-blue-100 text-blue-700 text-xs font-bold rounded-xl flex items-center justify-center gap-2 transition-all cursor-pointer border border-blue-100 shadow-2xs"
+              >
+                <Camera size={16} />
+                <span>Take Photo (Camera)</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setIsOptionsOpen(false);
+                  fileInputRef.current?.click();
+                }}
+                className="w-full py-3 bg-slate-50 hover:bg-slate-100 text-slate-700 text-xs font-bold rounded-xl flex items-center justify-center gap-2 transition-all cursor-pointer border border-slate-200 shadow-2xs"
+              >
+                <Upload size={16} />
+                <span>Choose from Gallery</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setIsOptionsOpen(false)}
+                className="w-full py-3 bg-white hover:bg-slate-50 text-slate-550 text-xs font-bold rounded-xl flex items-center justify-center transition-all cursor-pointer border border-slate-200 mt-2"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
+
 export type PhotoUploaderType = typeof PhotoUploader;

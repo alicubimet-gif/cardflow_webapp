@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { XCircle, Loader2 } from 'lucide-react';
 import { cleanText, restrictText, restrictNumber, validateEmail, validateMobile } from '@/utils/validation';
+import { PhoneInput } from '@/components/ui/PhoneInput';
 
 interface EditStaffModalProps {
   isOpen: boolean;
@@ -126,11 +127,10 @@ export function EditStaffModal({
   };
 
   const handlePhoneChange = (val: string) => {
-    const restricted = restrictNumber(val, 10);
-    setPhone(restricted);
+    setPhone(val);
     
     // Validate mobile format in real-time
-    const phoneErr = validateMobile(restricted);
+    const phoneErr = validateMobile(val);
     setFieldErrors(prev => ({
       ...prev,
       phone: phoneErr || undefined

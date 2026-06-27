@@ -41,10 +41,14 @@ export function validateEmail(value: string): string | null {
  * Validates mobile numbers (exactly 10 digits).
  */
 export function validateMobile(value: string): string | null {
-  const digits = value.replace(/[^0-9]/g, '');
-  if (!digits) return 'This field is required.';
-  if (digits.length !== 10) {
-    return 'Please enter a valid 10-digit mobile number.';
+  const trimmed = value.trim();
+  if (!trimmed) return 'This field is required.';
+  if (!trimmed.startsWith('+')) {
+    return 'Please enter a valid international mobile number starting with +.';
+  }
+  const digits = trimmed.slice(1).replace(/[^0-9]/g, '');
+  if (digits.length < 6 || digits.length > 15) {
+    return 'Phone number must be between 6 and 15 digits.';
   }
   return null;
 }
