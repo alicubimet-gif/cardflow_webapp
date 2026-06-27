@@ -12,7 +12,10 @@ async function handleRequest(request: NextRequest, { params }: { params: Promise
   const url = new URL(request.url);
   const searchParams = url.searchParams.toString();
 
-  const base = BACKEND_API_URL.replace(/\/$/, "");
+  let base = BACKEND_API_URL.replace(/\/$/, "");
+  if (!base.endsWith("/api")) {
+    base = `${base}/api`;
+  }
   const cleanPath = path.replace(/^\//, "").replace(/\/$/, "");
   const backendUrl = `${base}/${cleanPath}/${searchParams ? "?" + searchParams : ""}`;
 
@@ -72,7 +75,7 @@ async function handleRequest(request: NextRequest, { params }: { params: Promise
       const refreshToken = request.cookies.get('webapp_refresh_token')?.value;
       if (refreshToken) {
         try {
-          const refreshRes = await fetch(`${BACKEND_API_URL.replace(/\/$/, '')}/auth/refresh/`, {
+          const refreshRes = await fetch(`${base}/auth/refresh/`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',

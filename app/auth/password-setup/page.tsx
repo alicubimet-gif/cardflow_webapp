@@ -4,6 +4,7 @@ import React, { useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useAuth } from '@/context/auth-context';
 import { Loader2, KeyRound, Lock, Eye, EyeOff, Mail } from 'lucide-react';
+import Image from 'next/image';
 
 function PasswordSetupInner() {
   const { user, completePassword } = useAuth();
@@ -97,14 +98,21 @@ function PasswordSetupInner() {
       <div className="w-full max-w-md bg-white/[0.03] border border-white/[0.08] backdrop-blur-xl rounded-3xl p-8 shadow-2xl relative z-10 animate-in fade-in zoom-in-95 duration-500">
         {/* Brand Header */}
         <div className="text-center mb-8">
-          <div className="w-12 h-12 rounded-2xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400 mx-auto mb-4">
-            <KeyRound size={24} />
+          <div className="flex justify-center mb-6">
+            <Image
+              src="/branding/logo-dark.png"
+              alt="CardFlow"
+              width={220}
+              height={70}
+              priority
+              className="w-full h-auto object-contain select-none pointer-events-none max-w-[150px] sm:max-w-[180px] md:max-w-[220px]"
+            />
           </div>
           <h2 className="text-2xl font-bold text-white tracking-tight" style={{ fontFamily: 'Outfit, sans-serif' }}>
-            Welcome to CardFlow
+            Welcome Back
           </h2>
           <p className="text-slate-400 text-xs mt-2">
-            Please create a secure password to activate your account
+            Create password to continue
           </p>
         </div>
 

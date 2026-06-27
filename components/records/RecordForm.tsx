@@ -462,7 +462,9 @@ export function RecordForm({
       <div className="bg-white border border-slate-200 rounded-2xl shadow-xl w-full max-w-md overflow-hidden animate-in fade-in duration-200">
         <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
           <h3 className="font-extrabold text-sm text-slate-900">
-            {editingRecord ? 'Update Card Record' : 'Add Card Record'}
+            {editingRecord 
+              ? (isSchool ? 'Edit Student Record' : 'Edit Employee Record') 
+              : (isSchool ? 'Add Student Record' : 'Add Employee Record')}
           </h3>
           <button 
             type="button"
@@ -514,7 +516,7 @@ export function RecordForm({
               className="px-4 py-2 text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-xl shadow-xs transition-colors cursor-pointer disabled:opacity-50 flex items-center gap-1.5"
             >
               {isSubmitting && <span className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin"></span>}
-              <span>{editingRecord ? 'Update Record' : 'Save Record'}</span>
+              <span>{editingRecord ? 'Save Record' : 'Create Record'}</span>
             </button>
           </div>
         </form>

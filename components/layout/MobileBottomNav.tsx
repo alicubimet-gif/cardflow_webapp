@@ -11,8 +11,7 @@ interface MobileBottomNavProps {
 
 const tabToRoute: Record<string, string> = {
   dashboard: '/dashboard',
-  classes: '/classes',
-  branches: '/branches',
+  records: '/records',
   staff: '/staff',
   logs: '/approval-logs',
   profile: '/profile'
@@ -28,11 +27,7 @@ export function MobileBottomNav({
   
   if (isAdmin) {
     items.push({ id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard });
-    if (isSchool) {
-      items.push({ id: 'classes', label: 'Classes', icon: GraduationCap });
-    } else {
-      items.push({ id: 'branches', label: 'Branches', icon: Building2 });
-    }
+    items.push({ id: 'records', label: 'Records', icon: isSchool ? GraduationCap : Building2 });
     items.push({ id: 'staff', label: 'Staff', icon: Users });
     items.push({ id: 'logs', label: 'Logs', icon: ClipboardList });
     items.push({ id: 'profile', label: 'Profile', icon: User });
@@ -61,7 +56,7 @@ export function MobileBottomNav({
       <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-[#DFE4EA] h-[56px] flex items-center justify-around z-50 px-2 pb-[env(safe-area-inset-bottom,0px)] shadow-[0_-2px_10px_rgba(0,0,0,0.04)]">
         {items.map((item) => {
           const Icon = item.icon;
-          const isActive = currentTab === item.id || (item.id === 'logs' && currentTab === 'approval-logs');
+          const isActive = currentTab.startsWith(item.id) || (item.id === 'logs' && currentTab === 'approval-logs');
           const route = tabToRoute[item.id] || `/${item.id}`;
           
           return (

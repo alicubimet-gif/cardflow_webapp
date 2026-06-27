@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { AuthService } from '@/services/auth-service';
 import { Shield, Mail, Loader2, AlertCircle, CheckCircle, ArrowLeft } from 'lucide-react';
+import Image from 'next/image';
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState('');
@@ -51,14 +52,15 @@ export default function ForgotPasswordPage() {
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8 font-sans">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="flex items-center justify-center gap-2 mb-2">
-          <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white shadow-sm">
-            <Shield size={20} />
-          </div>
-          <span className="text-2xl font-extrabold text-slate-900 tracking-wider">CardFlow</span>
-          <span className="text-[10px] font-bold text-blue-600 bg-blue-50 border border-blue-200 px-2 py-0.5 rounded-full uppercase">
-            Portal
-          </span>
+        <div className="flex justify-center mb-6">
+          <Image
+            src="/branding/logo-light.png"
+            alt="CardFlow"
+            width={220}
+            height={70}
+            priority
+            className="w-full h-auto object-contain select-none pointer-events-none max-w-[150px] sm:max-w-[180px] md:max-w-[220px]"
+          />
         </div>
         
         <h2 className="mt-6 text-center text-3xl font-extrabold text-slate-900" style={{ fontFamily: 'Sora, sans-serif' }}>

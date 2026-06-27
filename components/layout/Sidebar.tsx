@@ -19,8 +19,7 @@ interface SidebarProps {
 
 const tabToRoute: Record<string, string> = {
   dashboard: '/dashboard',
-  classes: '/classes',
-  branches: '/branches',
+  records: '/records',
   staff: '/staff',
   logs: '/approval-logs',
   profile: '/profile'
@@ -49,12 +48,12 @@ export function Sidebar({
   return (
     <aside className="desktop-sidebar hidden lg:flex flex-col w-64 bg-white border-r border-[#DFE4EA] shrink-0 fixed top-0 bottom-0 left-0 h-screen z-[1010]">
       <div className="p-5 border-b border-[#DFE4EA] flex items-center gap-2.5">
-        <div className="w-8 h-8 rounded-xl bg-[#2563EB] flex items-center justify-center text-white shrink-0">
-          <Shield size={15} />
-        </div>
-        <div>
-          <span className="font-bold text-[#0B0F19] text-lg block leading-tight" style={{ fontFamily: 'Sora' }}>CardFlow</span>
-          <span className="text-[9px] font-semibold text-[#64748B] uppercase tracking-widest">Organization Portal</span>
+        <div className="h-8 w-28 relative shrink-0">
+          <img
+            src="/branding/logo-light.png"
+            alt="CardFlow"
+            className="h-full w-auto object-contain select-none pointer-events-none"
+          />
         </div>
       </div>
 
@@ -62,12 +61,8 @@ export function Sidebar({
         {isAdmin ? (
           <>
             <SidebarBtn icon={LayoutDashboard} label="Dashboard" tab="dashboard" current={currentTab} onClick={resetAllSubViews} />
-            {isSchool ? (
-              <SidebarBtn icon={GraduationCap} label="Classes" tab="classes" current={currentTab} onClick={resetAllSubViews} />
-            ) : (
-              <SidebarBtn icon={Building2} label="Branches" tab="branches" current={currentTab} onClick={resetAllSubViews} />
-            )}
-            <SidebarBtn icon={Users} label="Staff" tab="staff" current={currentTab} onClick={resetAllSubViews} />
+            <SidebarBtn icon={isSchool ? GraduationCap : Building2} label="Records" tab="records" current={currentTab} onClick={resetAllSubViews} />
+            <SidebarBtn icon={Users} label="Staff Management" tab="staff" current={currentTab} onClick={resetAllSubViews} />
             <SidebarBtn icon={ClipboardList} label="Approval Logs" tab="logs" current={currentTab} onClick={resetAllSubViews} />
             <SidebarBtn icon={User} label="Profile" tab="profile" current={currentTab} onClick={resetAllSubViews} />
           </>
@@ -100,7 +95,7 @@ export function Sidebar({
 function SidebarBtn({ icon: Icon, label, tab, current, onClick }: {
   icon: any; label: string; tab: string; current: string; onClick: () => void;
 }) {
-  const active = current === tab || (tab === 'logs' && current === 'approval-logs');
+  const active = current.startsWith(tab) || (tab === 'logs' && current === 'approval-logs');
   const route = tabToRoute[tab] || `/${tab}`;
   return (
     <Link
