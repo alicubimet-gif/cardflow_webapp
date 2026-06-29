@@ -42,7 +42,7 @@ export default function InviteLandingPage() {
         await login({ email, password: tempPassword });
         setStatus('success');
       } catch (err: any) {
-        console.error(err);
+        console.warn('[Invite] Magic token verification failed:', err.message || err);
         const code = err?.response?.data?.code;
         const msg = err?.response?.data?.message || err?.message || '';
         

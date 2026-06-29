@@ -2,6 +2,31 @@ import { useState, useCallback } from 'react';
 import * as recordService from '@/services/record-service';
 import { AuthService } from '@/services/auth-service';
 
+function extractLocalErrorMessage(error: any, defaultMessage: string = 'An error occurred'): string {
+  const responseData = error?.response?.data;
+  if (responseData) {
+    if (responseData.errors && typeof responseData.errors === 'object') {
+      const errorObj = responseData.errors;
+      for (const key in errorObj) {
+        const val = errorObj[key];
+        if (Array.isArray(val) && val.length > 0 && typeof val[0] === 'string') {
+          return val[0];
+        }
+        if (typeof val === 'string') {
+          return val;
+        }
+      }
+    }
+    if (responseData.message && typeof responseData.message === 'string' && responseData.message !== 'Please correct the highlighted fields.') {
+      return responseData.message;
+    }
+    if (responseData.detail && typeof responseData.detail === 'string') {
+      return responseData.detail;
+    }
+  }
+  return error?.message || defaultMessage;
+}
+
 export interface OrganizationStats {
   totalStudents: number;
   totalSchoolStaff: number;

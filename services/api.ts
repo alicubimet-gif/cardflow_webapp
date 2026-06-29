@@ -61,13 +61,15 @@ api.interceptors.response.use(
     }
 
     const isAuth401 = error?.response?.status === 401;
-    if (!isAuth401) {
+    const errorCode = error?.response?.data?.code;
+    const isSilencedError = errorCode && ['SUBSCRIBER_ACTION_REQUIRED', 'INVALID_OR_EXPIRED_TOKEN', 'TOKEN_EXPIRED'].includes(errorCode);
+    if (!isAuth401 && !isSilencedError) {
       console.error(
         '[API WebApp] Error ←',
         error?.config?.method?.toUpperCase(),
         error?.config?.url,
         '| Status:', error?.response?.status,
-        '| Data:', error?.response?.data
+        '| Data:', typeof error?.response?.data === 'object' ? JSON.stringify(error?.response?.data) : error?.response?.data
       );
     }
     return Promise.reject(error);

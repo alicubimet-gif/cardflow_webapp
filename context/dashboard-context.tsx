@@ -5,6 +5,7 @@ import { useAuth } from '@/context/auth-context';
 import { AuthService } from '@/services/auth-service';
 import * as recordService from '@/services/record-service';
 import api from '@/services/api';
+import { X, Mail, Phone, Copy, Check, Info } from 'lucide-react';
 
 export interface OrganizationStats {
   totalStudents: number;
@@ -160,6 +161,11 @@ interface DashboardContextType {
   getActiveFields: () => any[];
   getBreadcrumbs: (currentRoute: string) => any[];
   renderBlockade: (onBackAction?: () => void) => React.ReactNode;
+
+  isSubscriberModalOpen: boolean;
+  setIsSubscriberModalOpen: (b: boolean) => void;
+  subscriberInfo: any | null;
+  setSubscriberInfo: (info: any | null) => void;
 }
 
 const DashboardContext = createContext<DashboardContextType | undefined>(undefined);
@@ -173,6 +179,9 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
   const [activeDivisionId, setActiveDivisionId] = useState<string | null>(null);
   const [activeBranchId, setActiveBranchId] = useState<string | null>(null);
   const [activeDepartmentId, setActiveDepartmentId] = useState<string | null>(null);
+
+  const [isSubscriberModalOpen, setIsSubscriberModalOpen] = useState(false);
+  const [subscriberInfo, setSubscriberInfo] = useState<any | null>(null);
 
   // Modals & triggers
   const [isAssignStaffModalOpen, setIsAssignStaffModalOpen] = useState(false);
@@ -822,6 +831,35 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const handleWorkflowError = (err: any, fallbackMsg: string) => {
+    if (err?.response?.data?.code === 'SUBSCRIBER_ACTION_REQUIRED') {
+      setSubscriberInfo(err.response.data.subscriber);
+      setIsSubscriberModalOpen(true);
+    } else {
+      const responseData = err?.response?.data;
+      let errMsg = fallbackMsg;
+      if (responseData) {
+        if (responseData.errors && typeof responseData.errors === 'object') {
+          for (const key in responseData.errors) {
+            const val = responseData.errors[key];
+            if (Array.isArray(val) && val.length > 0 && typeof val[0] === 'string') {
+              errMsg = val[0];
+              break;
+            }
+          }
+        } else if (responseData.message && responseData.message !== 'Please correct the highlighted fields.') {
+          errMsg = responseData.message;
+        } else if (responseData.detail) {
+          errMsg = responseData.detail;
+        }
+      } else {
+        errMsg = err?.message || fallbackMsg;
+      }
+      alert(errMsg);
+    }
+    throw err;
+  };
+
   const handleOpenCreateRecord = async () => {
     if (activeDivisionId || activeDepartmentId) {
       await loadDynamicFields();
@@ -882,7 +920,7 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
       setIsRecordModalOpen(false);
       await fetchDashboardData();
     } catch (err: any) {
-      alert(err?.response?.data?.message || err?.message || 'Failed to save record.');
+      handleWorkflowError(err, 'Failed to save record.');
     } finally {
       setLoading(false);
     }
@@ -905,7 +943,9 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
     try {
       await AuthService.submitRecord(id, cardId);
       await fetchDashboardData();
-    } catch { alert('Failed to submit record.'); }
+    } catch (err: any) {
+      handleWorkflowError(err, 'Failed to submit record.');
+    }
     finally { setLoading(false); }
   };
 
@@ -917,7 +957,9 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
     try {
       await AuthService.approveRecord(id, {}, cardId);
       await fetchDashboardData();
-    } catch { alert('Failed to approve record.'); }
+    } catch (err: any) {
+      handleWorkflowError(err, 'Failed to approve record.');
+    }
     finally { setLoading(false); }
   };
 
@@ -934,7 +976,9 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
     try {
       await AuthService.rejectRecord(id, { comment: reason, rejection_reason: reason }, cardId);
       await fetchDashboardData();
-    } catch { alert('Failed to reject record.'); }
+    } catch (err: any) {
+      handleWorkflowError(err, 'Failed to reject record.');
+    }
     finally { setLoading(false); }
   };
 
@@ -951,7 +995,9 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
     try {
       await AuthService.correctionRecord(id, { comment: note, correction_note: note }, cardId);
       await fetchDashboardData();
-    } catch { alert('Failed to request correction.'); }
+    } catch (err: any) {
+      handleWorkflowError(err, 'Failed to request correction.');
+    }
     finally { setLoading(false); }
   };
 
@@ -971,6 +1017,10 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
       orgEmail,
       loading,
       error,
+      isSubscriberModalOpen,
+      setIsSubscriberModalOpen,
+      subscriberInfo,
+      setSubscriberInfo,
       isAdmin,
       isSchool,
       requiredFields,
@@ -1070,7 +1120,113 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
       renderBlockade
     }}>
       {children}
+      <SubscriberContactModal />
     </DashboardContext.Provider>
+  );
+}
+
+function SubscriberContactModal() {
+  const { isSubscriberModalOpen, setIsSubscriberModalOpen, subscriberInfo } = useDashboard();
+  const [copied, setCopied] = useState(false);
+
+  if (!isSubscriberModalOpen || !subscriberInfo) return null;
+
+  const handleCopyEmail = async () => {
+    try {
+      await navigator.clipboard.writeText(subscriberInfo.email);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error('Failed to copy email:', err);
+    }
+  };
+
+  const hasPhone = !!subscriberInfo.phone;
+
+  return (
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs transition-opacity duration-300">
+      <div className="relative w-full max-w-md bg-white rounded-3xl border border-slate-100 shadow-2xl p-6 md:p-8 space-y-6 animate-in fade-in zoom-in-95 duration-200" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
+        <button
+          onClick={() => setIsSubscriberModalOpen(false)}
+          className="absolute top-4 right-4 p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-50 rounded-full transition-colors cursor-pointer"
+        >
+          <X className="w-5 h-5" />
+        </button>
+
+        <div className="text-center space-y-3">
+          <div className="w-14 h-14 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center mx-auto shadow-inner">
+            <Info className="w-7 h-7" />
+          </div>
+          <div className="space-y-2">
+            <h2 className="text-xl font-extrabold text-slate-900 leading-tight">Unable to complete this request.</h2>
+            <p className="text-xs text-slate-500 font-medium leading-relaxed max-w-sm mx-auto">
+              Please contact your CardFlow service provider (Subscriber) to continue using this service.
+            </p>
+            <p className="text-[11px] text-slate-400 font-medium max-w-xs mx-auto">
+              If you need assistance, you can contact them using the details below.
+            </p>
+          </div>
+        </div>
+
+        <div className="bg-slate-50/70 border border-slate-100/85 rounded-2xl p-5 space-y-4">
+          <div className="space-y-1">
+            <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Subscriber</span>
+            <h3 className="text-sm font-extrabold text-slate-800">
+              {subscriberInfo.company || subscriberInfo.name}
+            </h3>
+          </div>
+
+          <div className="space-y-2.5 pt-2 border-t border-slate-150/60">
+            <div className="flex items-center gap-2.5 text-xs text-slate-600 font-semibold">
+              <span>📧</span>
+              <span>{subscriberInfo.email}</span>
+            </div>
+            {hasPhone && (
+              <div className="flex items-center gap-2.5 text-xs text-slate-600 font-semibold">
+                <span>📞</span>
+                <span>{subscriberInfo.phone}</span>
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div className="flex flex-col sm:flex-row gap-2 pt-2">
+          <button
+            onClick={() => setIsSubscriberModalOpen(false)}
+            className="flex-1 order-last sm:order-first px-4 py-2.5 border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-bold rounded-xl transition-colors cursor-pointer text-center"
+          >
+            Close
+          </button>
+          
+          <button
+            onClick={handleCopyEmail}
+            className="flex-1 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl shadow-sm transition-colors cursor-pointer inline-flex items-center justify-center gap-1.5"
+          >
+            {copied ? (
+              <>
+                <Check className="w-3.5 h-3.5" />
+                Copied Email
+              </>
+            ) : (
+              <>
+                <Copy className="w-3.5 h-3.5" />
+                Copy Email
+              </>
+            )}
+          </button>
+
+          {hasPhone && (
+            <a
+              href={`tel:${subscriberInfo.phone}`}
+              className="flex-1 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl shadow-sm transition-colors cursor-pointer inline-flex items-center justify-center gap-1.5 text-center"
+            >
+              <Phone className="w-3.5 h-3.5" />
+              Call Subscriber
+            </a>
+          )}
+        </div>
+      </div>
+    </div>
   );
 }
 

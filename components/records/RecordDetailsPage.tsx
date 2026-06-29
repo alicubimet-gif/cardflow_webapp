@@ -9,6 +9,7 @@ import { AuthService } from '@/services/auth-service';
 import { StatusBadge } from '@/components/ui/StatusBadge';
 import { IdCardPreview } from './IdCardPreview';
 import * as recordService from '@/services/record-service';
+import { useDashboard } from '@/context/dashboard-context';
 
 interface RecordDetailsPageProps {
   record: any;
@@ -42,6 +43,18 @@ export function RecordDetailsPage({
   const [record, setRecord] = useState(initialRecord);
   const [previewData, setPreviewData] = useState<any>(null);
   const [previewLoading, setPreviewLoading] = useState(false);
+
+  const { setIsSubscriberModalOpen, setSubscriberInfo } = useDashboard();
+
+  const handleLocalError = (err: any, fallbackMsg: string) => {
+    if (err?.response?.data?.code === 'SUBSCRIBER_ACTION_REQUIRED') {
+      setSubscriberInfo(err.response.data.subscriber);
+      setIsSubscriberModalOpen(true);
+    } else {
+      const msg = err?.response?.data?.detail || err?.response?.data?.message || fallbackMsg;
+      alert(msg);
+    }
+  };
   
   // Photo management state
   const [isPhotoUploading, setIsPhotoUploading] = useState(false);
@@ -204,8 +217,7 @@ export function RecordDetailsPage({
       }
     } catch (err: any) {
       console.error('Failed to download PDF:', err);
-      const msg = err?.response?.data?.detail || err?.response?.data?.message || 'Download failed. Please check credit balance.';
-      alert(msg);
+      handleLocalError(err, 'Download failed. Please check credit balance.');
     }
   };
 
@@ -662,8 +674,7 @@ export function RecordDetailsPage({
                     setIsApproveConfirmOpen(false);
                     await handleRefresh();
                   } catch (err: any) {
-                    const msg = err?.response?.data?.detail || err?.response?.data?.message || 'Approval failed. Please check your credit balance.';
-                    alert(msg);
+                    handleLocalError(err, 'Approval failed. Please check your credit balance.');
                   } finally {
                     setIsApproving(false);
                   }
