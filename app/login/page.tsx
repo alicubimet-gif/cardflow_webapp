@@ -72,11 +72,37 @@ function LoginContent() {
       return;
     }
 
+    const isEmail = /\S+@\S+\.\S+/.test(email);
+    const credentials: any = { password };
+    if (isEmail) {
+      credentials.email = email.trim().toLowerCase();
+    } else {
+      credentials.phone = email.trim();
+    }
+
     try {
-      await login({ email: email.trim().toLowerCase(), password });
+      await login(credentials);
     } catch (err: any) {
       console.error(err);
-      const msg = err?.response?.data?.message || err?.response?.data?.detail || 'Invalid email or password.';
+      const resData = err?.response?.data;
+      let msg = 'Invalid email or password.';
+      if (resData) {
+        if (typeof resData === 'string') {
+          msg = resData;
+        } else if (resData.message) {
+          msg = resData.message;
+        } else if (resData.detail) {
+          msg = resData.detail;
+        } else if (resData.non_field_errors) {
+          msg = Array.isArray(resData.non_field_errors) ? resData.non_field_errors[0] : String(resData.non_field_errors);
+        } else if (resData.email) {
+          msg = Array.isArray(resData.email) ? resData.email[0] : String(resData.email);
+        } else if (resData.phone) {
+          msg = Array.isArray(resData.phone) ? resData.phone[0] : String(resData.phone);
+        } else if (resData.password) {
+          msg = Array.isArray(resData.password) ? resData.password[0] : String(resData.password);
+        }
+      }
       setError(msg);
     }
   };

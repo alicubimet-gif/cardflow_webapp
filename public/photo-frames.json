@@ -1,0 +1,1192 @@
+[
+  {
+    "id": "classic_rectangle",
+    "name": "Classic Rectangle",
+    "category": "Classic",
+    "thumbnail": "",
+    "frameAsset": "",
+    "editable": true,
+    "supportsColor": true,
+    "supportsBorder": true,
+    "clipPathType": "rect",
+    "clipPathProps": { "x": 5, "y": 5, "width": 90, "height": 90 },
+    "shapes": [
+      {
+        "type": "rect",
+        "x": 5,
+        "y": 5,
+        "width": 90,
+        "height": 90,
+        "fill": "none",
+        "stroke": "borderColor",
+        "strokeWidth": "borderWidth"
+      }
+    ]
+  },
+  {
+    "id": "rounded_premium",
+    "name": "Soft Rounded Rectangle",
+    "category": "Classic",
+    "thumbnail": "",
+    "frameAsset": "",
+    "editable": true,
+    "supportsColor": true,
+    "supportsBorder": true,
+    "clipPathType": "rect",
+    "clipPathProps": { "x": 5, "y": 5, "width": 90, "height": 90, "rx": 14, "ry": 14 },
+    "shapes": [
+      {
+        "type": "rect",
+        "x": 5,
+        "y": 5,
+        "width": 90,
+        "height": 90,
+        "rx": 14,
+        "ry": 14,
+        "fill": "none",
+        "stroke": "borderColor",
+        "strokeWidth": "borderWidth"
+      },
+      {
+        "type": "rect",
+        "x": 9,
+        "y": 9,
+        "width": 82,
+        "height": 82,
+        "rx": 10,
+        "ry": 10,
+        "fill": "none",
+        "stroke": "accentColor",
+        "strokeWidth": 1.5,
+        "opacity": 0.8
+      }
+    ]
+  },
+  {
+    "id": "classic_circle",
+    "name": "Circle Frame",
+    "category": "Classic",
+    "thumbnail": "",
+    "frameAsset": "",
+    "editable": true,
+    "supportsColor": true,
+    "supportsBorder": true,
+    "clipPathType": "circle",
+    "clipPathProps": { "cx": 50, "cy": 50, "r": 45 },
+    "shapes": [
+      {
+        "type": "circle",
+        "cx": 50,
+        "cy": 50,
+        "r": 45,
+        "fill": "none",
+        "stroke": "borderColor",
+        "strokeWidth": "borderWidth"
+      },
+      {
+        "type": "circle",
+        "cx": 50,
+        "cy": 50,
+        "r": 41,
+        "fill": "none",
+        "stroke": "accentColor",
+        "strokeWidth": 1.5,
+        "opacity": 0.8
+      }
+    ]
+  },
+  {
+    "id": "capsule",
+    "name": "Capsule Frame",
+    "category": "Classic",
+    "thumbnail": "",
+    "frameAsset": "",
+    "editable": true,
+    "supportsColor": true,
+    "supportsBorder": true,
+    "clipPathType": "rect",
+    "clipPathProps": { "x": 15, "y": 5, "width": 70, "height": 90, "rx": 35, "ry": 35 },
+    "shapes": [
+      {
+        "type": "rect",
+        "x": 15,
+        "y": 5,
+        "width": 70,
+        "height": 90,
+        "rx": 35,
+        "ry": 35,
+        "fill": "none",
+        "stroke": "borderColor",
+        "strokeWidth": "borderWidth"
+      }
+    ]
+  },
+  {
+    "id": "double_border_circle",
+    "name": "Double Border",
+    "category": "Classic",
+    "thumbnail": "",
+    "frameAsset": "",
+    "editable": true,
+    "supportsColor": true,
+    "supportsBorder": true,
+    "clipPathType": "circle",
+    "clipPathProps": { "cx": 50, "cy": 50, "r": 38 },
+    "shapes": [
+      {
+        "type": "circle",
+        "cx": 50,
+        "cy": 50,
+        "r": 44,
+        "fill": "none",
+        "stroke": "borderColor",
+        "strokeWidth": "borderWidth"
+      },
+      {
+        "type": "circle",
+        "cx": 50,
+        "cy": 50,
+        "r": 39,
+        "fill": "none",
+        "stroke": "accentColor",
+        "strokeWidth": 1.5
+      }
+    ]
+  },
+  {
+    "id": "thin_elegant_border",
+    "name": "Thin Elegant Border",
+    "category": "Classic",
+    "thumbnail": "",
+    "frameAsset": "",
+    "editable": true,
+    "supportsColor": true,
+    "supportsBorder": true,
+    "clipPathType": "rect",
+    "clipPathProps": { "x": 6, "y": 6, "width": 88, "height": 88 },
+    "shapes": [
+      {
+        "type": "rect",
+        "x": 6,
+        "y": 6,
+        "width": 88,
+        "height": 88,
+        "fill": "none",
+        "stroke": "borderColor",
+        "strokeWidth": 1
+      },
+      {
+        "type": "rect",
+        "x": 9,
+        "y": 9,
+        "width": 82,
+        "height": 82,
+        "fill": "none",
+        "stroke": "accentColor",
+        "strokeWidth": 0.5,
+        "opacity": 0.6
+      }
+    ]
+  },
+  {
+    "id": "premium_white_border",
+    "name": "Premium White Border",
+    "category": "Classic",
+    "thumbnail": "",
+    "frameAsset": "",
+    "editable": true,
+    "supportsColor": true,
+    "supportsBorder": true,
+    "clipPathType": "rect",
+    "clipPathProps": { "x": 8, "y": 8, "width": 84, "height": 84 },
+    "shapes": [
+      {
+        "type": "rect",
+        "x": 4,
+        "y": 4,
+        "width": 92,
+        "height": 92,
+        "fill": "none",
+        "stroke": "#FFFFFF",
+        "strokeWidth": 8
+      },
+      {
+        "type": "rect",
+        "x": 8,
+        "y": 8,
+        "width": 84,
+        "height": 84,
+        "fill": "none",
+        "stroke": "borderColor",
+        "strokeWidth": "borderWidth"
+      }
+    ]
+  },
+  {
+    "id": "minimal_frame",
+    "name": "Minimal Frame",
+    "category": "Modern",
+    "thumbnail": "",
+    "frameAsset": "",
+    "editable": true,
+    "supportsColor": true,
+    "supportsBorder": true,
+    "clipPathType": "rect",
+    "clipPathProps": { "x": 5, "y": 5, "width": 90, "height": 90, "rx": 8, "ry": 8 },
+    "shapes": [
+      {
+        "type": "rect",
+        "x": 5,
+        "y": 5,
+        "width": 90,
+        "height": 90,
+        "rx": 8,
+        "ry": 8,
+        "fill": "none",
+        "stroke": "borderColor",
+        "strokeWidth": 1
+      }
+    ]
+  },
+  {
+    "id": "modern_glass",
+    "name": "Glass Frame",
+    "category": "Modern",
+    "thumbnail": "",
+    "frameAsset": "",
+    "editable": true,
+    "supportsColor": true,
+    "clipPathType": "rect",
+    "clipPathProps": { "x": 5, "y": 5, "width": 90, "height": 90, "rx": 10, "ry": 10 },
+    "shapes": [
+      {
+        "type": "rect",
+        "x": 5,
+        "y": 5,
+        "width": 90,
+        "height": 90,
+        "rx": 10,
+        "ry": 10,
+        "fill": "none",
+        "stroke": "#ffffff",
+        "strokeWidth": 1.5,
+        "opacity": 0.4
+      },
+      {
+        "type": "rect",
+        "x": 8,
+        "y": 5,
+        "width": 15,
+        "height": 2,
+        "fill": "accentColor",
+        "opacity": 0.9
+      },
+      {
+        "type": "rect",
+        "x": 77,
+        "y": 93,
+        "width": 15,
+        "height": 2,
+        "fill": "secondaryColor",
+        "opacity": 0.9
+      }
+    ]
+  },
+  {
+    "id": "gradient_frame",
+    "name": "Gradient Frame",
+    "category": "Modern",
+    "thumbnail": "",
+    "frameAsset": "",
+    "editable": true,
+    "supportsColor": true,
+    "clipPathType": "rect",
+    "clipPathProps": { "x": 8, "y": 8, "width": 84, "height": 84, "rx": 12, "ry": 12 },
+    "shapes": [
+      {
+        "type": "rect",
+        "x": 4,
+        "y": 4,
+        "width": 92,
+        "height": 92,
+        "rx": 16,
+        "ry": 16,
+        "fill": "none",
+        "stroke": "url(#grad)",
+        "strokeWidth": 5
+      }
+    ]
+  },
+  {
+    "id": "neon_frame",
+    "name": "Neon Frame",
+    "category": "Modern",
+    "thumbnail": "",
+    "frameAsset": "",
+    "editable": true,
+    "supportsColor": true,
+    "clipPathType": "rect",
+    "clipPathProps": { "x": 6, "y": 6, "width": 88, "height": 88, "rx": 6, "ry": 6 },
+    "shapes": [
+      {
+        "type": "rect",
+        "x": 6,
+        "y": 6,
+        "width": 88,
+        "height": 88,
+        "rx": 6,
+        "ry": 6,
+        "fill": "none",
+        "stroke": "borderColor",
+        "strokeWidth": 2,
+        "opacity": 0.9
+      },
+      {
+        "type": "rect",
+        "x": 5,
+        "y": 5,
+        "width": 90,
+        "height": 90,
+        "rx": 7,
+        "ry": 7,
+        "fill": "none",
+        "stroke": "accentColor",
+        "strokeWidth": 1.5,
+        "opacity": 0.6
+      }
+    ]
+  },
+  {
+    "id": "corporate_frame",
+    "name": "Corporate Frame",
+    "category": "Modern",
+    "thumbnail": "",
+    "frameAsset": "",
+    "editable": true,
+    "supportsColor": true,
+    "clipPathType": "rect",
+    "clipPathProps": { "x": 5, "y": 5, "width": 90, "height": 90 },
+    "shapes": [
+      {
+        "type": "rect",
+        "x": 5,
+        "y": 5,
+        "width": 90,
+        "height": 90,
+        "fill": "none",
+        "stroke": "borderColor",
+        "strokeWidth": "borderWidth"
+      },
+      {
+        "type": "path",
+        "d": "M 5 5 L 95 5 L 95 10 L 5 10 Z",
+        "fill": "accentColor"
+      },
+      {
+        "type": "path",
+        "d": "M 5 90 L 95 90 L 95 95 L 5 95 Z",
+        "fill": "secondaryColor"
+      }
+    ]
+  },
+  {
+    "id": "blue_ribbon",
+    "name": "Ribbon Frame",
+    "category": "School",
+    "thumbnail": "",
+    "frameAsset": "",
+    "editable": true,
+    "supportsColor": true,
+    "clipPathType": "circle",
+    "clipPathProps": { "cx": 50, "cy": 50, "r": 36 },
+    "shapes": [
+      {
+        "type": "circle",
+        "cx": 50,
+        "cy": 50,
+        "r": 44,
+        "fill": "none",
+        "stroke": "borderColor",
+        "strokeWidth": "borderWidth"
+      },
+      {
+        "type": "path",
+        "d": "M 32 80 L 15 100 L 32 90 L 49 100 L 32 80 Z",
+        "fill": "secondaryColor"
+      },
+      {
+        "type": "path",
+        "d": "M 68 80 L 51 100 L 68 90 L 85 100 L 68 80 Z",
+        "fill": "secondaryColor"
+      },
+      {
+        "type": "circle",
+        "cx": 50,
+        "cy": 50,
+        "r": 40,
+        "fill": "none",
+        "stroke": "accentColor",
+        "strokeWidth": 2
+      }
+    ]
+  },
+  {
+    "id": "student_frame",
+    "name": "Student ID Frame",
+    "category": "School",
+    "thumbnail": "",
+    "frameAsset": "",
+    "editable": true,
+    "supportsColor": true,
+    "clipPathType": "rect",
+    "clipPathProps": { "x": 5, "y": 5, "width": 90, "height": 90, "rx": 16, "ry": 16 },
+    "shapes": [
+      {
+        "type": "rect",
+        "x": 5,
+        "y": 5,
+        "width": 90,
+        "height": 90,
+        "rx": 16,
+        "ry": 16,
+        "fill": "none",
+        "stroke": "borderColor",
+        "strokeWidth": "borderWidth"
+      },
+      { "type": "circle", "cx": 12, "cy": 12, "r": 4, "fill": "accentColor" }
+    ]
+  },
+  {
+    "id": "modern-blue",
+    "name": "Modern School Frame",
+    "category": "School",
+    "thumbnail": "",
+    "frameAsset": "",
+    "editable": true,
+    "supportsColor": true,
+    "clipPathType": "rect",
+    "clipPathProps": { "x": 6, "y": 6, "width": 88, "height": 88, "rx": 8, "ry": 8 },
+    "shapes": [
+      {
+        "type": "rect",
+        "x": 6,
+        "y": 6,
+        "width": 88,
+        "height": 88,
+        "rx": 8,
+        "ry": 8,
+        "fill": "none",
+        "stroke": "borderColor",
+        "strokeWidth": "borderWidth"
+      },
+      {
+        "type": "path",
+        "d": "M 6,20 L 6,6 L 20,6",
+        "fill": "none",
+        "stroke": "accentColor",
+        "strokeWidth": 3
+      },
+      {
+        "type": "path",
+        "d": "M 94,80 L 94,94 L 80,94",
+        "fill": "none",
+        "stroke": "accentColor",
+        "strokeWidth": 3
+      },
+      {
+        "type": "path",
+        "d": "M 94,20 L 94,6 L 80,6",
+        "fill": "none",
+        "stroke": "secondaryColor",
+        "strokeWidth": 3
+      },
+      {
+        "type": "path",
+        "d": "M 6,80 L 6,94 L 20,94",
+        "fill": "none",
+        "stroke": "secondaryColor",
+        "strokeWidth": 3
+      }
+    ]
+  },
+  {
+    "id": "academic_border",
+    "name": "Academic Border",
+    "category": "School",
+    "thumbnail": "",
+    "frameAsset": "",
+    "editable": true,
+    "supportsColor": true,
+    "supportsBorder": true,
+    "clipPathType": "rect",
+    "clipPathProps": { "x": 8, "y": 8, "width": 84, "height": 84, "rx": 6, "ry": 6 },
+    "shapes": [
+      {
+        "type": "rect",
+        "x": 8,
+        "y": 8,
+        "width": 84,
+        "height": 84,
+        "rx": 6,
+        "ry": 6,
+        "fill": "none",
+        "stroke": "borderColor",
+        "strokeWidth": "borderWidth"
+      },
+      {
+        "type": "rect",
+        "x": 12,
+        "y": 12,
+        "width": 76,
+        "height": 76,
+        "rx": 4,
+        "ry": 4,
+        "fill": "none",
+        "stroke": "accentColor",
+        "strokeWidth": 1,
+        "strokeDasharray": "4 3"
+      }
+    ]
+  },
+  {
+    "id": "badge_frame",
+    "name": "Badge Frame",
+    "category": "School",
+    "thumbnail": "",
+    "frameAsset": "",
+    "editable": true,
+    "supportsColor": true,
+    "clipPathType": "polygon",
+    "clipPathProps": { "points": "50,5 92,25 92,75 50,95 8,75 8,25" },
+    "shapes": [
+      {
+        "type": "polygon",
+        "points": "50,5 92,25 92,75 50,95 8,75 8,25",
+        "fill": "none",
+        "stroke": "borderColor",
+        "strokeWidth": "borderWidth"
+      },
+      {
+        "type": "polygon",
+        "points": "50,11 86,28 86,71 50,88 14,71 14,28",
+        "fill": "none",
+        "stroke": "accentColor",
+        "strokeWidth": 1.5
+      }
+    ]
+  },
+  {
+    "id": "corporate_ring",
+    "name": "Corporate Ring",
+    "category": "Office",
+    "thumbnail": "",
+    "frameAsset": "",
+    "editable": true,
+    "supportsColor": true,
+    "clipPathType": "circle",
+    "clipPathProps": { "cx": 50, "cy": 50, "r": 36 },
+    "shapes": [
+      {
+        "type": "circle",
+        "cx": 50,
+        "cy": 50,
+        "r": 44,
+        "fill": "none",
+        "stroke": "borderColor",
+        "strokeWidth": "borderWidth",
+        "strokeDasharray": "5 3"
+      },
+      {
+        "type": "circle",
+        "cx": 50,
+        "cy": 50,
+        "r": 41,
+        "fill": "none",
+        "stroke": "accentColor",
+        "strokeWidth": 1,
+        "opacity": 0.6
+      },
+      {
+        "type": "circle",
+        "cx": 50,
+        "cy": 50,
+        "r": 37.5,
+        "fill": "none",
+        "stroke": "accentColor",
+        "strokeWidth": 2.5
+      },
+      { "type": "circle", "cx": 50, "cy": 4, "r": 2.5, "fill": "secondaryColor" },
+      { "type": "circle", "cx": 50, "cy": 96, "r": 2.5, "fill": "secondaryColor" },
+      { "type": "circle", "cx": 4, "cy": 50, "r": 2.5, "fill": "secondaryColor" },
+      { "type": "circle", "cx": 96, "cy": 50, "r": 2.5, "fill": "secondaryColor" }
+    ]
+  },
+  {
+    "id": "premium_employee",
+    "name": "Employee Card Frame",
+    "category": "Office",
+    "thumbnail": "",
+    "frameAsset": "",
+    "editable": true,
+    "supportsColor": true,
+    "clipPathType": "rect",
+    "clipPathProps": { "x": 6, "y": 6, "width": 88, "height": 88, "rx": 12, "ry": 12 },
+    "shapes": [
+      {
+        "type": "rect",
+        "x": 6,
+        "y": 6,
+        "width": 88,
+        "height": 88,
+        "rx": 12,
+        "ry": 12,
+        "fill": "none",
+        "stroke": "borderColor",
+        "strokeWidth": "borderWidth"
+      },
+      {
+        "type": "path",
+        "d": "M 6 75 L 94 75 L 94 88 A 6 6 0 0 1 88 94 L 12 94 A 6 6 0 0 1 6 88 Z",
+        "fill": "borderColor"
+      }
+    ]
+  },
+  {
+    "id": "visitor_frame",
+    "name": "Visitor Frame",
+    "category": "Office",
+    "thumbnail": "",
+    "frameAsset": "",
+    "editable": true,
+    "supportsColor": true,
+    "clipPathType": "rect",
+    "clipPathProps": { "x": 5, "y": 5, "width": 90, "height": 90, "rx": 6, "ry": 6 },
+    "shapes": [
+      {
+        "type": "rect",
+        "x": 5,
+        "y": 5,
+        "width": 90,
+        "height": 90,
+        "rx": 6,
+        "ry": 6,
+        "fill": "none",
+        "stroke": "borderColor",
+        "strokeWidth": "borderWidth"
+      },
+      {
+        "type": "rect",
+        "x": 10,
+        "y": 80,
+        "width": 80,
+        "height": 10,
+        "fill": "secondaryColor",
+        "rx": 2,
+        "ry": 2
+      }
+    ]
+  },
+  {
+    "id": "professional_border",
+    "name": "Professional Border",
+    "category": "Office",
+    "thumbnail": "",
+    "frameAsset": "",
+    "editable": true,
+    "supportsColor": true,
+    "clipPathType": "rect",
+    "clipPathProps": { "x": 8, "y": 8, "width": 84, "height": 84, "rx": 8, "ry": 8 },
+    "shapes": [
+      {
+        "type": "rect",
+        "x": 8,
+        "y": 8,
+        "width": 84,
+        "height": 84,
+        "rx": 8,
+        "ry": 8,
+        "fill": "none",
+        "stroke": "borderColor",
+        "strokeWidth": "borderWidth"
+      },
+      {
+        "type": "path",
+        "d": "M 8,24 L 8,8 L 24,8",
+        "fill": "none",
+        "stroke": "accentColor",
+        "strokeWidth": 2.5
+      },
+      {
+        "type": "path",
+        "d": "M 92,68 L 92,84 L 76,84",
+        "fill": "none",
+        "stroke": "accentColor",
+        "strokeWidth": 2.5
+      }
+    ]
+  },
+  {
+    "id": "corporate_accent",
+    "name": "Corporate Accent",
+    "category": "Office",
+    "thumbnail": "",
+    "frameAsset": "",
+    "editable": true,
+    "supportsColor": true,
+    "clipPathType": "rect",
+    "clipPathProps": { "x": 6, "y": 6, "width": 88, "height": 88, "rx": 4, "ry": 4 },
+    "shapes": [
+      {
+        "type": "rect",
+        "x": 6,
+        "y": 6,
+        "width": 88,
+        "height": 88,
+        "rx": 4,
+        "ry": 4,
+        "fill": "none",
+        "stroke": "borderColor",
+        "strokeWidth": "borderWidth"
+      },
+      {
+        "type": "path",
+        "d": "M 6,82 L 94,82 L 94,88 L 6,88 Z",
+        "fill": "secondaryColor"
+      },
+      {
+        "type": "circle",
+        "cx": 50,
+        "cy": 85,
+        "r": 1.5,
+        "fill": "accentColor"
+      }
+    ]
+  },
+  {
+    "id": "business_frame",
+    "name": "Business Frame",
+    "category": "Office",
+    "thumbnail": "",
+    "frameAsset": "",
+    "editable": true,
+    "supportsColor": true,
+    "clipPathType": "rect",
+    "clipPathProps": { "x": 8, "y": 8, "width": 84, "height": 84 },
+    "shapes": [
+      {
+        "type": "rect",
+        "x": 8,
+        "y": 8,
+        "width": 84,
+        "height": 84,
+        "fill": "none",
+        "stroke": "borderColor",
+        "strokeWidth": "borderWidth"
+      },
+      {
+        "type": "rect",
+        "x": 8,
+        "y": 8,
+        "width": 84,
+        "height": 14,
+        "fill": "accentColor"
+      }
+    ]
+  },
+  {
+    "id": "executive_frame",
+    "name": "Executive Frame",
+    "category": "Office",
+    "thumbnail": "",
+    "frameAsset": "",
+    "editable": true,
+    "supportsColor": true,
+    "clipPathType": "rect",
+    "clipPathProps": { "x": 10, "y": 10, "width": 80, "height": 80, "rx": 10, "ry": 10 },
+    "shapes": [
+      {
+        "type": "rect",
+        "x": 6,
+        "y": 6,
+        "width": 88,
+        "height": 88,
+        "rx": 14,
+        "ry": 14,
+        "fill": "none",
+        "stroke": "borderColor",
+        "strokeWidth": "borderWidth"
+      },
+      {
+        "type": "rect",
+        "x": 10,
+        "y": 10,
+        "width": 80,
+        "height": 80,
+        "rx": 10,
+        "ry": 10,
+        "fill": "none",
+        "stroke": "secondaryColor",
+        "strokeWidth": 1.5
+      },
+      { "type": "circle", "cx": 14, "cy": 14, "r": 2.5, "fill": "accentColor" },
+      { "type": "circle", "cx": 86, "cy": 14, "r": 2.5, "fill": "accentColor" },
+      { "type": "circle", "cx": 14, "cy": 86, "r": 2.5, "fill": "accentColor" },
+      { "type": "circle", "cx": 86, "cy": 86, "r": 2.5, "fill": "accentColor" }
+    ]
+  },
+  {
+    "id": "shield",
+    "name": "Shield Frame",
+    "category": "Creative",
+    "thumbnail": "",
+    "frameAsset": "",
+    "editable": true,
+    "supportsColor": true,
+    "clipPathType": "polygon",
+    "clipPathProps": { "points": "50,5 92,20 85,75 50,95 15,75 8,20" },
+    "shapes": [
+      {
+        "type": "polygon",
+        "points": "50,5 92,20 85,75 50,95 15,75 8,20",
+        "fill": "none",
+        "stroke": "borderColor",
+        "strokeWidth": "borderWidth"
+      },
+      {
+        "type": "polygon",
+        "points": "50,10 87,24 81,72 50,90 19,72 13,24",
+        "fill": "none",
+        "stroke": "accentColor",
+        "strokeWidth": 1.5
+      }
+    ]
+  },
+  {
+    "id": "hexagon",
+    "name": "Hexagon Frame",
+    "category": "Creative",
+    "thumbnail": "",
+    "frameAsset": "",
+    "editable": true,
+    "supportsColor": true,
+    "clipPathType": "polygon",
+    "clipPathProps": { "points": "50,5 89,27 89,73 50,95 11,73 11,27" },
+    "shapes": [
+      {
+        "type": "polygon",
+        "points": "50,5 89,27 89,73 50,95 11,73 11,27",
+        "fill": "none",
+        "stroke": "borderColor",
+        "strokeWidth": "borderWidth"
+      },
+      {
+        "type": "polygon",
+        "points": "50,9 85,29 85,71 50,91 15,71 15,29",
+        "fill": "none",
+        "stroke": "accentColor",
+        "strokeWidth": 1
+      }
+    ]
+  },
+  {
+    "id": "octagon",
+    "name": "Octagon Frame",
+    "category": "Creative",
+    "thumbnail": "",
+    "frameAsset": "",
+    "editable": true,
+    "supportsColor": true,
+    "clipPathType": "polygon",
+    "clipPathProps": { "points": "50,5 82,18 95,50 82,82 50,95 18,82 5,50 18,18" },
+    "shapes": [
+      {
+        "type": "polygon",
+        "points": "50,5 82,18 95,50 82,82 50,95 18,82 5,50 18,18",
+        "fill": "none",
+        "stroke": "borderColor",
+        "strokeWidth": "borderWidth"
+      }
+    ]
+  },
+  {
+    "id": "diamond",
+    "name": "Diamond Frame",
+    "category": "Creative",
+    "thumbnail": "",
+    "frameAsset": "",
+    "editable": true,
+    "supportsColor": true,
+    "clipPathType": "polygon",
+    "clipPathProps": { "points": "50,5 95,50 50,95 5,50" },
+    "shapes": [
+      {
+        "type": "polygon",
+        "points": "50,5 95,50 50,95 5,50",
+        "fill": "none",
+        "stroke": "borderColor",
+        "strokeWidth": "borderWidth"
+      }
+    ]
+  },
+  {
+    "id": "polygon",
+    "name": "Polygon Frame",
+    "category": "Creative",
+    "thumbnail": "",
+    "frameAsset": "",
+    "editable": true,
+    "supportsColor": true,
+    "clipPathType": "polygon",
+    "clipPathProps": { "points": "50,5 93,36 77,87 23,87 7,36" },
+    "shapes": [
+      {
+        "type": "polygon",
+        "points": "50,5 93,36 77,87 23,87 7,36",
+        "fill": "none",
+        "stroke": "borderColor",
+        "strokeWidth": "borderWidth"
+      }
+    ]
+  },
+  {
+    "id": "split_frame",
+    "name": "Split Frame",
+    "category": "Creative",
+    "thumbnail": "",
+    "frameAsset": "",
+    "editable": true,
+    "supportsColor": true,
+    "clipPathType": "rect",
+    "clipPathProps": { "x": 10, "y": 5, "width": 80, "height": 90, "rx": 4, "ry": 4 },
+    "shapes": [
+      {
+        "type": "rect",
+        "x": 10,
+        "y": 5,
+        "width": 80,
+        "height": 90,
+        "rx": 4,
+        "ry": 4,
+        "fill": "none",
+        "stroke": "borderColor",
+        "strokeWidth": "borderWidth"
+      },
+      {
+        "type": "path",
+        "d": "M 4,5 L 4,95",
+        "fill": "none",
+        "stroke": "accentColor",
+        "strokeWidth": 2.5
+      },
+      {
+        "type": "path",
+        "d": "M 96,5 L 96,95",
+        "fill": "none",
+        "stroke": "secondaryColor",
+        "strokeWidth": 2.5
+      }
+    ]
+  },
+  {
+    "id": "wave_frame",
+    "name": "Wave Frame",
+    "category": "Creative",
+    "thumbnail": "",
+    "frameAsset": "",
+    "editable": true,
+    "supportsColor": true,
+    "clipPathType": "rect",
+    "clipPathProps": { "x": 6, "y": 6, "width": 88, "height": 88, "rx": 10, "ry": 10 },
+    "shapes": [
+      {
+        "type": "rect",
+        "x": 6,
+        "y": 6,
+        "width": 88,
+        "height": 88,
+        "rx": 10,
+        "ry": 10,
+        "fill": "none",
+        "stroke": "borderColor",
+        "strokeWidth": "borderWidth"
+      },
+      {
+        "type": "path",
+        "d": "M 6 80 C 20 75, 35 85, 50 80 C 65 75, 80 85, 94 80 L 94 88 A 6 6 0 0 1 88 94 L 12 94 A 6 6 0 0 1 6 88 Z",
+        "fill": "accentColor",
+        "opacity": 0.8
+      }
+    ]
+  },
+  {
+    "id": "curved_frame",
+    "name": "Curved Frame",
+    "category": "Creative",
+    "thumbnail": "",
+    "frameAsset": "",
+    "editable": true,
+    "supportsColor": true,
+    "clipPathType": "rect",
+    "clipPathProps": { "x": 6, "y": 6, "width": 88, "height": 88, "rx": 8, "ry": 8 },
+    "shapes": [
+      {
+        "type": "rect",
+        "x": 6,
+        "y": 6,
+        "width": 88,
+        "height": 88,
+        "rx": 8,
+        "ry": 8,
+        "fill": "none",
+        "stroke": "borderColor",
+        "strokeWidth": "borderWidth"
+      },
+      {
+        "type": "path",
+        "d": "M 6,80 Q 50,70 94,80 L 94,88 A 6 6 0 0 1 88 94 L 12 94 A 6 6 0 0 1 6 88 Z",
+        "fill": "secondaryColor"
+      }
+    ]
+  },
+  {
+    "id": "modern_badge",
+    "name": "Badge Frame",
+    "category": "Premium",
+    "thumbnail": "",
+    "frameAsset": "",
+    "editable": true,
+    "supportsColor": true,
+    "clipPathType": "circle",
+    "clipPathProps": { "cx": 50, "cy": 50, "r": 40 },
+    "shapes": [
+      {
+        "type": "circle",
+        "cx": 50,
+        "cy": 50,
+        "r": 44,
+        "fill": "none",
+        "stroke": "borderColor",
+        "strokeWidth": "borderWidth"
+      },
+      {
+        "type": "circle",
+        "cx": 50,
+        "cy": 50,
+        "r": 41,
+        "fill": "none",
+        "stroke": "secondaryColor",
+        "strokeWidth": 1.5
+      }
+    ]
+  },
+  {
+    "id": "luxury_frame",
+    "name": "Luxury Frame",
+    "category": "Premium",
+    "thumbnail": "",
+    "frameAsset": "",
+    "editable": true,
+    "supportsColor": true,
+    "clipPathType": "rect",
+    "clipPathProps": { "x": 8, "y": 8, "width": 84, "height": 84, "rx": 10, "ry": 10 },
+    "shapes": [
+      {
+        "type": "rect",
+        "x": 8,
+        "y": 8,
+        "width": 84,
+        "height": 84,
+        "rx": 10,
+        "ry": 10,
+        "fill": "none",
+        "stroke": "borderColor",
+        "strokeWidth": "borderWidth"
+      },
+      {
+        "type": "rect",
+        "x": 12,
+        "y": 12,
+        "width": 76,
+        "height": 76,
+        "rx": 6,
+        "ry": 6,
+        "fill": "none",
+        "stroke": "secondaryColor",
+        "strokeWidth": 1
+      }
+    ]
+  },
+  {
+    "id": "gold-round",
+    "name": "Gold Round",
+    "category": "Premium",
+    "thumbnail": "",
+    "frameAsset": "",
+    "editable": true,
+    "supportsColor": true,
+    "clipPathType": "circle",
+    "clipPathProps": { "cx": 50, "cy": 50, "r": 44 },
+    "shapes": [
+      {
+        "type": "circle",
+        "cx": 50,
+        "cy": 50,
+        "r": 44,
+        "fill": "none",
+        "stroke": "url(#grad)",
+        "strokeWidth": "borderWidth"
+      },
+      {
+        "type": "circle",
+        "cx": 50,
+        "cy": 50,
+        "r": 41,
+        "fill": "none",
+        "stroke": "borderColor",
+        "strokeWidth": 1,
+        "opacity": 0.8
+      }
+    ]
+  },
+  {
+    "id": "premium_accent_frame",
+    "name": "Premium Accent Frame",
+    "category": "Premium",
+    "thumbnail": "",
+    "frameAsset": "",
+    "editable": true,
+    "supportsColor": true,
+    "clipPathType": "rect",
+    "clipPathProps": { "x": 10, "y": 10, "width": 80, "height": 80, "rx": 12, "ry": 12 },
+    "shapes": [
+      {
+        "type": "rect",
+        "x": 6,
+        "y": 6,
+        "width": 88,
+        "height": 88,
+        "rx": 16,
+        "ry": 16,
+        "fill": "none",
+        "stroke": "borderColor",
+        "strokeWidth": "borderWidth"
+      },
+      {
+        "type": "rect",
+        "x": 10,
+        "y": 10,
+        "width": 80,
+        "height": 80,
+        "rx": 12,
+        "ry": 12,
+        "fill": "none",
+        "stroke": "accentColor",
+        "strokeWidth": 0.75
+      },
+      { "type": "circle", "cx": 10, "cy": 10, "r": 1.5, "fill": "secondaryColor" },
+      { "type": "circle", "cx": 90, "cy": 10, "r": 1.5, "fill": "secondaryColor" },
+      { "type": "circle", "cx": 10, "cy": 90, "r": 1.5, "fill": "secondaryColor" },
+      { "type": "circle", "cx": 90, "cy": 90, "r": 1.5, "fill": "secondaryColor" }
+    ]
+  }
+]
