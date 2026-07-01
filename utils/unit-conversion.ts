@@ -20,6 +20,65 @@ export const MM_TO_PX = 3.7795275591;
 export const PT_TO_PX = 1.3333333333;
 export const PX_TO_PT = 0.75;
 
+export function getEstimatedTextWidthInEMs(text: string): number {
+  let len = 0;
+  for (let i = 0; i < text.length; i++) {
+    const char = text[i];
+    if (/[A-Z]/.test(char)) {
+      len += 0.72;
+    } else if (/[a-z]/.test(char)) {
+      len += 0.52;
+    } else if (/[0-9]/.test(char)) {
+      len += 0.55;
+    } else if (/\s/.test(char)) {
+      len += 0.28;
+    } else if (/[i1l|!.,;' ]/.test(char)) {
+      len += 0.25;
+    } else {
+      len += 0.45;
+    }
+  }
+  return Math.max(len, 0.5);
+}
+
+export function getResponsiveFontSize(
+  text: string,
+  width: number,
+  height: number,
+  paddingX: number,
+  minFontScale = 0.5,
+  maxFontScale = 2.5,
+  multiline = false
+): number {
+  if (!text) text = 'Text';
+  const usableW = Math.max(0, width - 2 * paddingX);
+  const ems = getEstimatedTextWidthInEMs(text);
+  
+  if (!multiline) {
+    const baseFontSize = height * 0.80;
+    const fontSizeWidth = usableW / ems;
+    const minFontSize = baseFontSize * minFontScale;
+    const maxFontSize = baseFontSize * maxFontScale;
+    const targetFontSize = Math.min(baseFontSize, fontSizeWidth);
+    return Math.max(minFontSize, Math.min(maxFontSize, targetFontSize));
+  } else {
+    const singleLineSize = height * 0.80;
+    const fontSizeWidth = usableW / ems;
+    if (fontSizeWidth >= singleLineSize) {
+      const minFontSize = singleLineSize * minFontScale;
+      const maxFontSize = singleLineSize * maxFontScale;
+      return Math.max(minFontSize, Math.min(maxFontSize, fontSizeWidth));
+    }
+    const totalNeededWidth = ems * (height * 0.40);
+    const estimatedLines = Math.max(1.5, Math.ceil(totalNeededWidth / usableW));
+    const targetFontSize = Math.min(height * 0.80, (height * 0.90) / estimatedLines);
+    
+    const minFontSize = (height * 0.80) * minFontScale;
+    const maxFontSize = (height * 0.80) * maxFontScale;
+    return Math.max(minFontSize, Math.min(maxFontSize, targetFontSize));
+  }
+}
+
 export function pxToMm(px: number): number {
   return Number((px * PX_TO_MM).toFixed(2));
 }
@@ -253,24 +312,27 @@ export function denormalizeCanvasToPX(canvasJson: any): any {
         opacity: el.opacity !== undefined ? el.opacity : 1
       };
       
-      // Denormalize style measurements to px
-      const isTextOrField = el.type === 'text' || el.type === 'field';
-      if (isTextOrField) {
-        nextEl.autoScale = style.autoScale ?? true;
-        nextEl.baseFontSize = style.baseFontSize ?? style.fontSize ?? 3.5;
-        const baseWidthMm = style.baseWidth ?? el.width ?? 45;
-        nextEl.baseWidth = Math.round(unitToPx(baseWidthMm, unit));
+      if (nextEl.type === 'text' || nextEl.type === 'field') {
+        nextEl.autoScale = style.autoScale ?? nextEl.autoScale ?? true;
+        nextEl.minFontScale = style.minFontScale ?? nextEl.minFontScale ?? 0.5;
+        nextEl.maxFontScale = style.maxFontScale ?? nextEl.maxFontScale ?? 2.5;
+        nextEl.paddingX = style.paddingX ?? nextEl.paddingX ?? 1.5;
+        nextEl.paddingY = style.paddingY ?? nextEl.paddingY ?? 0;
+        nextEl.whiteSpace = style.whiteSpace ?? nextEl.whiteSpace ?? 'nowrap';
         
-        const fsVal = style.fontSize ?? 3.5;
-        nextEl.fontSize = Math.round(mmToPt(fsVal));
-        nextEl.fontUnit = 'pt';
-        
-        const padLeftMm = style.padding?.left ?? 2;
-        const padRightMm = style.padding?.right ?? 2;
-        nextEl.paddingLeft = Math.round(unitToPx(padLeftMm, unit));
-        nextEl.paddingRight = Math.round(unitToPx(padRightMm, unit));
+        nextEl.paddingLeft = Math.round(unitToPx(nextEl.paddingX, unit));
+        nextEl.paddingRight = Math.round(unitToPx(nextEl.paddingX, unit));
         nextEl.paddingTop = 0;
         nextEl.paddingBottom = 0;
+
+        delete nextEl.fontSize;
+        delete nextEl.font_size;
+        if (nextEl.style) {
+          delete nextEl.style.fontSize;
+          delete nextEl.style.calculatedFontSize;
+          delete nextEl.style.baseFontSize;
+          delete nextEl.style.baseWidth;
+        }
       } else {
         if (style.fontSize !== undefined) {
           nextEl.fontSize = Math.round(unitToPx(style.fontSize, unit));
@@ -442,21 +504,28 @@ export function normalizeCanvasToMM(canvasState: any, targetUnit: 'mm' | 'cm' = 
       
       // Font / text styling
       if (el.fontFamily !== undefined) style.fontFamily = el.fontFamily;
-      const isTextOrField = type === 'text' || type === 'field';
-      if (isTextOrField) {
-        const bFontSize = el.baseFontSize || ptToMm(el.fontSize || 12);
-        const bWidth = el.baseWidth ? pxToUnit(el.baseWidth, targetUnit) : normW;
-        style.baseFontSize = parseFloat(bFontSize.toFixed(4));
-        style.baseWidth = parseFloat(bWidth.toFixed(4));
-        style.autoScale = el.autoScale ?? true;
-        style.singleLine = true;
-        style.fontSize = parseFloat(ptToMm(el.fontSize || 12).toFixed(4));
-        style.fontUnit = targetUnit;
-        style.padding = {
-          left: 2,
-          right: 2,
-          unit: targetUnit
-        };
+      if (type === 'text' || type === 'field') {
+        // Delete all hardcoded font-sizes for responsive text
+        delete style.fontSize;
+        delete style.fontUnit;
+        delete style.calculatedFontSize;
+        delete style.baseFontSize;
+        delete style.baseWidth;
+        delete style.padding;
+        
+        style.autoScale = el.autoScale !== undefined ? el.autoScale : true;
+        style.minFontScale = el.minFontScale !== undefined ? el.minFontScale : 0.5;
+        style.maxFontScale = el.maxFontScale !== undefined ? el.maxFontScale : 2.5;
+        style.paddingX = el.paddingX !== undefined ? el.paddingX : 1.5;
+        style.paddingY = el.paddingY !== undefined ? el.paddingY : 0;
+        style.whiteSpace = el.whiteSpace !== undefined ? el.whiteSpace : 'nowrap';
+        
+        el.autoScale = style.autoScale;
+        el.minFontScale = style.minFontScale;
+        el.maxFontScale = style.maxFontScale;
+        el.paddingX = style.paddingX;
+        el.paddingY = style.paddingY;
+        el.whiteSpace = style.whiteSpace;
       } else {
         if (el.fontSize !== undefined) {
           const fsVal = typeof el.fontSize === 'object' ? el.fontSize.value : el.fontSize;
@@ -643,23 +712,6 @@ export function mmToPt(mm: number): number {
   return Number((mm * 3.7795275591 * 0.75).toFixed(4));
 }
 
-export function getEstimatedTextWidthInEMs(text: string): number {
-  let len = 0;
-  for (let i = 0; i < text.length; i++) {
-    const char = text[i];
-    if (/[A-Z]/.test(char)) {
-      len += 0.65;
-    } else if (/[0-9]/.test(char)) {
-      len += 0.55;
-    } else if (/[i1l|!.,;' ]/.test(char)) {
-      len += 0.25;
-    } else {
-      len += 0.5;
-    }
-  }
-  return Math.max(len, 1);
-}
-
 export function calculateAutoFontSize(
   textVal: string,
   widthPx: number,
@@ -701,27 +753,20 @@ export function calculateAutoFontSize(
 }
 
 export function resolveRenderFontSize(el: any, customText?: string): number {
-  if (el.autoScale) {
-    const textVal = customText !== undefined ? customText : (el.text || el.sampleValue || el.name || 'Text');
-    const padLeftMm = el.style?.padding?.left ?? el.padding?.left ?? 2;
-    const padRightMm = el.style?.padding?.right ?? el.padding?.right ?? 2;
-    const baseFontSizeMm = el.baseFontSize ?? el.style?.baseFontSize ?? 3.5;
-    const baseWidthMm = el.baseWidth ? (el.baseWidth * PX_TO_MM) : (el.style?.baseWidth ?? pxToMm(el.width || 100));
-    
-    const { fontSizePt } = calculateAutoFontSize(
-      textVal,
-      el.width || 100,
-      el.height || 25,
-      baseWidthMm,
-      baseFontSizeMm,
-      padLeftMm,
-      padRightMm
-    );
-    return fontSizePt;
-  } else {
-    if (el.style?.fontSize !== undefined) {
-      return Number((el.style.fontSize * 3.7795275591 * 0.75).toFixed(4));
-    }
-    return el.fontSize || 12;
-  }
+  const textVal = customText !== undefined ? customText : (el.text || el.sampleValue || el.name || 'Text');
+  const unit = el.unit || 'mm';
+  
+  const paddingX = el.paddingX !== undefined ? el.paddingX : 1.5;
+  const paddingXPx = unitToPx(paddingX, unit);
+  
+  const fontSizePx = getResponsiveFontSize(
+    textVal,
+    el.width || 100,
+    el.height || 25,
+    paddingXPx,
+    el.minFontScale !== undefined ? el.minFontScale : 0.5,
+    el.maxFontScale !== undefined ? el.maxFontScale : 2.5
+  );
+  
+  return fontSizePx;
 }

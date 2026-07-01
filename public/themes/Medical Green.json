@@ -1,0 +1,94 @@
+{
+  "id": "medical_green",
+  "name": "Medical Green",
+  "category": "Medical",
+  "description": "Clean and clinical medical service theme.",
+  "orientation": "vertical",
+  "frontBackground": {
+    "type": "solid",
+    "color": "#F0FDF4"
+  },
+  "backBackground": {
+    "type": "solid",
+    "color": "#DCFCE7"
+  },
+  "elements": [
+    {
+      "id": "top_accent",
+      "type": "shape",
+      "asset": "modern-wave",
+      "x": 0,
+      "y": 0,
+      "width": 638,
+      "height": 130,
+      "fill": "#10B981",
+      "secondaryFill": "#059669",
+      "layerIndex": 0,
+      "side": "FRONT"
+    },
+    {
+      "id": "hospital_name",
+      "type": "text",
+      "text": "SACRED HEART HOSPITAL",
+      "x": 50,
+      "y": 40,
+      "width": 538,
+      "height": 35,
+      "fontFamily": "Inter",
+      "fontWeight": "bold",
+      "color": "#ffffff",
+      "textAlign": "center",
+      "layerIndex": 1,
+      "side": "FRONT"
+    },
+    {
+      "id": "photo_frame",
+      "type": "image",
+      "name": "photo",
+      "field_key": "photo",
+      "x": 219,
+      "y": 190,
+      "width": 200,
+      "height": 200,
+      "imageShape": "rounded",
+      "borderRadius": 999,
+      "borderWidth": 4,
+      "borderColor": "#10B981",
+      "borderStyle": "solid",
+      "layerIndex": 2,
+      "side": "FRONT"
+    },
+    {
+      "id": "doctor_name",
+      "type": "field",
+      "name": "full_name",
+      "text": "Dr. Sarah Jenkins",
+      "x": 50,
+      "y": 450,
+      "width": 538,
+      "height": 45,
+      "fontFamily": "Inter",
+      "fontWeight": "bold",
+      "color": "#065F46",
+      "textAlign": "center",
+      "layerIndex": 3,
+      "side": "FRONT"
+    },
+    {
+      "id": "doctor_dept",
+      "type": "field",
+      "name": "department",
+      "text": "Cardiology",
+      "x": 50,
+      "y": 500,
+      "width": 538,
+      "height": 30,
+      "fontFamily": "Inter",
+      "fontWeight": "semibold",
+      "color": "#10B981",
+      "textAlign": "center",
+      "layerIndex": 4,
+      "side": "FRONT"
+    }
+  ]
+}

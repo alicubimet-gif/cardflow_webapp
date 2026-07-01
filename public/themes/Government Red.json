@@ -1,0 +1,93 @@
+{
+  "id": "government_red",
+  "name": "Government Red",
+  "category": "Government",
+  "description": "Official and high-security department pass.",
+  "orientation": "vertical",
+  "frontBackground": {
+    "type": "solid",
+    "color": "#FFFFFF"
+  },
+  "backBackground": {
+    "type": "solid",
+    "color": "#F9FAFB"
+  },
+  "elements": [
+    {
+      "id": "header_bar",
+      "type": "shape",
+      "asset": "rectangle",
+      "x": 0,
+      "y": 0,
+      "width": 638,
+      "height": 130,
+      "fill": "#991B1B",
+      "layerIndex": 0,
+      "side": "FRONT"
+    },
+    {
+      "id": "gov_header",
+      "type": "text",
+      "text": "DEPARTMENT OF STATE",
+      "x": 50,
+      "y": 45,
+      "width": 538,
+      "height": 35,
+      "fontFamily": "Inter",
+      "fontWeight": "bold",
+      "color": "#ffffff",
+      "textAlign": "center",
+      "layerIndex": 1,
+      "side": "FRONT"
+    },
+    {
+      "id": "photo_frame",
+      "type": "image",
+      "name": "photo",
+      "field_key": "photo",
+      "x": 219,
+      "y": 200,
+      "width": 200,
+      "height": 200,
+      "imageShape": "rounded",
+      "borderRadius": 0,
+      "borderWidth": 4,
+      "borderColor": "#991B1B",
+      "borderStyle": "solid",
+      "layerIndex": 2,
+      "side": "FRONT"
+    },
+    {
+      "id": "official_name",
+      "type": "field",
+      "name": "full_name",
+      "text": "Hon. Arthur Pendelton",
+      "x": 50,
+      "y": 460,
+      "width": 538,
+      "height": 40,
+      "fontFamily": "Inter",
+      "fontWeight": "bold",
+      "color": "#111827",
+      "textAlign": "center",
+      "layerIndex": 3,
+      "side": "FRONT"
+    },
+    {
+      "id": "official_clearance",
+      "type": "field",
+      "name": "clearance",
+      "text": "CLEARANCE LEVEL: 5",
+      "x": 50,
+      "y": 510,
+      "width": 538,
+      "height": 30,
+      "fontFamily": "Inter",
+      "fontWeight": "semibold",
+      "color": "#991B1B",
+      "textAlign": "center",
+      "layerIndex": 4,
+      "side": "FRONT"
+    }
+  ]
+}

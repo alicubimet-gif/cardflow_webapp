@@ -5,8 +5,9 @@ import { RotateCw, Copy, Trash2, Upload } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 import Barcode from 'react-barcode';
 import PremiumPhotoFrame from './PremiumPhotoFrame';
+import JSONShapeRenderer from './JSONShapeRenderer';
 import { resolvePhotoUrl } from '@/services/record-service';
-import { resolveRenderFontSize, unitToPx } from '../../utils/unit-conversion';
+import { resolveRenderFontSize, unitToPx, getResponsiveFontSize, MM_TO_PX } from '../../utils/unit-conversion';
 import VectorElement from './VectorElement';
 import VectorShape from './VectorShape';
 
@@ -245,10 +246,27 @@ export function TemplateRenderer({
         const renderContent = () => {
           // ── TEXT / FIELD ───────────────────────────────────────────────────
           if (typeUpper === 'TEXT' || typeUpper === 'FIELD') {
+            const minScale = el.minFontScale ?? el.style?.minFontScale ?? 0.5;
+            const maxScale = el.maxFontScale ?? el.style?.maxFontScale ?? 2.5;
+            const paddingX = el.paddingX ?? el.style?.paddingX ?? 1.5;
+            const padLeft = paddingX * MM_TO_PX;
+            const padRight = paddingX * MM_TO_PX;
+
             if (isDesignerMode) {
+              const elText = el.text || el.sampleValue || 'Text';
+              const calculatedFontSize = getResponsiveFontSize(
+                elText,
+                el.width,
+                el.height,
+                padLeft,
+                minScale,
+                maxScale
+              );
+
               if (editingId === el.id) {
                 return (
-                  <textarea
+                  <input
+                    type="text"
                     ref={editingRef as any}
                     autoFocus
                     value={el.text || ''}
@@ -262,10 +280,10 @@ export function TemplateRenderer({
                     }}
                     onClick={(ev) => ev.stopPropagation()}
                     onMouseDown={(ev) => ev.stopPropagation()}
-                    className="w-full h-full bg-transparent border-0 outline-none resize-none p-0 m-0"
+                    className="w-full h-full bg-transparent border-0 outline-none p-0 m-0"
                     style={{
                       fontFamily: getFontFamily(el.fontFamily),
-                      fontSize: el.fontSize || 16,
+                      fontSize: `${calculatedFontSize}px`,
                       fontWeight: el.fontWeight === 'semibold' ? 600 : el.fontWeight === 'medium' ? 500 : el.fontWeight === 'bold' ? 700 : 400,
                       color: el.color || el.textColor || '#111827',
                       textAlign: el.textAlign || 'left',
@@ -273,6 +291,13 @@ export function TemplateRenderer({
                       letterSpacing: `${el.letterSpacing || 0}px`,
                       lineHeight: el.lineHeight || 1.2,
                       opacity: el.opacity !== undefined ? el.opacity : 1,
+                      paddingLeft: padLeft,
+                      paddingRight: padRight,
+                      paddingTop: 0,
+                      paddingBottom: 0,
+                      boxSizing: 'border-box',
+                      whiteSpace: 'nowrap',
+                      overflow: 'hidden'
                     }}
                   />
                 );
@@ -286,19 +311,34 @@ export function TemplateRenderer({
                   }}
                   style={{
                     fontFamily: getFontFamily(el.fontFamily),
-                    fontSize: el.fontSize || 16,
+                    fontSize: `${calculatedFontSize}px`,
                     fontWeight: el.fontWeight === 'semibold' ? 600 : el.fontWeight === 'medium' ? 500 : el.fontWeight === 'bold' ? 700 : (typeUpper === 'FIELD' ? 700 : 400),
                     color: el.color || el.textColor || '#111827',
                     textAlign: el.textAlign || 'left',
                     fontStyle: el.italic ? 'italic' : 'normal',
                     letterSpacing: `${el.letterSpacing || 0}px`,
                     justifyContent: el.textAlign === 'center' ? 'center' : el.textAlign === 'right' ? 'flex-end' : 'flex-start',
-                    wordBreak: 'break-word',
                     lineHeight: el.lineHeight || 1.2,
                     opacity: el.opacity !== undefined ? el.opacity : 1,
+                    paddingLeft: padLeft,
+                    paddingRight: padRight,
+                    paddingTop: 0,
+                    paddingBottom: 0,
+                    boxSizing: 'border-box',
                   }}
                 >
-                  {el.text}
+                  <span
+                    style={{
+                      display: 'block',
+                      width: '100%',
+                      whiteSpace: 'nowrap',
+                      overflow: 'hidden',
+                      textOverflow: 'clip',
+                      textAlign: el.textAlign || el.align || el.style?.textAlign || el.style?.align || 'center',
+                    }}
+                  >
+                    {el.text}
+                  </span>
                 </div>
               );
             }
@@ -338,13 +378,20 @@ export function TemplateRenderer({
               }
             }
 
-            const fontSz = resolveRenderFontSize(el, resolvedText || el.text || el.sampleValue || el.name || 'Text');
+            const calculatedFontSize = getResponsiveFontSize(
+              resolvedText,
+              el.width,
+              el.height,
+              padLeft,
+              minScale,
+              maxScale
+            );
             return (
               <span
                 style={{
                   width: '100%',
                   height: '100%',
-                  fontSize: `${fontSz}px`,
+                  fontSize: `${calculatedFontSize}px`,
                   fontFamily: getFontFamily(el.fontFamily),
                   fontWeight: el.fontWeight || 'normal',
                   fontStyle: el.italic ? 'italic' : 'normal',
@@ -356,10 +403,11 @@ export function TemplateRenderer({
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: (el.textAlign || el.align) === 'left' ? 'flex-start' : (el.textAlign || el.align) === 'right' ? 'flex-end' : 'center',
-                  paddingLeft: el.paddingLeft !== undefined ? `${el.paddingLeft}px` : '2mm',
-                  paddingRight: el.paddingRight !== undefined ? `${el.paddingRight}px` : '2mm',
+                  paddingLeft: padLeft,
+                  paddingRight: padRight,
+                  paddingTop: 0,
+                  paddingBottom: 0,
                   boxSizing: 'border-box',
-                  overflow: 'hidden',
                 }}
               >
                 <span
@@ -611,235 +659,31 @@ export function TemplateRenderer({
           const isShape = typeUpper === 'SHAPE' || el.category === 'graphic' || el.category === 'decorative';
 
           if (isShape) {
-            if (el.assetId) {
-              return (
-                <VectorShape
-                  assetId={el.assetId}
-                  primaryColor={el.primaryColor}
-                  secondaryColor={el.secondaryColor}
-                  borderColor={el.borderColor}
-                  borderWidth={el.borderWidth}
-                  opacity={el.opacity}
-                  gradient={el.gradient}
-                  width={el.width}
-                  height={el.height}
-                  flipH={el.flipH}
-                  flipV={el.flipV}
-                />
-              );
-            }
-            const shapeType = String(el.shapeType || el.type || '').toLowerCase();
-            const radius = el.borderRadius ?? 0;
-            const fillVal = el.fill || '#cbd5e1';
-            const borderStyleOverride = el.stroke
-              ? { border: `${el.strokeWidth || el.borderWidth || 2}px ${el.strokeStyle || 'solid'} ${el.stroke}` }
-              : (el.borderWidth && el.borderColor ? { border: `${el.borderWidth}px ${el.borderStyle || 'solid'} ${el.borderColor}` } : {});
-
-            if (shapeType === 'border-frame') {
-              return (
-                <div className="w-full h-full" style={{ opacity: el.opacity ?? 1 }}>
-                  <svg width="100%" height="100%" viewBox="0 0 100 100" preserveAspectRatio="none">
-                    <rect x="5" y="5" width="90" height="90" fill="none" stroke={el.stroke || '#fbbf24'} strokeWidth={el.strokeWidth || 3} />
-                  </svg>
-                </div>
-              );
-            }
-            if (shapeType === 'star') {
-              return (
-                <div className="w-full h-full" style={{ opacity: el.opacity ?? 1 }}>
-                  <svg width="100%" height="100%" viewBox="0 0 100 100" preserveAspectRatio="none">
-                    <polygon points="50,5 64,36 98,36 70,57 81,91 50,70 19,91 30,57 2,36 36,36" fill={fillVal} stroke={el.stroke || 'none'} strokeWidth={el.strokeWidth || 0} />
-                  </svg>
-                </div>
-              );
-            }
-            if (shapeType === 'corner_accent') {
-              return (
-                <div className="w-full h-full" style={{ opacity: el.opacity ?? 1 }}>
-                  <svg width="100%" height="100%" viewBox="0 0 100 100" preserveAspectRatio="none">
-                    <polygon points="0,0 100,0 0,100" fill={fillVal} />
-                    <line x1="10" y1="90" x2="90" y2="10" stroke={el.stroke || '#fbbf24'} strokeWidth={el.strokeWidth || 3} />
-                    <line x1="20" y1="80" x2="80" y2="20" stroke={el.stroke || '#fbbf24'} strokeWidth={el.strokeWidth ? el.strokeWidth / 2 : 1.5} opacity="0.7" />
-                  </svg>
-                </div>
-              );
-            }
-            if (shapeType === 'curved_ribbon') {
-              return (
-                <div className="w-full h-full" style={{ opacity: el.opacity ?? 1 }}>
-                  <svg width="100%" height="100%" viewBox="0 0 200 60" preserveAspectRatio="none">
-                    <path d="M10,10 L190,10 L180,50 L20,50 Z" fill={fillVal} />
-                    <path d="M20,50 L10,10 L30,10 Z" fill={el.stroke || '#1d4ed8'} />
-                    <path d="M180,50 L190,10 L170,10 Z" fill={el.stroke || '#1d4ed8'} />
-                  </svg>
-                </div>
-              );
-            }
-            if (shapeType === 'diagonal_strip') {
-              return (
-                <div className="w-full h-full" style={{ opacity: el.opacity ?? 1 }}>
-                  <svg width="100%" height="100%" viewBox="0 0 100 20" preserveAspectRatio="none">
-                    <polygon points="0,0 80,0 100,20 20,20" fill={fillVal} />
-                  </svg>
-                </div>
-              );
-            }
-            if (shapeType === 'geometric_block') {
-              return (
-                <div className="w-full h-full" style={{ opacity: el.opacity ?? 1 }}>
-                  <svg width="100%" height="100%" viewBox="0 0 100 100" preserveAspectRatio="none">
-                    <rect x="10" y="10" width="60" height="60" fill={fillVal} opacity="0.5" />
-                    <rect x="30" y="30" width="60" height="60" fill={el.stroke || '#1d4ed8'} opacity="0.7" />
-                    <rect x="20" y="20" width="60" height="60" fill="none" stroke={el.stroke || '#1d4ed8'} strokeWidth={el.strokeWidth || 2} />
-                  </svg>
-                </div>
-              );
-            }
-            if (shapeType === 'dots') {
-              return (
-                <div className="w-full h-full" style={{ opacity: el.opacity ?? 1 }}>
-                  <svg width="100%" height="100%" viewBox="0 0 100 100" preserveAspectRatio="none">
-                    {[0, 1, 2, 3, 4].map(i => [0, 1, 2, 3, 4].map(j => (
-                      <circle key={`${i}-${j}`} cx={10 + i * 20} cy={10 + j * 20} r="3" fill={fillVal} />
-                    )))}
-                  </svg>
-                </div>
-              );
-            }
-            if (shapeType === 'wave') {
-              return (
-                <div className="w-full h-full" style={{ opacity: el.opacity ?? 1 }}>
-                  <svg width="100%" height="100%" viewBox="0 0 100 40" preserveAspectRatio="none">
-                    <path d="M0,20 Q25,5 50,20 T100,20 L100,40 L0,40 Z" fill={fillVal} />
-                    <path d="M0,15 Q25,0 50,15 T100,15" fill="none" stroke={el.stroke || '#1d4ed8'} strokeWidth={el.strokeWidth || 2} />
-                  </svg>
-                </div>
-              );
-            }
-            if (shapeType === 'abstract_lines') {
-              return (
-                <div className="w-full h-full" style={{ opacity: el.opacity ?? 1 }}>
-                  <svg width="100%" height="100%" viewBox="0 0 100 100" preserveAspectRatio="none">
-                    <line x1="0" y1="20" x2="80" y2="100" stroke={fillVal} strokeWidth="4" />
-                    <line x1="20" y1="0" x2="100" y2="80" stroke={fillVal} strokeWidth="4" />
-                    <line x1="40" y1="0" x2="100" y2="60" stroke={el.stroke || '#1d4ed8'} strokeWidth="2" />
-                  </svg>
-                </div>
-              );
-            }
-            if (shapeType === 'tech_overlay') {
-              return (
-                <div className="w-full h-full" style={{ opacity: el.opacity ?? 1 }}>
-                  <svg width="100%" height="100%" viewBox="0 0 100 100" preserveAspectRatio="none">
-                    <polygon points="50,10 90,30 90,70 50,90 10,70 10,30" fill="none" stroke={fillVal} strokeWidth="2" />
-                    <polygon points="50,20 80,35 80,65 50,80 20,65 20,35" fill="none" stroke={el.stroke || '#1d4ed8'} strokeWidth="1" opacity="0.7" />
-                  </svg>
-                </div>
-              );
-            }
-            if (shapeType === 'badge') {
-              return (
-                <div className="w-full h-full" style={{ opacity: el.opacity ?? 1 }}>
-                  <svg width="100%" height="100%" viewBox="0 0 100 100" preserveAspectRatio="none">
-                    <path d="M50,5 L90,25 L90,65 C90,80 70,95 50,98 C30,95 10,80 10,65 L10,25 Z" fill={fillVal} stroke={el.stroke || 'transparent'} strokeWidth={el.strokeWidth ? el.strokeWidth * 2 : 0} />
-                  </svg>
-                </div>
-              );
-            }
-            if (shapeType === 'rectangle') {
-              return (
-                <div className="w-full h-full" style={{ backgroundColor: el.fill || '#3A75FF', border: `${el.strokeWidth || 0}px ${el.strokeStyle || 'solid'} ${el.stroke || '#1D427D'}`, borderRadius: `${el.borderRadius || 0}px`, opacity: el.opacity ?? 1 }} />
-              );
-            }
-            if (shapeType === 'circle') {
-              return (
-                <div className="w-full h-full rounded-full" style={{ backgroundColor: el.fill || '#3A75FF', border: `${el.strokeWidth || 0}px ${el.strokeStyle || 'solid'} ${el.stroke || '#1D427D'}`, opacity: el.opacity ?? 1 }} />
-              );
-            }
-            if (shapeType === 'line') {
-              return (
-                <div style={{ width: '100%', height: el.strokeWidth || 2, backgroundColor: el.stroke || el.fill || '#1D427D', opacity: el.opacity ?? 1 }} />
-              );
-            }
-            if (shapeType === 'triangle') {
-              return (
-                <div className="w-full h-full" style={{ opacity: el.opacity ?? 1 }}>
-                  <svg viewBox="0 0 100 100" className="w-full h-full" preserveAspectRatio="none">
-                    <polygon points="50,0 100,100 0,100" fill={el.fill || '#3A75FF'} stroke={el.stroke || 'none'} strokeWidth={el.strokeWidth ? el.strokeWidth * 2 : 0} />
-                  </svg>
-                </div>
-              );
-            }
-            if (shapeType === 'polygon') {
-              return (
-                <div className="w-full h-full" style={{ opacity: el.opacity ?? 1 }}>
-                  <svg viewBox="0 0 100 100" className="w-full h-full" preserveAspectRatio="none">
-                    <polygon points="50,0 100,25 100,75 50,100 0,75 0,25" fill={el.fill || '#3A75FF'} stroke={el.stroke || 'none'} strokeWidth={el.strokeWidth ? el.strokeWidth * 2 : 0} />
-                  </svg>
-                </div>
-              );
-            }
-            if (shapeType === 'border-frame') {
-              return (
-                <div className="w-full h-full" style={{ ...getElStyle(el), backgroundColor: fillVal === '#cbd5e1' ? 'transparent' : fillVal, border: `${el.strokeWidth || 3}px solid ${el.stroke || '#6366f1'}`, borderRadius: `${radius}px` }} />
-              );
-            }
-            if (shapeType === 'gradient-shape') {
-              const colors = el.gradientColors || ['#4f46e5', '#2563eb'];
-              return (
-                <div className="w-full h-full" style={{ ...getElStyle(el), background: `linear-gradient(135deg, ${colors.join(', ')})`, borderRadius: `${radius}px`, ...borderStyleOverride }} />
-              );
-            }
-            if (shapeType === 'wave-shape') {
-              return (
-                <div className="w-full h-full" style={{ opacity: el.opacity ?? 1 }}>
-                  <svg width="100%" height="100%" viewBox="0 0 100 100" preserveAspectRatio="none">
-                    <path d="M0,40 C30,70 70,10 100,40 L100,100 L0,100 Z" fill={fillVal} stroke={el.stroke || 'transparent'} strokeWidth={el.strokeWidth ? el.strokeWidth * 2 : 0} />
-                  </svg>
-                </div>
-              );
-            }
-            if (shapeType === 'corner-pattern') {
-              return (
-                <div className="w-full h-full" style={{ opacity: el.opacity ?? 1 }}>
-                  <svg width="100%" height="100%" viewBox="0 0 100 100" preserveAspectRatio="none">
-                    <path d="M0,0 L100,0 C100,0 70,30 30,30 C30,70 0,100 0,100 Z" fill={fillVal} stroke={el.stroke || 'transparent'} />
-                  </svg>
-                </div>
-              );
-            }
-            if (shapeType === 'circle-pattern') {
-              return (
-                <div className="w-full h-full" style={{ opacity: el.opacity ?? 1 }}>
-                  <svg width="100%" height="100%" viewBox="0 0 100 100" preserveAspectRatio="none">
-                    <circle cx="50" cy="50" r="40" fill="none" stroke={el.stroke || fillVal} strokeWidth={el.strokeWidth || 1} opacity="0.2" />
-                    <circle cx="50" cy="50" r="30" fill="none" stroke={el.stroke || fillVal} strokeWidth={el.strokeWidth || 1} opacity="0.3" />
-                    <circle cx="50" cy="50" r="20" fill="none" stroke={el.stroke || fillVal} strokeWidth={el.strokeWidth || 1} opacity="0.4" />
-                  </svg>
-                </div>
-              );
-            }
-            if (shapeType === 'modern-abstract-shape') {
-              return (
-                <div className="w-full h-full" style={{ opacity: el.opacity ?? 1 }}>
-                  <svg width="100%" height="100%" viewBox="0 0 100 100" preserveAspectRatio="none">
-                    <polygon points="0,0 100,30 80,100 0,70" fill={fillVal} opacity="0.2" />
-                    <polygon points="100,0 30,50 100,100" fill={el.stroke || fillVal} opacity="0.1" />
-                  </svg>
-                </div>
-              );
-            }
-
-            // Generic shape rectangle fallback
-            const gradStyle: React.CSSProperties = {};
-            if (el.fillType === 'gradient') {
-              const dir = el.gradientDirection || 'to-br';
-              const cssDir = dir === 'to-r' ? 'to right' : dir === 'to-b' ? 'to bottom' : dir === 'to-tr' ? 'to top right' : 'to bottom right';
-              gradStyle.background = `linear-gradient(${cssDir}, ${el.gradientFrom || '#4f46e5'}, ${el.gradientTo || '#2563eb'})`;
-            } else {
-              gradStyle.backgroundColor = fillVal;
-            }
-            return <div className="w-full h-full" style={{ borderRadius: `${radius}px`, ...gradStyle, ...borderStyleOverride }} />;
+            return (
+              <JSONShapeRenderer
+                shapeId={el.shapeId || el.asset}
+                asset={el.asset}
+                shapeType={el.shapeType}
+                fill={el.fill}
+                secondaryFill={el.secondaryFill}
+                accentColor={el.accentColor}
+                stroke={el.stroke}
+                strokeWidth={el.strokeWidth || el.borderWidth}
+                strokeStyle={el.strokeStyle || el.borderStyle}
+                borderRadius={el.borderRadius}
+                opacity={el.opacity}
+                flipH={el.flipH}
+                flipV={el.flipV}
+                gradientEnabled={el.gradientEnabled || el.fillType === 'gradient'}
+                gradientColors={el.gradientColors || (el.gradientFrom && el.gradientTo ? [el.gradientFrom, el.gradientTo] : undefined)}
+                gradientDirection={el.gradientDirection}
+                shadowEnabled={el.shadowEnabled}
+                shadowColor={el.shadowColor}
+                shadowBlur={el.shadowBlur}
+                shadowOffsetX={el.shadowOffsetX}
+                shadowOffsetY={el.shadowOffsetY}
+              />
+            );
           }
           // ── PREMIUM DESIGN ELEMENT ─────────────────────────────────────────
           const isElement = typeUpper === 'ELEMENT';

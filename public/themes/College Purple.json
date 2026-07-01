@@ -1,0 +1,97 @@
+{
+  "id": "college_purple",
+  "name": "College Purple",
+  "category": "College",
+  "description": "Vibrant and energetic youth college layout.",
+  "orientation": "vertical",
+  "frontBackground": {
+    "type": "gradient",
+    "color": "#5B21B6",
+    "gradientFrom": "#5B21B6",
+    "gradientTo": "#8B5CF6",
+    "gradientDirection": "to-br"
+  },
+  "backBackground": {
+    "type": "solid",
+    "color": "#5B21B6"
+  },
+  "elements": [
+    {
+      "id": "accent_lines",
+      "type": "shape",
+      "asset": "abstract-lines",
+      "x": 50,
+      "y": 50,
+      "width": 538,
+      "height": 300,
+      "fill": "#C084FC",
+      "opacity": 0.25,
+      "layerIndex": 0,
+      "side": "FRONT"
+    },
+    {
+      "id": "college_title",
+      "type": "text",
+      "text": "METRO STATE COLLEGE",
+      "x": 50,
+      "y": 80,
+      "width": 538,
+      "height": 40,
+      "fontFamily": "Outfit",
+      "fontWeight": "bold",
+      "color": "#ffffff",
+      "textAlign": "center",
+      "layerIndex": 1,
+      "side": "FRONT"
+    },
+    {
+      "id": "photo_frame",
+      "type": "image",
+      "name": "photo",
+      "field_key": "photo",
+      "x": 209,
+      "y": 180,
+      "width": 220,
+      "height": 220,
+      "imageShape": "circle",
+      "borderRadius": 999,
+      "borderWidth": 4,
+      "borderColor": "#C084FC",
+      "borderStyle": "solid",
+      "layerIndex": 2,
+      "side": "FRONT"
+    },
+    {
+      "id": "student_name",
+      "type": "field",
+      "name": "full_name",
+      "text": "Chloe Richardson",
+      "x": 50,
+      "y": 480,
+      "width": 538,
+      "height": 50,
+      "fontFamily": "Outfit",
+      "fontWeight": "bold",
+      "color": "#ffffff",
+      "textAlign": "center",
+      "layerIndex": 3,
+      "side": "FRONT"
+    },
+    {
+      "id": "student_id_label",
+      "type": "field",
+      "name": "student_id",
+      "text": "STUDENT ID: 2026-9482",
+      "x": 50,
+      "y": 540,
+      "width": 538,
+      "height": 30,
+      "fontFamily": "Outfit",
+      "fontWeight": "medium",
+      "color": "#F3E8FF",
+      "textAlign": "center",
+      "layerIndex": 4,
+      "side": "FRONT"
+    }
+  ]
+}
