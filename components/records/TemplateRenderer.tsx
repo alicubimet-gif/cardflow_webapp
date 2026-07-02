@@ -7,9 +7,8 @@ import Barcode from 'react-barcode';
 import PremiumPhotoFrame from './PremiumPhotoFrame';
 import JSONShapeRenderer from './JSONShapeRenderer';
 import { resolvePhotoUrl } from '@/services/record-service';
-import { resolveRenderFontSize, unitToPx, getResponsiveFontSize, MM_TO_PX } from '../../utils/unit-conversion';
-import VectorElement from './VectorElement';
-import VectorShape from './VectorShape';
+import { unitToPx, getResponsiveFontSize, MM_TO_PX, getAutoFitFontSize } from '../../utils/unit-conversion';
+import { resolveCodeValue } from './shared-card-renderer';
 
 const resolveMediaUrl = resolvePhotoUrl;
 
@@ -53,6 +52,18 @@ function getFontFamily(family?: string): string {
   return maps[family] || family;
 }
 
+function getFontWeight(weight?: string | number): number | string {
+  if (!weight) return 400;
+  const w = String(weight).toLowerCase();
+  if (w === 'bold' || w === '700') return 700;
+  if (w === 'semibold' || w === '600') return 600;
+  if (w === 'medium' || w === '500') return 500;
+  if (w === 'regular' || w === 'normal' || w === '400') return 400;
+  if (w === 'light' || w === '300') return 300;
+  const num = parseInt(w, 10);
+  return isNaN(num) ? weight : num;
+}
+
 // ─── Photo utilities ──────────────────────────────────────────────────────────
 const getImageClipPath = (shape: string) => {
   if (shape === 'circle' || shape === 'circular') return 'circle(50% at 50% 50%)';
@@ -80,18 +91,57 @@ function getEstimatedTextWidthInEMs(text: string): number {
   return Math.max(len, 1);
 }
 
-export function getAutoScaledFontSize(text: string, width: number, height: number, minSize = 6, maxSize = 300): number {
-  if (!text) return 14;
-  const lines = text.split('\n');
+export function getAutoScaledFontSize(el: any): number {
+  if (!el) return 12;
+
+  // Resolve base metrics
+  const baseWidth = el.baseWidth || el.style?.baseWidth || el.width || 100;
+  const baseFontSize = el.baseFontSize || el.style?.baseFontSize || el.fontSize || el.font_size || el.style?.fontSize || el.style?.font_size || 12;
+
+  const scale = el.width / baseWidth;
+  const scaledFontSize = baseFontSize * scale;
+
+  // Resolve fitting limit using text length, width, height, and paddings
+  const text = el.text || el.sampleValue || el.name || 'Text';
+  const resolvedText = text.replace(/\{\{[^}]+\}\}/g, 'Basil Bray le laudanti');
+  const lines = resolvedText.split('\n');
   const lineCount = Math.max(lines.length, 1);
-  const fontSizeHeight = (height / (lineCount * 1.25)) * 0.95;
+
+  // Paddings in pixels (1mm = 3.7795 px)
+  const padL = el.paddingLeft !== undefined ? el.paddingLeft : (el.paddingX !== undefined ? el.paddingX * 3.7795 : (el.style?.padding?.left !== undefined ? el.style.padding.left * 3.7795 : 7.56));
+  const padR = el.paddingRight !== undefined ? el.paddingRight : (el.paddingX !== undefined ? el.paddingX * 3.7795 : (el.style?.padding?.right !== undefined ? el.style.padding.right * 3.7795 : 7.56));
+  const padT = el.paddingTop !== undefined ? el.paddingTop : 0;
+  const padB = el.paddingBottom !== undefined ? el.paddingBottom : 0;
+
+  const contentW = Math.max(10, el.width - (padL + padR));
+  const contentH = Math.max(10, el.height - (padT + padB));
+
+  // Convert content box dimensions to points
+  const PX_TO_PT = 0.75;
+  const contentW_pt = contentW * PX_TO_PT;
+  const contentH_pt = contentH * PX_TO_PT;
+
+  const fsHeightMax = (contentH_pt / (lineCount * 1.35)) * 0.95;
+
   let maxLineEMs = 0;
   for (const line of lines) {
-    maxLineEMs = Math.max(maxLineEMs, getEstimatedTextWidthInEMs(line));
+    let lineLen = 0;
+    for (let i = 0; i < line.length; i++) {
+      const char = line[i];
+      if (/[A-Z]/.test(char)) lineLen += 0.72;
+      else if (/[a-z]/.test(char)) lineLen += 0.52;
+      else if (/\s/.test(char)) lineLen += 0.28;
+      else lineLen += 0.45;
+    }
+    maxLineEMs = Math.max(maxLineEMs, Math.max(lineLen, 1));
   }
-  const fontSizeWidth = (width / maxLineEMs) * 0.95;
-  const finalSize = Math.min(fontSizeHeight, fontSizeWidth);
-  return Math.max(minSize, Math.min(maxSize, finalSize));
+  const fsWidthMax = (contentW_pt / maxLineEMs) * 0.95;
+  const maxFittingFontSize = Math.min(fsHeightMax, fsWidthMax);
+
+  // Return the minimum of the scaled and max fitting sizes
+  const finalSize = Math.min(scaledFontSize, maxFittingFontSize);
+
+  return Math.max(6, Math.min(300, finalSize));
 }
 
 function normalize(k: string): string {
@@ -198,7 +248,7 @@ export function TemplateRenderer({
   onStartEditing,
   onPlaceholderUpload,
 }: TemplateRendererProps) {
-  
+
   const getTypeWeight = (el: any): number => {
     const t = String(el.type || '').toUpperCase();
     if (t === 'SHAPE') return 1;
@@ -252,18 +302,118 @@ export function TemplateRenderer({
             const padLeft = paddingX * MM_TO_PX;
             const padRight = paddingX * MM_TO_PX;
 
+            // ── NESTED QR CODE GENERATION ──
+            if (el.qr?.enabled) {
+              const qrKey = el.qr.sourceField || el.sourceField || el.source_field || el.source_context || el.fieldName || el.fieldKey || el.fieldId || el.field_id || el.name || el.field || '';
+              let qrText = resolveFieldValue(qrKey, recordData);
+              if (!qrText && (isDesignerMode || (recordData && recordData.id === 'preview'))) {
+                qrText = qrKey ? `{{${qrKey}}}` : 'STU-10045';
+              }
+              if (!qrText) {
+                qrText = el.text || 'STU-10045';
+              }
+              const qrColor = el.qr.color || '#000000';
+              const sizeVal = Math.min(el.width, el.height);
+              return (
+                <div className="w-full h-full flex items-center justify-center overflow-hidden bg-transparent">
+                  <QRCodeSVG
+                    value={qrText}
+                    size={sizeVal}
+                    fgColor={qrColor}
+                    bgColor="transparent"
+                    level={el.qr.errorCorrection || 'M'}
+                    includeMargin={false}
+                  />
+                </div>
+              );
+            }
+
+            // ── NESTED BARCODE GENERATION ──
+            if (el.barcode?.enabled) {
+              const barKey = el.barcode.sourceField || el.sourceField || el.source_field || el.source_context || el.fieldName || el.fieldKey || el.fieldId || el.field_id || el.name || el.field || '';
+              let barcodeVal = resolveFieldValue(barKey, recordData);
+              if (!barcodeVal && (isDesignerMode || (recordData && recordData.id === 'preview'))) {
+                barcodeVal = '12345678';
+              }
+              if (!barcodeVal) {
+                barcodeVal = el.text || '12345678';
+              }
+              const barcodeColor = el.barcode.color || '#000000';
+              return (
+                <div className="w-full h-full flex items-center justify-center overflow-hidden bg-transparent">
+                  <Barcode
+                    value={barcodeVal}
+                    width={isDesignerMode ? Math.max(0.6, (el.width - 20) / 100) : 0.8}
+                    height={Math.max(10, el.height - 25)}
+                    displayValue={!isDesignerMode && el.width > 80}
+                    fontSize={6}
+                    margin={0}
+                    format={el.barcode.format || 'CODE128'}
+                    lineColor={barcodeColor}
+                    background="transparent"
+                  />
+                </div>
+              );
+            }
+
             if (isDesignerMode) {
               const elText = el.text || el.sampleValue || 'Text';
-              const calculatedFontSize = getResponsiveFontSize(
-                elText,
-                el.width,
-                el.height,
-                padLeft,
-                minScale,
-                maxScale
-              );
+              const calculatedFontSize = getAutoFitFontSize({
+                text: elText,
+                width: el.width,
+                height: el.height,
+                paddingX: padLeft,
+                designedFontSize: el.fontSize || 14,
+                minFontSize: el.minFontSize !== undefined ? el.minFontSize : (el.style?.minFontSize !== undefined ? el.style.minFontSize : (el.minFontScale ? (el.height * 0.8 * el.minFontScale) : 6)),
+                autoFit: el.autoFit !== false && el.autoScale !== false && el.style?.autoFit !== false && el.style?.autoScale !== false,
+                multiline: el.multiline || false,
+                lineHeight: el.lineHeight || el.style?.lineHeight || 1.2
+              });
+
+              const flexAlign = el.textAlign === 'center' ? 'center' : el.textAlign === 'right' ? 'flex-end' : 'flex-start';
+              const flexJustify = el.verticalAlign === 'top' ? 'flex-start' : el.verticalAlign === 'bottom' ? 'flex-end' : 'center';
 
               if (editingId === el.id) {
+                if (el.multiline) {
+                  return (
+                    <textarea
+                      ref={editingRef as any}
+                      autoFocus
+                      value={el.text || ''}
+                      onChange={(ev) => onTextChange?.(el.id, ev.target.value)}
+                      onBlur={() => onTextBlur?.(el.id, el.text)}
+                      onKeyDown={(ev) => {
+                        if (ev.key === 'Escape') {
+                          onTextBlur?.(el.id, el.text);
+                        }
+                        ev.stopPropagation();
+                      }}
+                      onClick={(ev) => ev.stopPropagation()}
+                      onMouseDown={(ev) => ev.stopPropagation()}
+                      className="w-full h-full bg-transparent border-0 outline-none p-0 m-0 resize-none text-left"
+                      style={{
+                        fontFamily: getFontFamily(el.fontFamily),
+                        fontSize: `${calculatedFontSize}px`,
+                        fontWeight: getFontWeight(el.fontWeight) as any,
+                        color: el.color || el.textColor || '#111827',
+                        textAlign: el.textAlign || 'left',
+                        fontStyle: (el.italic || el.fontStyle === 'italic') ? 'italic' : 'normal',
+                        letterSpacing: `${el.letterSpacing || 0}px`,
+                        lineHeight: el.lineHeight || 1.2,
+                        opacity: el.opacity !== undefined ? el.opacity : 1,
+                        paddingLeft: padLeft,
+                        paddingRight: padRight,
+                        paddingTop: 0,
+                        paddingBottom: 0,
+                        boxSizing: 'border-box',
+                        whiteSpace: 'normal',
+                        wordBreak: 'break-word',
+                        textTransform: el.textTransform || 'none',
+                        overflow: 'hidden'
+                      }}
+                    />
+                  );
+                }
                 return (
                   <input
                     type="text"
@@ -284,10 +434,10 @@ export function TemplateRenderer({
                     style={{
                       fontFamily: getFontFamily(el.fontFamily),
                       fontSize: `${calculatedFontSize}px`,
-                      fontWeight: el.fontWeight === 'semibold' ? 600 : el.fontWeight === 'medium' ? 500 : el.fontWeight === 'bold' ? 700 : 400,
+                      fontWeight: getFontWeight(el.fontWeight) as any,
                       color: el.color || el.textColor || '#111827',
                       textAlign: el.textAlign || 'left',
-                      fontStyle: el.italic ? 'italic' : 'normal',
+                      fontStyle: (el.italic || el.fontStyle === 'italic') ? 'italic' : 'normal',
                       letterSpacing: `${el.letterSpacing || 0}px`,
                       lineHeight: el.lineHeight || 1.2,
                       opacity: el.opacity !== undefined ? el.opacity : 1,
@@ -297,6 +447,7 @@ export function TemplateRenderer({
                       paddingBottom: 0,
                       boxSizing: 'border-box',
                       whiteSpace: 'nowrap',
+                      textTransform: el.textTransform || 'none',
                       overflow: 'hidden'
                     }}
                   />
@@ -304,7 +455,7 @@ export function TemplateRenderer({
               }
               return (
                 <div
-                  className="w-full h-full select-none flex items-center cursor-text"
+                  className="w-full h-full select-none flex flex-col cursor-text"
                   onDoubleClick={(ev) => {
                     ev.stopPropagation();
                     if (!el.locked) onStartEditing?.(el.id);
@@ -312,12 +463,13 @@ export function TemplateRenderer({
                   style={{
                     fontFamily: getFontFamily(el.fontFamily),
                     fontSize: `${calculatedFontSize}px`,
-                    fontWeight: el.fontWeight === 'semibold' ? 600 : el.fontWeight === 'medium' ? 500 : el.fontWeight === 'bold' ? 700 : (typeUpper === 'FIELD' ? 700 : 400),
+                    fontWeight: getFontWeight(el.fontWeight || (typeUpper === 'FIELD' ? 'bold' : 'normal')) as any,
                     color: el.color || el.textColor || '#111827',
                     textAlign: el.textAlign || 'left',
-                    fontStyle: el.italic ? 'italic' : 'normal',
+                    fontStyle: (el.italic || el.fontStyle === 'italic') ? 'italic' : 'normal',
                     letterSpacing: `${el.letterSpacing || 0}px`,
-                    justifyContent: el.textAlign === 'center' ? 'center' : el.textAlign === 'right' ? 'flex-end' : 'flex-start',
+                    justifyContent: flexJustify,
+                    alignItems: flexAlign,
                     lineHeight: el.lineHeight || 1.2,
                     opacity: el.opacity !== undefined ? el.opacity : 1,
                     paddingLeft: padLeft,
@@ -325,35 +477,28 @@ export function TemplateRenderer({
                     paddingTop: 0,
                     paddingBottom: 0,
                     boxSizing: 'border-box',
+                    whiteSpace: el.multiline ? 'normal' : 'nowrap',
+                    wordBreak: el.multiline ? 'break-word' : undefined,
+                    textTransform: el.textTransform || 'none',
+                    overflow: 'hidden'
                   }}
                 >
-                  <span
-                    style={{
-                      display: 'block',
-                      width: '100%',
-                      whiteSpace: 'nowrap',
-                      overflow: 'hidden',
-                      textOverflow: 'clip',
-                      textAlign: el.textAlign || el.align || el.style?.textAlign || el.style?.align || 'center',
-                    }}
-                  >
-                    {el.text}
-                  </span>
+                  {elText}
                 </div>
               );
             }
 
             // Static Render Mode
             let resolvedText = '';
-            if (el.field_key && recordData[el.field_key] !== undefined) {
-              resolvedText = String(recordData[el.field_key]);
+            const activeKey = el.fieldKey || el.field_key || el.fieldName || el.fieldId || el.field_id || el.dataKey || el.name || '';
+            if (activeKey && recordData[activeKey] !== undefined) {
+              resolvedText = String(recordData[activeKey]);
             } else {
               const rawText = el.text || '';
               if (rawText.includes('{{')) {
                 resolvedText = resolveTokens(rawText, recordData);
               } else if (typeUpper === 'FIELD') {
-                const key = el.dataKey || el.name || el.field_key || el.field_name || '';
-                resolvedText = resolveFieldValue(key, recordData);
+                resolvedText = resolveFieldValue(activeKey, recordData);
               } else {
                 const isId = rawText.startsWith('el_') || rawText.startsWith('elem_') || /^[a-f0-9-]{8,}$/.test(rawText);
                 resolvedText = isId ? '' : rawText;
@@ -378,56 +523,66 @@ export function TemplateRenderer({
               }
             }
 
-            const calculatedFontSize = getResponsiveFontSize(
-              resolvedText,
-              el.width,
-              el.height,
-              padLeft,
-              minScale,
-              maxScale
-            );
+            const calculatedFontSize = getAutoFitFontSize({
+              text: resolvedText,
+              width: el.width,
+              height: el.height,
+              paddingX: padLeft,
+              designedFontSize: el.fontSize || 14,
+              minFontSize: el.minFontSize !== undefined ? el.minFontSize : (el.style?.minFontSize !== undefined ? el.style.minFontSize : (el.minFontScale ? (el.height * 0.8 * el.minFontScale) : 6)),
+              autoFit: el.autoFit !== false && el.autoScale !== false && el.style?.autoFit !== false && el.style?.autoScale !== false,
+              multiline: el.multiline || false,
+              lineHeight: el.lineHeight || el.style?.lineHeight || 1.2
+            });
+
+            const flexAlign = el.textAlign === 'center' ? 'center' : el.textAlign === 'right' ? 'flex-end' : 'flex-start';
+            const flexJustify = el.verticalAlign === 'top' ? 'flex-start' : el.verticalAlign === 'bottom' ? 'flex-end' : 'center';
+
             return (
-              <span
+              <div
                 style={{
                   width: '100%',
                   height: '100%',
                   fontSize: `${calculatedFontSize}px`,
-                  fontFamily: getFontFamily(el.fontFamily),
-                  fontWeight: el.fontWeight || 'normal',
-                  fontStyle: el.italic ? 'italic' : 'normal',
-                  color: el.textColor || el.color || el.fill || '#111827',
+                  fontFamily: getFontFamily(el.fontFamily || el.style?.fontFamily),
+                  fontWeight: getFontWeight(el.fontWeight || el.style?.fontWeight || 'normal') as any,
+                  fontStyle: (el.italic || el.fontStyle === 'italic' || el.style?.italic || el.style?.fontStyle === 'italic') ? 'italic' : 'normal',
+                  color: el.textColor || el.color || el.style?.textColor || el.style?.color || el.fill || '#111827',
                   backgroundColor: 'transparent',
-                  textAlign: el.textAlign || el.align || 'center',
-                  letterSpacing: el.letterSpacing ? `${el.letterSpacing}px` : 'normal',
-                  lineHeight: el.lineHeight || '1.25',
+                  textAlign: el.textAlign || 'left',
+                  letterSpacing: (el.letterSpacing !== undefined ? el.letterSpacing : el.style?.letterSpacing) ? `${el.letterSpacing || el.style?.letterSpacing}px` : 'normal',
+                  lineHeight: el.lineHeight || el.style?.lineHeight || '1.25',
                   display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: (el.textAlign || el.align) === 'left' ? 'flex-start' : (el.textAlign || el.align) === 'right' ? 'flex-end' : 'center',
+                  flexDirection: 'column',
+                  justifyContent: flexJustify,
+                  alignItems: flexAlign,
                   paddingLeft: padLeft,
                   paddingRight: padRight,
                   paddingTop: 0,
                   paddingBottom: 0,
                   boxSizing: 'border-box',
+                  whiteSpace: el.multiline ? 'normal' : 'nowrap',
+                  wordBreak: el.multiline ? 'break-word' : undefined,
+                  textTransform: el.textTransform || 'none',
+                  overflow: 'hidden'
                 }}
               >
-                <span
-                  style={{
-                    display: 'block',
-                    width: '100%',
-                    whiteSpace: 'nowrap',
-                    overflow: 'hidden',
-                    textOverflow: 'clip',
-                    textAlign: el.textAlign || el.align || 'center',
-                  }}
-                >
-                  {resolvedText}
-                </span>
-              </span>
+                {resolvedText}
+              </div>
             );
           }
 
           // ── PHOTO / PHOTO_FRAME ────────────────────────────────────────────
-          const isPhotoFrame = typeUpper === 'PHOTO_FRAME' || typeUpper === 'PREMIUMPHOTOFRAME' || typeUpper === 'PHOTOFIELD' || !!el.frameStyle || !!el.frameId || !!el.frame;
+          const isPhotoFrame =
+            typeUpper === 'PHOTO_FRAME' ||
+            typeUpper === 'PREMIUMPHOTOFRAME' ||
+            typeUpper === 'PHOTOFIELD' ||
+            !!el.frameStyle ||
+            !!el.frameId ||
+            !!el.frame ||
+            !!el.frameAsset ||
+            !!el.style?.frameAsset;
+
           const isPhoto = !isPhotoFrame && (
             typeUpper === 'PHOTO' ||
             typeUpper === 'STUDENT-PHOTO' || typeUpper === 'EMPLOYEE-PHOTO' ||
@@ -435,12 +590,14 @@ export function TemplateRenderer({
             (typeUpper === 'IMAGE' && (
               el.name === 'student_photo' || el.name === 'parent_photo' ||
               el.name === 'photo' || el.name === 'profile_photo' ||
-              el.dataKey === 'photo' || el.dataKey === 'profile_photo'
+              el.dataKey === 'photo' || el.dataKey === 'profile_photo' ||
+              el.fieldName === 'photo' || el.field_key === 'photo' ||
+              el.fieldId === 'photo'
             ))
           );
 
           if (isPhotoFrame) {
-            const fieldKey = el.fieldKey || el.field_key || el.dataKey || 'photo';
+            const fieldKey = el.fieldKey || el.field_key || el.fieldName || el.fieldId || el.field_id || el.dataKey || 'photo';
             const rawPhoto = recordData ? (recordData[fieldKey] || recordData.photoUrl || recordData.profile_photo || recordData.photo || '') : '';
             const resolvedPhoto = isDesignerMode ? (el.imageSrc || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300') : resolveMediaUrl(rawPhoto);
             const hasPhoto = resolvedPhoto && resolvedPhoto.trim() !== '' && !resolvedPhoto.includes('dicebear.com');
@@ -467,12 +624,15 @@ export function TemplateRenderer({
                 borderRadius={el.borderRadius || el.style?.borderRadius}
                 frameAsset={el.frame?.asset || el.frameAsset}
                 frame={el.frame}
+                primaryColor={el.primaryColor || el.style?.primaryColor}
+                glowColor={el.glowColor || el.style?.glowColor}
+                gradientColor={el.gradientColor || el.style?.gradientColor}
               />
             );
           }
 
           if (isPhoto) {
-            const fieldKey = el.field_key || el.dataKey || 'photo';
+            const fieldKey = el.fieldKey || el.field_key || el.fieldName || el.fieldId || el.field_id || el.dataKey || 'photo';
             const rawPhoto = recordData ? (recordData[fieldKey] || recordData.photoUrl || recordData.profile_photo || recordData.photo || '') : '';
             const resolvedPhoto = isDesignerMode ? (el.imageSrc || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300') : resolveMediaUrl(rawPhoto);
             const hasPhoto = resolvedPhoto && resolvedPhoto.trim() !== '' && !resolvedPhoto.includes('dicebear.com');
@@ -611,63 +771,19 @@ export function TemplateRenderer({
             );
           }
 
-          // ── QR CODE ────────────────────────────────────────────────────────
-          if (typeUpper === 'QRCODE' || typeUpper === 'QR' || typeUpper === 'QR_CODE') {
-            const key = el.fieldName || el.fieldKey || el.name || '';
-            const qrText = (el.qrDataType === 'custom' ? el.qrCustomText : recordData?.[key]) || (isDesignerMode ? `{{${key}}}` : resolveFieldValue(key, recordData)) || `{{${key}}}`;
-            const qrColor = el.color || el.textColor || '#000000';
-            const qrBg = el.fill || el.backgroundColor || '#ffffff';
-            return (
-              <div className="w-full h-full p-1 flex items-center justify-center bg-white shadow-sm rounded">
-                <QRCodeSVG
-                  value={qrText}
-                  size={Math.min(el.width, el.height) - 8}
-                  fgColor={qrColor}
-                  bgColor={qrBg}
-                  level="M"
-                  includeMargin={false}
-                />
-              </div>
-            );
-          }
-
-          // ── BARCODE ────────────────────────────────────────────────────────
-          if (typeUpper === 'BARCODE') {
-            const key = el.fieldName || el.fieldKey || el.name || '';
-            const barcodeVal = (el.qrDataType === 'custom' ? el.qrCustomText : recordData?.[key]) || (isDesignerMode ? '12345678' : resolveFieldValue(key, recordData)) || '12345678';
-            const barcodeColor = el.color || el.textColor || '#000000';
-            const barcodeBg = el.fill || el.backgroundColor || '#ffffff';
-            return (
-              <div className="w-full h-full p-2 bg-white flex items-center justify-center overflow-hidden shadow-sm rounded">
-                <Barcode
-                  value={barcodeVal}
-                  width={isDesignerMode ? Math.max(1, (el.width - 20) / 100) : 0.8}
-                  height={el.height - 25}
-                  displayValue={!isDesignerMode && el.width > 80}
-                  fontSize={6}
-                  margin={0}
-                  format={(el as any).barcodeFormat || 'CODE128'}
-                  lineColor={barcodeColor}
-                  background={barcodeBg}
-                  renderer="svg"
-                />
-              </div>
-            );
-          }
-
           // ── SHAPES ─────────────────────────────────────────────────────────
           const isShape = typeUpper === 'SHAPE' || el.category === 'graphic' || el.category === 'decorative';
 
           if (isShape) {
             return (
               <JSONShapeRenderer
-                shapeId={el.shapeId || el.asset}
-                asset={el.asset}
+                shapeId={el.shapeId || el.assetId || el.asset}
+                asset={el.asset || el.assetId || el.shapeId}
                 shapeType={el.shapeType}
-                fill={el.fill}
+                fill={el.fill || el.fillColor}
                 secondaryFill={el.secondaryFill}
                 accentColor={el.accentColor}
-                stroke={el.stroke}
+                stroke={el.stroke || el.strokeColor}
                 strokeWidth={el.strokeWidth || el.borderWidth}
                 strokeStyle={el.strokeStyle || el.borderStyle}
                 borderRadius={el.borderRadius}
@@ -682,26 +798,102 @@ export function TemplateRenderer({
                 shadowBlur={el.shadowBlur}
                 shadowOffsetX={el.shadowOffsetX}
                 shadowOffsetY={el.shadowOffsetY}
+                shadowOpacity={el.shadowOpacity}
               />
             );
           }
-          // ── PREMIUM DESIGN ELEMENT ─────────────────────────────────────────
-          const isElement = typeUpper === 'ELEMENT';
-          if (isElement) {
+
+          // ── QRCODE / BARCODE ───────────────────────────────────────────────
+          if (typeUpper === 'QRCODE' || typeUpper === 'QR' || typeUpper === 'QR_CODE') {
+            const qrText = resolveCodeValue(el.fieldKey || el.sourceField || el.source_field || el.source_context || el.dataKey, recordData, 'qr') || el.text || 'STU-10045';
+            const fgColor = el.foregroundColor || el.color || el.qrColor || '#000000';
+            const bgMode = el.backgroundMode || 'transparent';
+            const bgColor = bgMode === 'transparent' ? 'transparent' : (el.backgroundColor || el.qrBackgroundColor || '#ffffff');
+            const ecLevel = el.errorCorrection || el.level || 'M';
+            const qrMargin = el.margin !== undefined ? el.margin : 0;
+            const sizeVal = Math.min(el.width, el.height);
+            
             return (
-              <VectorElement
-                assetId={el.assetId}
-                primaryColor={el.primaryColor}
-                secondaryColor={el.secondaryColor}
-                borderColor={el.borderColor}
-                borderWidth={el.borderWidth}
-                opacity={el.opacity}
-                gradient={el.gradient}
-                width={el.width}
-                height={el.height}
-                flipH={el.flipH}
-                flipV={el.flipV}
-              />
+              <div style={{
+                width: '100%',
+                height: '100%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                backgroundColor: bgColor,
+                borderRadius: el.borderRadius ? `${el.borderRadius}px` : undefined,
+              }}>
+                <QRCodeSVG
+                  value={qrText}
+                  size={sizeVal - (qrMargin * 2)}
+                  fgColor={fgColor}
+                  bgColor={bgColor}
+                  level={ecLevel}
+                  includeMargin={qrMargin > 0}
+                />
+              </div>
+            );
+          }
+
+          if (typeUpper === 'BARCODE') {
+            const barText = resolveCodeValue(el.fieldKey || el.sourceField || el.source_field || el.source_context || el.dataKey, recordData, 'barcode') || el.text || '12345678';
+            const fgColor = el.color || el.lineColor || el.qrColor || '#000000';
+            const bgMode = el.backgroundMode || 'transparent';
+            const bgColor = bgMode === 'transparent' ? 'transparent' : (el.backgroundColor || el.qrBackgroundColor || '#ffffff');
+            const format = el.barcodeFormat || el.format || 'CODE128';
+            const lineThickness = el.lineThickness !== undefined ? el.lineThickness : 2;
+            const textVisible = el.displayValue !== false && el.showText !== false;
+            const fontSz = el.fontSize || 10;
+            const fontColor = el.fontColor || el.textColor || el.color || '#000000';
+
+            return (
+              <div 
+                className={`barcode-${el.id}`}
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  backgroundColor: bgColor,
+                  borderRadius: el.borderRadius ? `${el.borderRadius}px` : undefined,
+                  overflow: 'hidden',
+                }}
+              >
+                <style dangerouslySetInnerHTML={{__html: `
+                  .barcode-${el.id} svg {
+                    max-width: 100% !important;
+                    max-height: 100% !important;
+                    width: auto !important;
+                    height: auto !important;
+                    display: block;
+                  }
+                  .barcode-${el.id} svg text {
+                    font-family: ${el.fontFamily || 'Inter'} !important;
+                    font-weight: ${el.fontWeight || 500} !important;
+                    letter-spacing: ${el.letterSpacing || 0}px !important;
+                  }
+                `}} />
+                <Barcode
+                  value={barText}
+                  width={lineThickness}
+                  height={Math.max(10, el.height - (textVisible ? fontSz + 15 : 10))}
+                  fontSize={fontSz}
+                  displayValue={textVisible}
+                  format={format as any}
+                  lineColor={fgColor}
+                  background={bgColor}
+                  margin={0}
+                  {...{ 
+                    fontColor: fontColor,
+                    font: el.fontFamily || 'Inter',
+                    fontOptions: (el.fontWeight === 'bold' || (el.fontWeight as any) === 700 || el.fontWeight === 'semibold' || (el.fontWeight as any) === 600) ? 'bold' : '',
+                    textAlign: el.textAlign || 'center',
+                    textMargin: el.textMargin !== undefined ? el.textMargin : 2,
+                  } as any}
+                />
+              </div>
             );
           }
 
@@ -724,7 +916,19 @@ export function TemplateRenderer({
           if (element.shadowBlur) {
             style.filter = `drop-shadow(${element.shadowOffsetX || 0}px ${element.shadowOffsetY || 2}px ${element.shadowBlur}px ${element.shadowColor || '#00000040'})`;
           }
-          if (element.borderWidth && element.borderColor && element.type !== 'shape' && element.type !== 'photo_frame' && element.type !== 'premiumPhotoFrame') {
+          const isPhotoFrameElement = 
+            element.type === 'photo_frame' ||
+            element.type === 'premiumPhotoFrame' ||
+            element.type === 'photoField' ||
+            element.type?.toUpperCase() === 'PHOTO_FRAME' ||
+            element.type?.toUpperCase() === 'PREMIUMPHOTOFRAME' ||
+            !!element.frameStyle ||
+            !!element.frameId ||
+            !!element.frame ||
+            !!element.frameAsset ||
+            !!element.style?.frameAsset;
+
+          if (element.borderWidth && element.borderColor && element.type !== 'shape' && !isPhotoFrameElement) {
             style.border = `${element.borderWidth}px ${element.borderStyle || 'solid'} ${element.borderColor}`;
           }
           return style;
@@ -740,7 +944,7 @@ export function TemplateRenderer({
             <div style={getElStyle(el)}>
               {renderContent()}
             </div>
-            
+
             {/* Interactive handles in designer mode */}
             {isDesignerMode && isSelected && !repositionMode && !el.locked && (
               <>
@@ -780,7 +984,7 @@ export function TemplateRenderer({
                 ))}
               </>
             )}
-            
+
             {/* Interactive actions overlay toolbar */}
             {isDesignerMode && isSelected && !repositionMode && !el.locked && (
               <div

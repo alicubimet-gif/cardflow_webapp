@@ -19,7 +19,7 @@ interface DivisionDetailsProps {
   setRecordSearch: (val: string) => void;
   recordFilterStatus: string;
   setRecordFilterStatus: (val: string) => void;
-  onBack: () => void;
+  onBack?: () => void;
   onAssignStaff: (id: string) => void;
   onBulkUpload: () => void;
   onAddRecord: () => void;
@@ -32,6 +32,7 @@ interface DivisionDetailsProps {
   onCorrectionRecord: (id: string) => void;
   onViewStaff?: (staff: any) => void;
   templateFields?: any[];
+  onUpdatePhoto?: (record: any) => void;
 }
 
 export function DivisionDetails({
@@ -60,7 +61,8 @@ export function DivisionDetails({
   onRejectRecord,
   onCorrectionRecord,
   onViewStaff = () => {},
-  templateFields = []
+  templateFields = [],
+  onUpdatePhoto
 }: DivisionDetailsProps) {
 
   // Filter staff assignments & staff
@@ -83,14 +85,16 @@ export function DivisionDetails({
   return (
     <div className="space-y-[20px] p-[16px] md:p-0 w-full max-w-full overflow-x-hidden">
       {/* Back Navigation Link */}
-      <div>
-        <button
-          onClick={onBack}
-          className="text-xs font-semibold text-[#2563EB] hover:text-[#1D4ED8] hover:underline cursor-pointer flex items-center gap-1"
-        >
-          {isAdmin ? `← Back to Class ${className}` : '← Back to Dashboard'}
-        </button>
-      </div>
+      {onBack && (
+        <div>
+          <button
+            onClick={onBack}
+            className="text-xs font-semibold text-[#2563EB] hover:text-[#1D4ED8] hover:underline cursor-pointer flex items-center gap-1"
+          >
+            {isAdmin ? `← Back to Class ${className}` : '← Back to Dashboard'}
+          </button>
+        </div>
+      )}
 
       {/* Division Header Card wrapping the layout details and Actions */}
       <DivisionHeader
@@ -143,6 +147,7 @@ export function DivisionDetails({
           onRejectRecord={onRejectRecord}
           onCorrectionRecord={onCorrectionRecord}
           templateFields={templateFields}
+          onUpdatePhoto={onUpdatePhoto}
         />
       </div>
     </div>

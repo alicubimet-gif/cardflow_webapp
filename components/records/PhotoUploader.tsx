@@ -20,8 +20,29 @@ export function PhotoUploader({
   const [isFlipped, setIsFlipped] = useState(false);
   const [isOptionsOpen, setIsOptionsOpen] = useState(false);
   
+  // New States for Panning / Dragging (Crop translation)
+  const [panX, setPanX] = useState<number>(0);
+  const [panY, setPanY] = useState<number>(0);
+  const [isDragging, setIsDragging] = useState<boolean>(false);
+  const dragStartRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
+  const panStartRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
+
+  const imageRef = useRef<HTMLImageElement | null>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Sync state if initialPhotoUrl changes
+  useEffect(() => {
+    if (initialPhotoUrl) {
+      setPreviewImageUrl(initialPhotoUrl);
+      setPanX(0);
+      setPanY(0);
+      setZoom(1.0);
+      setRotation(0);
+      setBrightness(100);
+      setIsFlipped(false);
+    }
+  }, [initialPhotoUrl]);
 
   // Redraw Canvas on adjustments
   useEffect(() => {
@@ -38,7 +59,8 @@ export function PhotoUploader({
     img.src = previewImageUrl;
 
     img.onload = () => {
-      // Set fixed card print size constraints (typically 600x600 for ID photos)
+      imageRef.current = img;
+      // Set fixed card print size constraints (typically 400x400 for profile photo)
       canvas.width = 400;
       canvas.height = 400;
       
@@ -47,8 +69,8 @@ export function PhotoUploader({
       // Save canvas state
       ctx.save();
       
-      // Translate to center for rotation
-      ctx.translate(canvas.width / 2, canvas.height / 2);
+      // Translate to center for rotation and apply pan offsets
+      ctx.translate(canvas.width / 2 + panX, canvas.height / 2 + panY);
       ctx.rotate((rotation * Math.PI) / 180);
       
       // Apply mirroring
@@ -59,23 +81,69 @@ export function PhotoUploader({
       // Apply brightness filter
       ctx.filter = `brightness(${brightness}%)`;
       
-      // Draw image scaled and centered
-      const scale = zoom;
-      const drawWidth = canvas.width * scale;
-      const drawHeight = canvas.height * scale;
+      // Draw image scaled and centered, preserving aspect ratio (avoiding squish)
+      const imgRatio = img.width / img.height;
+      let drawWidth = canvas.width;
+      let drawHeight = canvas.height;
+      
+      if (imgRatio > 1) {
+        // Landscape: fit height, overflow width
+        drawWidth = canvas.height * imgRatio;
+      } else {
+        // Portrait: fit width, overflow height
+        drawHeight = canvas.width / imgRatio;
+      }
+      
+      const finalWidth = drawWidth * zoom;
+      const finalHeight = drawHeight * zoom;
       
       ctx.drawImage(
         img, 
-        -drawWidth / 2, 
-        -drawHeight / 2, 
-        drawWidth, 
-        drawHeight
+        -finalWidth / 2, 
+        -finalHeight / 2, 
+        finalWidth, 
+        finalHeight
       );
       
       // Restore canvas context
       ctx.restore();
     };
-  }, [previewImageUrl, zoom, rotation, brightness, isFlipped, canvasRef]);
+  }, [previewImageUrl, zoom, rotation, brightness, isFlipped, panX, panY, canvasRef]);
+
+  // Mouse Drag / Touch Pan Event Handlers
+  const handleCanvasMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
+    if (!previewImageUrl) return;
+    setIsDragging(true);
+    dragStartRef.current = { x: e.clientX, y: e.clientY };
+    panStartRef.current = { x: panX, y: panY };
+  };
+
+  const handleCanvasMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
+    if (!isDragging) return;
+    const dx = e.clientX - dragStartRef.current.x;
+    const dy = e.clientY - dragStartRef.current.y;
+    setPanX(panStartRef.current.x + dx);
+    setPanY(panStartRef.current.y + dy);
+  };
+
+  const handleCanvasMouseUpOrLeave = () => {
+    setIsDragging(false);
+  };
+
+  const handleCanvasTouchStart = (e: React.TouchEvent<HTMLCanvasElement>) => {
+    if (!previewImageUrl || e.touches.length !== 1) return;
+    setIsDragging(true);
+    dragStartRef.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+    panStartRef.current = { x: panX, y: panY };
+  };
+
+  const handleCanvasTouchMove = (e: React.TouchEvent<HTMLCanvasElement>) => {
+    if (!isDragging || e.touches.length !== 1) return;
+    const dx = e.touches[0].clientX - dragStartRef.current.x;
+    const dy = e.touches[0].clientY - dragStartRef.current.y;
+    setPanX(panStartRef.current.x + dx);
+    setPanY(panStartRef.current.y + dy);
+  };
 
   // Camera Management
   const startCamera = async () => {
@@ -121,6 +189,8 @@ export function PhotoUploader({
             setRotation(0);
             setBrightness(100);
             setIsFlipped(false);
+            setPanX(0);
+            setPanY(0);
             
             // Invoke callback if photo was selected
             if (onPhotoSelected) {
@@ -144,6 +214,8 @@ export function PhotoUploader({
       setRotation(0);
       setBrightness(100);
       setIsFlipped(false);
+      setPanX(0);
+      setPanY(0);
       
       if (onPhotoSelected) {
         onPhotoSelected(file);
@@ -151,11 +223,29 @@ export function PhotoUploader({
     }
   };
 
+  const handleAutoFit = () => {
+    if (!imageRef.current) return;
+    const img = imageRef.current;
+    const ratio = img.width / img.height;
+    if (ratio > 1) {
+      setZoom(1 / ratio);
+    } else {
+      setZoom(ratio);
+    }
+    setPanX(0);
+    setPanY(0);
+    setRotation(0);
+    setBrightness(100);
+    setIsFlipped(false);
+  };
+
   const triggerReset = () => {
     setZoom(1.0);
     setRotation(0);
     setBrightness(100);
     setIsFlipped(false);
+    setPanX(0);
+    setPanY(0);
   };
 
   return (
@@ -204,9 +294,20 @@ export function PhotoUploader({
                 <div className="relative border border-slate-200 rounded-2xl overflow-hidden bg-slate-50 w-[280px] h-[280px] sm:w-[300px] sm:h-[300px] flex items-center justify-center shadow-3xs">
                   <canvas 
                     ref={canvasRef} 
-                    className="w-full h-full object-cover"
+                    onMouseDown={handleCanvasMouseDown}
+                    onMouseMove={handleCanvasMouseMove}
+                    onMouseUp={handleCanvasMouseUpOrLeave}
+                    onMouseLeave={handleCanvasMouseUpOrLeave}
+                    onTouchStart={handleCanvasTouchStart}
+                    onTouchMove={handleCanvasTouchMove}
+                    onTouchEnd={handleCanvasMouseUpOrLeave}
+                    className="w-full h-full object-cover cursor-move"
+                    title="Drag to crop/reposition"
                   />
                 </div>
+                <span className="text-[10px] font-medium text-slate-400 mt-2 select-none">
+                  💡 Drag image inside the frame to pan/reposition
+                </span>
                 
                 {/* Quick actions for chosen photo */}
                 <div className="flex gap-3 w-[280px] sm:w-[300px] mt-4">
@@ -252,14 +353,25 @@ export function PhotoUploader({
             <span className="text-[10px] font-extrabold text-slate-500 uppercase tracking-wider block">
               Image Adjustments
             </span>
-            <button
-              type="button"
-              onClick={triggerReset}
-              className="text-[10px] font-bold text-blue-600 hover:text-blue-700 flex items-center gap-1 cursor-pointer"
-            >
-              <ResetIcon size={12} />
-              <span>Reset</span>
-            </button>
+            <div className="flex items-center gap-2.5">
+              <button
+                type="button"
+                onClick={handleAutoFit}
+                className="text-[10px] font-bold text-emerald-600 hover:text-emerald-700 flex items-center gap-0.5 cursor-pointer"
+                title="Fit image inside frame"
+              >
+                <span>Auto Fit</span>
+              </button>
+              <button
+                type="button"
+                onClick={triggerReset}
+                className="text-[10px] font-bold text-blue-600 hover:text-blue-700 flex items-center gap-0.5 cursor-pointer"
+                title="Reset adjustments"
+              >
+                <ResetIcon size={12} />
+                <span>Reset</span>
+              </button>
+            </div>
           </div>
 
           {/* Zoom Slider */}

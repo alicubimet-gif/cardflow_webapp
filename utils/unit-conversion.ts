@@ -79,6 +79,72 @@ export function getResponsiveFontSize(
   }
 }
 
+export function getAutoFitFontSize({
+  text,
+  width,
+  height,
+  paddingX,
+  designedFontSize,
+  minFontSize,
+  autoFit,
+  multiline,
+  lineHeight = 1.2
+}: {
+  text: string;
+  width: number;
+  height: number;
+  paddingX: number;
+  designedFontSize: number;
+  minFontSize: number;
+  autoFit: boolean;
+  multiline: boolean;
+  lineHeight?: number;
+}): number {
+  if (!text) text = ' ';
+  const usableW = Math.max(1, width - 2 * paddingX);
+  const ems = getEstimatedTextWidthInEMs(text);
+  
+  if (!autoFit) {
+    return Math.max(1, designedFontSize);
+  }
+
+  let F = designedFontSize;
+  const minF = Math.max(4, minFontSize); // ensure at least 4px (approx 1mm)
+  
+  if (!multiline) {
+    // Single-line autofit
+    const heightLimit = height * 0.85;
+    const widthLimit = usableW / ems;
+    F = Math.min(heightLimit, widthLimit);
+    if (F < minF) {
+      F = minF;
+    }
+    F = Math.min(F, designedFontSize);
+    return F;
+  } else {
+    // Multiline autofit
+    const estimatedCharWidthFactor = 0.45;
+    
+    for (let currentF = designedFontSize; currentF >= minF; currentF -= 0.5) {
+      F = currentF;
+      const charWidth = currentF * estimatedCharWidthFactor;
+      const charsPerLine = Math.max(1, Math.floor(usableW / charWidth));
+      
+      const paragraphs = text.split('\n');
+      let totalLines = 0;
+      for (const p of paragraphs) {
+        totalLines += Math.max(1, Math.ceil(p.length / charsPerLine));
+      }
+      
+      const totalHeight = totalLines * currentF * lineHeight;
+      if (totalHeight <= height) {
+        break;
+      }
+    }
+    return F;
+  }
+}
+
 export function pxToMm(px: number): number {
   return Number((px * PX_TO_MM).toFixed(2));
 }
@@ -313,12 +379,20 @@ export function denormalizeCanvasToPX(canvasJson: any): any {
       };
       
       if (nextEl.type === 'text' || nextEl.type === 'field') {
-        nextEl.autoScale = style.autoScale ?? nextEl.autoScale ?? true;
+        nextEl.autoFit = style.autoFit ?? nextEl.autoFit ?? (style.autoScale ?? nextEl.autoScale ?? true);
+        nextEl.autoScale = nextEl.autoFit;
+        if (style.minFontSize !== undefined) {
+          nextEl.minFontSize = unitToPx(style.minFontSize, unit);
+        } else if (el.minFontSize !== undefined) {
+          nextEl.minFontSize = unitToPx(el.minFontSize, unit);
+        } else {
+          nextEl.minFontSize = unitToPx(1.5, unit);
+        }
         nextEl.minFontScale = style.minFontScale ?? nextEl.minFontScale ?? 0.5;
         nextEl.maxFontScale = style.maxFontScale ?? nextEl.maxFontScale ?? 2.5;
         nextEl.paddingX = style.paddingX ?? nextEl.paddingX ?? 1.5;
         nextEl.paddingY = style.paddingY ?? nextEl.paddingY ?? 0;
-        nextEl.whiteSpace = style.whiteSpace ?? nextEl.whiteSpace ?? 'nowrap';
+        nextEl.whiteSpace = style.whiteSpace ?? nextEl.whiteSpace ?? (el.multiline ? 'normal' : 'nowrap');
         
         nextEl.paddingLeft = Math.round(unitToPx(nextEl.paddingX, unit));
         nextEl.paddingRight = Math.round(unitToPx(nextEl.paddingX, unit));
@@ -513,14 +587,23 @@ export function normalizeCanvasToMM(canvasState: any, targetUnit: 'mm' | 'cm' = 
         delete style.baseWidth;
         delete style.padding;
         
-        style.autoScale = el.autoScale !== undefined ? el.autoScale : true;
+        style.autoFit = el.autoFit !== undefined ? el.autoFit : (el.autoScale !== undefined ? el.autoScale : true);
+        style.autoScale = style.autoFit;
+        if (el.minFontSize !== undefined) {
+          style.minFontSize = Number(pxToUnit(el.minFontSize, targetUnit).toFixed(6));
+        } else {
+          style.minFontSize = 1.5;
+        }
         style.minFontScale = el.minFontScale !== undefined ? el.minFontScale : 0.5;
         style.maxFontScale = el.maxFontScale !== undefined ? el.maxFontScale : 2.5;
         style.paddingX = el.paddingX !== undefined ? el.paddingX : 1.5;
         style.paddingY = el.paddingY !== undefined ? el.paddingY : 0;
-        style.whiteSpace = el.whiteSpace !== undefined ? el.whiteSpace : 'nowrap';
+        style.whiteSpace = el.whiteSpace !== undefined ? el.whiteSpace : (el.multiline ? 'normal' : 'nowrap');
+        style.multiline = el.multiline || false;
         
+        el.autoFit = style.autoFit;
         el.autoScale = style.autoScale;
+        el.minFontSize = style.minFontSize;
         el.minFontScale = style.minFontScale;
         el.maxFontScale = style.maxFontScale;
         el.paddingX = style.paddingX;
@@ -759,14 +842,15 @@ export function resolveRenderFontSize(el: any, customText?: string): number {
   const paddingX = el.paddingX !== undefined ? el.paddingX : 1.5;
   const paddingXPx = unitToPx(paddingX, unit);
   
-  const fontSizePx = getResponsiveFontSize(
-    textVal,
-    el.width || 100,
-    el.height || 25,
-    paddingXPx,
-    el.minFontScale !== undefined ? el.minFontScale : 0.5,
-    el.maxFontScale !== undefined ? el.maxFontScale : 2.5
-  );
-  
-  return fontSizePx;
+  return getAutoFitFontSize({
+    text: textVal,
+    width: el.width || 100,
+    height: el.height || 25,
+    paddingX: paddingXPx,
+    designedFontSize: el.fontSize || 14,
+    minFontSize: el.minFontSize !== undefined ? el.minFontSize : (el.minFontScale ? (el.height * 0.8 * el.minFontScale) : 6),
+    autoFit: el.autoFit !== false && el.autoScale !== false,
+    multiline: el.multiline || false,
+    lineHeight: el.lineHeight || 1.2
+  });
 }

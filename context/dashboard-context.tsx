@@ -359,6 +359,9 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
         setStaffList(staff || []);
         setLogsList(logs || []);
         setAllAssignmentsList(assignments || []);
+      } else {
+        const assignments = await AuthService.getStaffAssignments(user.id).catch(() => []);
+        setAllAssignmentsList(assignments || []);
       }
     } catch (err: any) {
       setError(err?.response?.data?.message || err?.message || 'Failed to sync with backend.');

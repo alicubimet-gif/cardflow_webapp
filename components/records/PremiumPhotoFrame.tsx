@@ -21,6 +21,9 @@ interface PremiumPhotoFrameProps {
   padding?: number;
   backgroundColor?: string;
   borderRadius?: number;
+  primaryColor?: string;
+  glowColor?: string;
+  gradientColor?: string;
   frame?: {
     id: string;
     asset: string;
@@ -48,6 +51,9 @@ export default function PremiumPhotoFrame({
   padding = 0,
   backgroundColor,
   borderRadius = 8,
+  primaryColor = '#2563EB',
+  glowColor = '#22c55e',
+  gradientColor = '#60A5FA',
   frame,
 }: PremiumPhotoFrameProps) {
   const clipId = React.useId().replace(/[^a-zA-Z0-9]/g, '');
@@ -59,7 +65,7 @@ export default function PremiumPhotoFrame({
 
   const renderProfilePlaceholder = () => (
     <g>
-      <rect width="100" height="100" fill="#f1f5f9" />
+      <rect width="100" height="100" fill="none" />
       <path
         d="M50,44 C57.5,44 63.5,38 63.5,30.5 C63.5,23 57.5,17 50,17 C42.5,17 36.5,23 36.5,30.5 C36.5,38 42.5,44 50,44 Z M50,51 C37.5,51 17,57.5 17,70 L17,83 L83,83 L83,70 C83,57.5 62.5,51 50,51 Z"
         fill="#cbd5e1"
@@ -118,6 +124,10 @@ export default function PremiumPhotoFrame({
       if (val === 'borderColor') return borderColor;
       if (val === 'accentColor') return accentColor;
       if (val === 'secondaryColor') return secondaryColor;
+      if (val === 'primaryColor') return primaryColor;
+      if (val === 'glowColor') return glowColor;
+      if (val === 'gradientColor') return gradientColor;
+      if (val === 'shadowColor') return shadowColor;
       if (val === 'borderWidth') return borderWidth;
       if (val === 'url(#grad)') return `url(#grad-${clipId})`;
       return val;

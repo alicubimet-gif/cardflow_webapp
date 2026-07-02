@@ -13,6 +13,7 @@ interface RecordCardProps {
   onApprove?: (id: string) => void;
   onReject?: (id: string) => void;
   onCorrection?: (id: string) => void;
+  onUpdatePhoto?: (rec: any) => void;
 }
 
 export function RecordCard({
@@ -25,7 +26,8 @@ export function RecordCard({
   isAdmin,
   onApprove,
   onReject,
-  onCorrection
+  onCorrection,
+  onUpdatePhoto
 }: RecordCardProps) {
   const name = record.name || record.full_name || record.student_name || record.employee_name || 'Roster Record';
   const subType = isSchool ? 'Student' : 'Employee';
@@ -70,61 +72,72 @@ export function RecordCard({
       </div>
 
       <div className="flex flex-col gap-2 pt-2 border-t border-slate-100">
-        <button
-          onClick={() => onView(record)}
-          className="w-full py-2 bg-slate-100 hover:bg-slate-200/80 text-slate-700 text-xs font-bold rounded-xl transition-colors cursor-pointer"
-        >
-          View Card Details
-        </button>
-
-        {/* Action Triggers based on status and role */}
-        <div className="flex gap-2">
-          {!isAdmin && status === 'draft' && (
-            <>
+        {!isAdmin ? (
+          <div className="space-y-2">
+            <button
+              onClick={() => onView(record)}
+              className="w-full py-2 bg-slate-100 hover:bg-slate-200/80 text-slate-700 text-xs font-bold rounded-xl transition-colors cursor-pointer flex items-center justify-center gap-1.5"
+            >
+              <span>👁</span>
+              <span>View Card</span>
+            </button>
+            <div className="flex gap-2">
               {onEdit && (
                 <button
                   onClick={() => onEdit(record)}
-                  className="flex-1 py-1.5 border border-slate-200 hover:bg-slate-50 text-slate-700 text-[10px] font-extrabold rounded-xl transition-colors cursor-pointer flex items-center justify-center gap-1 shadow-3xs"
+                  className="flex-1 py-2 border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-bold rounded-xl transition-colors cursor-pointer flex items-center justify-center gap-1.5 shadow-3xs"
                 >
-                  <Edit size={12} />
-                  <span>Edit</span>
+                  <span>✏</span>
+                  <span>Edit Details</span>
                 </button>
               )}
-              {onSubmit && (
+              {onUpdatePhoto && (
                 <button
-                  onClick={() => onSubmit(record.id)}
-                  className="flex-1 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-[10px] font-extrabold rounded-xl transition-colors cursor-pointer flex items-center justify-center gap-1 shadow-xs"
+                  onClick={() => onUpdatePhoto(record)}
+                  className="flex-1 py-2 bg-blue-50 hover:bg-blue-100 border border-blue-200 text-blue-700 text-xs font-bold rounded-xl transition-colors cursor-pointer flex items-center justify-center gap-1.5 shadow-3xs"
                 >
-                  <ArrowUpCircle size={12} />
-                  <span>Submit</span>
+                  <span>📷</span>
+                  <span>Update Photo</span>
                 </button>
               )}
-            </>
-          )}
+            </div>
+          </div>
+        ) : (
+          <>
+            <button
+              onClick={() => onView(record)}
+              className="w-full py-2 bg-slate-100 hover:bg-slate-200/80 text-slate-700 text-xs font-bold rounded-xl transition-colors cursor-pointer"
+            >
+              View Card Details
+            </button>
 
-          {isAdmin && status === 'pending' && (
-            <>
-              {onApprove && (
-                <button
-                  onClick={() => onApprove(record.id)}
-                  className="flex-1 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] font-extrabold rounded-xl transition-colors cursor-pointer flex items-center justify-center gap-1 shadow-xs"
-                >
-                  <ShieldCheck size={12} />
-                  <span>Approve</span>
-                </button>
+            {/* Action Triggers based on status and role */}
+            <div className="flex gap-2">
+              {isAdmin && status === 'pending' && (
+                <>
+                  {onApprove && (
+                    <button
+                      onClick={() => onApprove(record.id)}
+                      className="flex-1 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] font-extrabold rounded-xl transition-colors cursor-pointer flex items-center justify-center gap-1 shadow-xs"
+                    >
+                      <ShieldCheck size={12} />
+                      <span>Approve</span>
+                    </button>
+                  )}
+                  {onReject && (
+                    <button
+                      onClick={() => onReject(record.id)}
+                      className="flex-1 py-1.5 bg-rose-600 hover:bg-rose-700 text-white text-[10px] font-extrabold rounded-xl transition-colors cursor-pointer flex items-center justify-center gap-1 shadow-xs"
+                    >
+                      <Trash2 size={12} />
+                      <span>Reject</span>
+                    </button>
+                  )}
+                </>
               )}
-              {onReject && (
-                <button
-                  onClick={() => onReject(record.id)}
-                  className="flex-1 py-1.5 bg-rose-600 hover:bg-rose-700 text-white text-[10px] font-extrabold rounded-xl transition-colors cursor-pointer flex items-center justify-center gap-1 shadow-xs"
-                >
-                  <Trash2 size={12} />
-                  <span>Reject</span>
-                </button>
-              )}
-            </>
-          )}
-        </div>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );

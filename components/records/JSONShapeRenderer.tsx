@@ -9,8 +9,11 @@ interface JSONShapeRendererProps {
   secondaryFill?: string; // secondary color
   accentColor?: string;   // accent color
   stroke?: string;        // border color
+  borderColor?: string;   // alias for stroke
   strokeWidth?: number;   // border width
-  strokeStyle?: string;   // border style
+  borderWidth?: number;   // alias for strokeWidth
+  strokeStyle?: string;   // border style (solid | dashed | dotted)
+  borderStyle?: string;   // alias for strokeStyle
   borderRadius?: number;
   opacity?: number;
   flipH?: boolean;
@@ -23,6 +26,33 @@ interface JSONShapeRendererProps {
   shadowBlur?: number;
   shadowOffsetX?: number;
   shadowOffsetY?: number;
+  shadowOpacity?: number; // shadow opacity (0 to 1)
+}
+
+function applyShadowOpacity(color: string, opacity: number = 0.3): string {
+  if (!color) return `rgba(0,0,0,${opacity})`;
+  let hex = color.trim();
+  if (hex.startsWith('#')) {
+    hex = hex.slice(1);
+    let r = 0, g = 0, b = 0;
+    if (hex.length === 3) {
+      r = parseInt(hex[0] + hex[0], 16);
+      g = parseInt(hex[1] + hex[1], 16);
+      b = parseInt(hex[2] + hex[2], 16);
+    } else if (hex.length === 6 || hex.length === 8) {
+      r = parseInt(hex.slice(0, 2), 16);
+      g = parseInt(hex.slice(2, 4), 16);
+      b = parseInt(hex.slice(4, 6), 16);
+    }
+    return `rgba(${r}, ${g}, ${b}, ${opacity})`;
+  }
+  if (hex.startsWith('rgb')) {
+    const matches = hex.match(/\d+/g);
+    if (matches && matches.length >= 3) {
+      return `rgba(${matches[0]}, ${matches[1]}, ${matches[2]}, ${opacity})`;
+    }
+  }
+  return hex;
 }
 
 export default function JSONShapeRenderer({
@@ -33,8 +63,11 @@ export default function JSONShapeRenderer({
   secondaryFill = '#60A5FA',
   accentColor = '#3B82F6',
   stroke = 'none',
-  strokeWidth = 0,
-  strokeStyle = 'solid',
+  borderColor,
+  strokeWidth,
+  borderWidth = 0,
+  strokeStyle,
+  borderStyle = 'solid',
   borderRadius = 0,
   opacity = 1,
   flipH = false,
@@ -43,10 +76,11 @@ export default function JSONShapeRenderer({
   gradientColors,
   gradientDirection,
   shadowEnabled = false,
-  shadowColor = '#00000030',
+  shadowColor = '#000000',
   shadowBlur = 4,
   shadowOffsetX = 2,
   shadowOffsetY = 2,
+  shadowOpacity,
 }: JSONShapeRendererProps) {
   const finalId = shapeId || asset || shapeType || 'rectangle';
 
@@ -72,6 +106,12 @@ export default function JSONShapeRenderer({
     svgProps: { x: 4, y: 4, width: 92, height: 92 }
   };
 
+  const resolvedStroke = stroke !== 'none' && stroke !== undefined ? stroke : (borderColor !== undefined ? borderColor : 'none');
+  const resolvedStrokeWidth = strokeWidth !== undefined ? strokeWidth : (borderWidth !== undefined ? borderWidth : 0);
+  const resolvedStrokeStyle = strokeStyle !== undefined ? strokeStyle : (borderStyle !== undefined ? borderStyle : 'solid');
+  const resolvedShadowOpacity = shadowOpacity !== undefined ? shadowOpacity : 0.3;
+  const resolvedShadowColor = applyShadowOpacity(shadowColor, resolvedShadowOpacity);
+
   const uniqueId = React.useId().replace(/[^a-zA-Z0-9]/g, '');
   const gradId = `grad-${uniqueId}`;
 
@@ -82,19 +122,19 @@ export default function JSONShapeRenderer({
     }
     if (colVal === 'secondaryColor') return secondaryFill;
     if (colVal === 'accentColor') return accentColor;
-    if (colVal === 'borderColor') return stroke;
-    if (colVal === 'shadowColor') return shadowColor;
+    if (colVal === 'borderColor') return resolvedStroke;
+    if (colVal === 'shadowColor') return resolvedShadowColor;
     if (colVal === 'none') return 'none';
     return colVal;
   };
 
   const mapWidth = (wVal: any) => {
-    if (wVal === 'borderWidth') return strokeWidth;
+    if (wVal === 'borderWidth') return resolvedStrokeWidth;
     return wVal;
   };
 
   const shadowFilter = shadowEnabled
-    ? `drop-shadow(${shadowOffsetX}px ${shadowOffsetY}px ${shadowBlur}px ${shadowColor})`
+    ? `drop-shadow(${shadowOffsetX}px ${shadowOffsetY}px ${shadowBlur}px ${resolvedShadowColor})`
     : undefined;
 
   const renderShapeElement = (sh: any, index: number) => {
@@ -105,17 +145,26 @@ export default function JSONShapeRenderer({
     const strokeMapped = mapColor(props.stroke);
     const strokeWidthMapped = mapWidth(props.strokeWidth);
 
+    let strokeDasharray: string | undefined = undefined;
+    const strokeStyleMapped = props.strokeStyle || resolvedStrokeStyle;
+    if (strokeStyleMapped === 'dashed') {
+      strokeDasharray = '6,6';
+    } else if (strokeStyleMapped === 'dotted') {
+      strokeDasharray = '2,2';
+    }
+
     const commonProps = {
-      key: index,
       fill: fillMapped,
       stroke: strokeMapped !== 'none' ? strokeMapped : undefined,
       strokeWidth: strokeWidthMapped,
+      strokeDasharray: strokeMapped !== 'none' && strokeWidthMapped > 0 ? strokeDasharray : undefined,
       opacity: props.opacity !== undefined ? props.opacity : undefined,
     };
 
     if (elType === 'rect') {
       return (
         <rect
+          key={index}
           {...commonProps}
           x={props.x ?? 0}
           y={props.y ?? 0}
@@ -129,6 +178,7 @@ export default function JSONShapeRenderer({
     if (elType === 'circle') {
       return (
         <circle
+          key={index}
           {...commonProps}
           cx={props.cx ?? 50}
           cy={props.cy ?? 50}
@@ -139,6 +189,7 @@ export default function JSONShapeRenderer({
     if (elType === 'polygon') {
       return (
         <polygon
+          key={index}
           {...commonProps}
           points={props.points}
         />
@@ -147,6 +198,7 @@ export default function JSONShapeRenderer({
     if (elType === 'line') {
       return (
         <line
+          key={index}
           {...commonProps}
           x1={props.x1 ?? 0}
           y1={props.y1 ?? 50}
@@ -158,6 +210,7 @@ export default function JSONShapeRenderer({
     if (elType === 'path') {
       return (
         <path
+          key={index}
           {...commonProps}
           d={props.d}
         />

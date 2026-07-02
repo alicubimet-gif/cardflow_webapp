@@ -17,6 +17,7 @@ interface StudentListProps {
   onRejectRecord: (id: string) => void;
   onCorrectionRecord: (id: string) => void;
   templateFields?: any[];
+  onUpdatePhoto?: (rec: any) => void;
 }
 
 export function StudentList({
@@ -32,7 +33,8 @@ export function StudentList({
   onApproveRecord,
   onRejectRecord,
   onCorrectionRecord,
-  templateFields = []
+  templateFields = [],
+  onUpdatePhoto
 }: StudentListProps) {
   
   if (recordsList.length === 0) {
@@ -91,6 +93,7 @@ export function StudentList({
           onReject={onRejectRecord}
           onCorrection={onCorrectionRecord}
           templateFields={templateFields}
+          onUpdatePhoto={onUpdatePhoto}
         />
       </div>
     </div>

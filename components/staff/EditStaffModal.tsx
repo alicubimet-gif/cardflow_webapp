@@ -206,18 +206,12 @@ export function EditStaffModal({
             <label className="text-xs font-semibold text-[#64748B] uppercase tracking-wider block mb-2">
               Phone Number
             </label>
-            <input
+            <PhoneInput
               id="phone"
-              type="tel"
-              inputMode="numeric"
               value={phone}
-              onChange={e => handlePhoneChange(e.target.value)}
+              onChange={handlePhoneChange}
+              error={fieldErrors.phone}
               placeholder="e.g. 9876543210"
-              className={`w-full h-11 px-4 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-100 text-sm font-medium text-[#0B0F19] transition-all ${
-                fieldErrors.phone 
-                  ? 'border-rose-500 focus:border-rose-500 focus:ring-rose-500/10'
-                  : 'border-[#D1D5DB] focus:border-[#2563EB]'
-              }`}
             />
             {fieldErrors.phone && (
               <p className="mt-1.5 text-xs font-semibold text-rose-500">{fieldErrors.phone}</p>

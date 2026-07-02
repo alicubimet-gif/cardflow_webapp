@@ -16,6 +16,7 @@ interface RecordFormProps {
   departmentsList: any[];
   isSubmitting?: boolean;
   prefilledValues?: Record<string, any>;
+  hidePhoto?: boolean;
 }
 
 export function RecordForm({
@@ -30,7 +31,8 @@ export function RecordForm({
   branchesList,
   departmentsList,
   isSubmitting = false,
-  prefilledValues
+  prefilledValues,
+  hidePhoto = false
 }: RecordFormProps) {
   const [formValues, setFormValues] = useState<Record<string, any>>({});
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
@@ -493,7 +495,7 @@ export function RecordForm({
           }
 
           {/* Photo Uploader Panel (if configured) */}
-          {hasPhotoField && (
+          {hasPhotoField && !hidePhoto && (
             <div className="pt-2">
               <PhotoUploader
                 initialPhotoUrl={initialPhotoUrl}

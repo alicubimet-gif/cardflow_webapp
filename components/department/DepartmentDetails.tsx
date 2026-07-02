@@ -16,7 +16,7 @@ interface DepartmentDetailsProps {
   setRecordSearch: (val: string) => void;
   recordFilterStatus: string;
   setRecordFilterStatus: (val: string) => void;
-  onBack: () => void;
+  onBack?: () => void;
   onAssignStaff: (id: string) => void;
   onBulkUpload: () => void;
   onAddRecord: () => void;
@@ -28,6 +28,7 @@ interface DepartmentDetailsProps {
   onRejectRecord: (id: string) => void;
   onCorrectionRecord: (id: string) => void;
   templateFields?: any[];
+  onUpdatePhoto?: (record: any) => void;
 }
 
 export function DepartmentDetails({
@@ -55,7 +56,8 @@ export function DepartmentDetails({
   onApproveRecord,
   onRejectRecord,
   onCorrectionRecord,
-  templateFields = []
+  templateFields = [],
+  onUpdatePhoto
 }: DepartmentDetailsProps) {
 
   // Filter staff assignments & staff
@@ -77,14 +79,16 @@ export function DepartmentDetails({
 
   return (
     <div className="space-y-5">
-      <div className="flex items-center justify-between">
-        <button
-          onClick={onBack}
-          className="text-xs font-semibold text-[#2563EB] hover:underline cursor-pointer flex items-center gap-1"
-        >
-          {isAdmin ? `← Back to Branch ${branchName}` : '← Back to Dashboard'}
-        </button>
-      </div>
+      {onBack && (
+        <div className="flex items-center justify-between">
+          <button
+            onClick={onBack}
+            className="text-xs font-semibold text-[#2563EB] hover:underline cursor-pointer flex items-center gap-1"
+          >
+            {isAdmin ? `← Back to Branch ${branchName}` : '← Back to Dashboard'}
+          </button>
+        </div>
+      )}
 
       <div className="bg-white border border-[#DFE4EA] rounded-2xl p-5 flex flex-col md:flex-row md:items-center justify-between gap-4" style={{ boxShadow: '0 1px 3px rgba(0,0,0,0.08)' }}>
         <div>
@@ -182,6 +186,7 @@ export function DepartmentDetails({
           onReject={onRejectRecord}
           onCorrection={onCorrectionRecord}
           templateFields={templateFields}
+          onUpdatePhoto={onUpdatePhoto}
         />
       </div>
     </div>

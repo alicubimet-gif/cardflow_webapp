@@ -43,12 +43,9 @@ export function validateEmail(value: string): string | null {
 export function validateMobile(value: string): string | null {
   const trimmed = value.trim();
   if (!trimmed) return 'This field is required.';
-  if (!trimmed.startsWith('+')) {
-    return 'Please enter a valid international mobile number starting with +.';
-  }
-  const digits = trimmed.slice(1).replace(/[^0-9]/g, '');
-  if (digits.length < 6 || digits.length > 15) {
-    return 'Phone number must be between 6 and 15 digits.';
+  const digits = trimmed.replace(/[^0-9]/g, '');
+  if (digits.length < 7 || digits.length > 15) {
+    return 'Phone number must be between 7 and 15 digits.';
   }
   return null;
 }
