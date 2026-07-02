@@ -4,8 +4,10 @@ import React, { createContext, useContext, useState, useEffect, useCallback } fr
 import { useAuth } from '@/context/auth-context';
 import { AuthService } from '@/services/auth-service';
 import * as recordService from '@/services/record-service';
-import api from '@/services/api';
+import api, { logApiError } from '@/services/api';
 import { X, Mail, Phone, Copy, Check, Info } from 'lucide-react';
+import { useDialog } from '@/hooks/useDialog';
+import { useToast } from '@/hooks/useToast';
 
 export interface OrganizationStats {
   totalStudents: number;
@@ -109,6 +111,7 @@ interface DashboardContextType {
   handleOpenView: (staff: any) => Promise<void>;
   handleCreateStaffSubmit: (payload: any) => Promise<void>;
   handleEditStaffSubmit: (id: string, payload: any) => Promise<void>;
+  handleDeleteStaff: (id: string) => Promise<void>;
   handleResetPasswordSubmit: (id: string, newPassword: string) => Promise<void>;
   handleToggleStaffStatus: (id: string, currentStatus: boolean, name: string) => Promise<void>;
   handleRemoveStaffAssignment: (assignmentId: string, label: string) => Promise<void>;
@@ -172,6 +175,8 @@ const DashboardContext = createContext<DashboardContextType | undefined>(undefin
 
 export function DashboardProvider({ children }: { children: React.ReactNode }) {
   const { user } = useAuth();
+  const dialog = useDialog();
+  const { toast } = useToast();
 
   const [orgName, setOrgName] = useState('');
   const [orgEmail, setOrgEmail] = useState('');
@@ -401,7 +406,7 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
         setRequiredFields(data.fields);
       }
     } catch (err) {
-      console.error('Error fetching active template:', err);
+      logApiError('Error fetching active template:', err);
     }
   }, [user, activeClassId, activeDivisionId, activeBranchId, activeDepartmentId]);
 
@@ -464,8 +469,33 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
     try {
       await AuthService.createStaff(payload);
       await fetchDashboardData();
+      toast('Staff Created Successfully', 'success');
     } catch (err: any) {
-      throw err;
+      dialog.alert({ title: 'Save Failed', message: err?.response?.data?.message || 'Failed to update staff.', variant: 'error' });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDeleteStaff = async (id: string) => {
+    const confirmed = await dialog.confirm({
+      title: 'Delete Staff',
+      message: 'Are you sure you want to delete this staff member?\n\nThis action cannot be undone.',
+      variant: 'danger'
+    });
+    if (!confirmed) return;
+    
+    setLoading(true);
+    try {
+      await AuthService.deleteStaff(id);
+      await fetchDashboardData();
+      toast('Staff deleted successfully.', 'success');
+    } catch (err: any) {
+      dialog.alert({ 
+        title: 'Delete Failed', 
+        message: err?.response?.data?.message || 'Unable to delete staff. This staff member is assigned to active records. Please remove assignments first.', 
+        variant: 'error' 
+      });
     } finally {
       setLoading(false);
     }
@@ -476,6 +506,7 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
     try {
       await AuthService.updateStaff(id, payload);
       await fetchDashboardData();
+      toast('Staff Updated Successfully', 'success');
       if (viewingStaff && String(viewingStaff.id) === String(id)) {
         const assignments = await AuthService.getStaffAssignments(id).catch(() => []);
         setViewingStaff({ ...viewingStaff, ...payload, assignments });
@@ -495,7 +526,7 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
         new_password: newPassword,
         temporary_password: newPassword
       });
-      alert('Password reset successfully.');
+      toast('Password reset successfully.', 'success');
     } catch (err: any) {
       throw err;
     } finally {
@@ -505,7 +536,12 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
 
   const handleToggleStaffStatus = async (id: string, currentStatus: boolean, name: string) => {
     const actionText = currentStatus ? 'deactivate' : 'activate';
-    if (!confirm(`Are you sure you want to ${actionText} staff member "${name}"?`)) return;
+    const confirmed = await dialog.confirm({
+      title: 'Confirm Status Change',
+      message: `Are you sure you want to ${actionText} staff member "${name}"?`,
+      variant: 'warning'
+    });
+    if (!confirmed) return;
     setLoading(true);
     try {
       const targetActive = !currentStatus;
@@ -514,12 +550,13 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
         status: targetActive ? 'active' : 'inactive'
       });
       await fetchDashboardData();
+      toast(`Staff ${actionText}d successfully.`, 'success');
       if (viewingStaff && String(viewingStaff.id) === String(id)) {
         const assignments = await AuthService.getStaffAssignments(id).catch(() => []);
         setViewingStaff((prev: any) => prev ? { ...prev, is_active: targetActive, status: targetActive ? 'active' : 'inactive', assignments } : null);
       }
     } catch (err: any) {
-      alert(err?.response?.data?.message || `Failed to ${actionText} staff member.`);
+      dialog.alert({ title: 'Update Failed', message: err?.response?.data?.message || `Failed to ${actionText} staff member.`, variant: 'error' });
     } finally {
       setLoading(false);
     }
@@ -534,8 +571,8 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
         const updated = (viewingStaff.assignments || []).filter((a: any) => String(a.id) !== String(assignmentId));
         setViewingStaff({ ...viewingStaff, assignments: updated });
       }
-    } catch {
-      alert(`Failed to remove access to "${label}".`);
+    } catch (err: any) {
+      dialog.alert({ title: 'Remove Failed', message: `Failed to remove access to "${label}".`, variant: 'error' });
     } finally {
       setLoading(false);
     }
@@ -575,7 +612,7 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
       setIsAssignClassOpen(false);
       await fetchDashboardData();
     } catch (err: any) {
-      alert('Failed to update class assignments.');
+      dialog.alert({ title: 'Assignment Failed', message: 'Failed to update class assignments.', variant: 'error' });
     } finally {
       setLoading(false);
     }
@@ -616,8 +653,8 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
       setViewingStaff({ ...viewingStaff, assignments: freshAssignments });
       setIsAssignDivisionOpen(false);
       await fetchDashboardData();
-    } catch {
-      alert('Failed to update division assignments.');
+    } catch (err) {
+      dialog.alert({ title: 'Assignment Failed', message: 'Failed to update division assignments.', variant: 'error' });
     } finally {
       setLoading(false);
     }
@@ -655,8 +692,8 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
       setViewingStaff({ ...viewingStaff, assignments: freshAssignments });
       setIsAssignBranchOpen(false);
       await fetchDashboardData();
-    } catch {
-      alert('Failed to update branch assignments.');
+    } catch (err) {
+      dialog.alert({ title: 'Assignment Failed', message: 'Failed to update branch assignments.', variant: 'error' });
     } finally {
       setLoading(false);
     }
@@ -697,8 +734,8 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
       setViewingStaff({ ...viewingStaff, assignments: freshAssignments });
       setIsAssignDepartmentOpen(false);
       await fetchDashboardData();
-    } catch {
-      alert('Failed to update department assignments.');
+    } catch (err) {
+      dialog.alert({ title: 'Assignment Failed', message: 'Failed to update department assignments.', variant: 'error' });
     } finally {
       setLoading(false);
     }
@@ -750,7 +787,7 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
       setIsAssignStaffModalOpen(false);
       await fetchDashboardData();
     } catch (err: any) {
-      alert('Failed to update staff assignments.');
+      dialog.alert({ title: 'Assignment Failed', message: 'Failed to update staff assignments.', variant: 'error' });
     } finally {
       setLoading(false);
     }
@@ -786,7 +823,7 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
           ? await AuthService.updateClass(editingStructureId, { name, organization: user?.organization_id })
           : await AuthService.createClass({ name, organization: user?.organization_id });
       } else if (structureType === 'division') {
-        if (!parentId) { alert('Parent Class is required.'); setLoading(false); return; }
+        if (!parentId) { dialog.alert({ title: 'Missing Information', message: 'Parent Class is required.', variant: 'warning' }); setLoading(false); return; }
         editingStructureId
           ? await AuthService.updateDivision(editingStructureId, { name, school_class: parentId })
           : await AuthService.createDivision({ name, school_class: parentId });
@@ -795,22 +832,23 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
           ? await AuthService.updateBranch(editingStructureId, { name, organization: user?.organization_id })
           : await AuthService.createBranch({ name, organization: user?.organization_id });
       } else if (structureType === 'department') {
-        if (!parentId) { alert('Parent Branch is required.'); setLoading(false); return; }
+        if (!parentId) { dialog.alert({ title: 'Missing Information', message: 'Parent Branch is required.', variant: 'warning' }); setLoading(false); return; }
         editingStructureId
           ? await AuthService.updateDepartment(editingStructureId, { name, branch: parentId })
           : await AuthService.createDepartment({ name, branch: parentId });
       }
       setIsStructureModalOpen(false);
       await fetchDashboardData();
-    } catch {
-      alert('Failed to save. Please try again.');
+    } catch (err) {
+      dialog.alert({ title: 'Save Failed', message: 'Failed to save. Please try again.', variant: 'error' });
     } finally {
       setLoading(false);
     }
   };
 
   const handleDeleteStructure = async (type: 'class' | 'division' | 'branch' | 'department', id: string) => {
-    if (!confirm(`Delete this ${type}?`)) return;
+    const confirmed = await dialog.confirm({ title: `Delete ${type}?`, message: `Are you sure you want to delete this ${type}?`, variant: 'danger' });
+    if (!confirmed) return;
     setLoading(true);
     try {
       if (type === 'class') await AuthService.deleteClass(id);
@@ -818,8 +856,8 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
       else if (type === 'branch') await AuthService.deleteBranch(id);
       else if (type === 'department') await AuthService.deleteDepartment(id);
       await fetchDashboardData();
-    } catch {
-      alert(`Failed to delete ${type}.`);
+    } catch (err) {
+      dialog.alert({ title: 'Delete Failed', message: `Failed to delete ${type}.`, variant: 'error' });
     } finally {
       setLoading(false);
     }
@@ -830,7 +868,7 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
       const fields = await recordService.getFields();
       setDynamicFieldsList(fields || []);
     } catch (err) {
-      console.error('Failed to load fields config:', err);
+      logApiError('Failed to load fields config:', err);
     }
   };
 
@@ -858,7 +896,7 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
       } else {
         errMsg = err?.message || fallbackMsg;
       }
-      alert(errMsg);
+      dialog.alert({ title: 'Error', message: errMsg, variant: 'error' });
     }
     throw err;
   };
@@ -930,13 +968,17 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
   };
 
   const handleDeleteRecord = async (id: string) => {
-    if (!confirm('Delete this record?')) return;
+    const confirmed = await dialog.confirm({ title: 'Delete Record', message: 'Are you sure you want to delete this record?', variant: 'danger' });
+    if (!confirmed) return;
     setLoading(true);
     try {
       await AuthService.deleteRecord(id);
       await fetchDashboardData();
-    } catch { alert('Failed to delete record.'); }
-    finally { setLoading(false); }
+    } catch (err) {
+      dialog.alert({ title: 'Delete Failed', message: 'Failed to delete record.', variant: 'error' });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleSubmitRecord = async (id: string) => {
@@ -953,7 +995,10 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
   };
 
   const handleApproveRecord = async (id: string, skipConfirm = false) => {
-    if (!skipConfirm && !confirm('Approve this record?')) return;
+    if (!skipConfirm) {
+      const confirmed = await dialog.confirm({ title: 'Approve Record', message: 'Are you sure you want to approve this record?' });
+      if (!confirmed) return;
+    }
     const rec = recordsList.find(r => String(r.id) === String(id));
     const cardId = rec?.card_id;
     setLoading(true);
@@ -969,8 +1014,8 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
   const handleRejectRecord = async (id: string, reasonFromDetails?: string) => {
     let reason = reasonFromDetails;
     if (reason === undefined) {
-      const promptVal = prompt('Enter rejection reason:');
-      if (promptVal === null) return;
+      const promptVal = await dialog.prompt({ title: 'Reject Record', label: 'Reason for rejection', placeholder: 'Enter rejection reason' });
+      if (!promptVal) return;
       reason = promptVal;
     }
     const rec = recordsList.find(r => String(r.id) === String(id));
@@ -988,8 +1033,8 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
   const handleCorrectionRecord = async (id: string, noteFromDetails?: string) => {
     let note = noteFromDetails;
     if (note === undefined) {
-      const promptVal = prompt('Enter correction instructions:');
-      if (promptVal === null) return;
+      const promptVal = await dialog.prompt({ title: 'Request Correction', label: 'Correction instructions', placeholder: 'Enter correction instructions' });
+      if (!promptVal) return;
       note = promptVal;
     }
     const rec = recordsList.find(r => String(r.id) === String(id));
@@ -1078,6 +1123,7 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
       handleOpenView,
       handleCreateStaffSubmit,
       handleEditStaffSubmit,
+      handleDeleteStaff,
       handleResetPasswordSubmit,
       handleToggleStaffStatus,
       handleRemoveStaffAssignment,

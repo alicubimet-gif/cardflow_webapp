@@ -1,5 +1,6 @@
 import React from 'react';
 import { Plus, Trash2, Shield, Layers, Building2, Briefcase } from 'lucide-react';
+import { useDialog } from '@/hooks/useDialog';
 
 interface StaffPermissionsProps {
   staff: any;
@@ -29,9 +30,15 @@ export function StaffPermissions({
   getDeptName
 }: StaffPermissionsProps) {
   const assignments = staff?.assignments || [];
+  const dialog = useDialog();
 
   const handleRemove = async (id: string, label: string) => {
-    if (confirm(`Are you sure you want to remove access to "${label}"?`)) {
+    const confirmed = await dialog.confirm({
+      title: 'Remove Access',
+      message: `Are you sure you want to remove access to "${label}"?`,
+      variant: 'danger'
+    });
+    if (confirmed) {
       await onRemoveAssignment(id, label);
     }
   };

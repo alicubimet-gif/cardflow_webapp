@@ -63,7 +63,14 @@ api.interceptors.response.use(
     const isAuth401 = error?.response?.status === 401;
     const errorCode = error?.response?.data?.code;
     const isSilencedError = errorCode && ['SUBSCRIBER_ACTION_REQUIRED', 'INVALID_OR_EXPIRED_TOKEN', 'TOKEN_EXPIRED'].includes(errorCode);
-    if (!isAuth401 && !isSilencedError) {
+    // 400 responses with field-level `errors` are handled inline by forms — no need to log
+    const isFieldValidationError =
+      error?.response?.status === 400 &&
+      error?.response?.data?.errors &&
+      typeof error?.response?.data?.errors === 'object';
+    // 404 responses are expected "not found" states (e.g. no template assigned yet) handled by callers
+    const isNotFoundError = error?.response?.status === 404;
+    if (!isAuth401 && !isSilencedError && !isFieldValidationError && !isNotFoundError) {
       console.error(
         '[API WebApp] Error ←',
         error?.config?.method?.toUpperCase(),
@@ -77,3 +84,21 @@ api.interceptors.response.use(
 );
 
 export default api;
+
+/**
+ * Use this in local catch blocks instead of `console.error(err)`.
+ * It applies the same silencing rules as the global Axios interceptor so
+ * 401 auth errors, 400 field-validation errors, and 404 not-found states
+ * never pollute the console.
+ */
+export function logApiError(label: string, err: any): void {
+  const status = err?.response?.status;
+  const errorCode = err?.response?.data?.code;
+
+  if (status === 401) return;
+  if (status === 404) return;
+  if (errorCode && ['SUBSCRIBER_ACTION_REQUIRED', 'INVALID_OR_EXPIRED_TOKEN', 'TOKEN_EXPIRED'].includes(errorCode)) return;
+  if (status === 400 && err?.response?.data?.errors && typeof err?.response?.data?.errors === 'object') return;
+
+  console.error(label, err);
+}

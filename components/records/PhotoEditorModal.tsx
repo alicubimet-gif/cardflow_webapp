@@ -3,6 +3,8 @@ import { X, Loader2 } from 'lucide-react';
 import { PhotoUploader } from './PhotoUploader';
 import { AuthService } from '@/services/auth-service';
 import { resolvePhotoUrl } from '@/services/record-service';
+import { useDialog } from '@/hooks/useDialog';
+import { useToast } from '@/hooks/useToast';
 
 interface PhotoEditorModalProps {
   isOpen: boolean;
@@ -21,6 +23,8 @@ export function PhotoEditorModal({
 }: PhotoEditorModalProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [isSaving, setIsSaving] = useState(false);
+  const dialog = useDialog();
+  const { toast } = useToast();
 
   if (!isOpen || !record) return null;
 
@@ -30,7 +34,7 @@ export function PhotoEditorModal({
   const handleSave = async () => {
     const canvas = canvasRef.current;
     if (!canvas) {
-      alert('Photo editor not initialized yet.');
+      dialog.alert({ title: 'Error', message: 'Photo editor not initialized yet.', variant: 'error' });
       return;
     }
 
@@ -38,7 +42,7 @@ export function PhotoEditorModal({
     try {
       canvas.toBlob(async (blob) => {
         if (!blob) {
-          alert('Failed to generate image data. Please ensure a photo is selected/loaded.');
+          dialog.alert({ title: 'Processing Failed', message: 'Failed to generate image data. Please ensure a photo is selected/loaded.', variant: 'error' });
           setIsSaving(false);
           return;
         }
@@ -52,11 +56,12 @@ export function PhotoEditorModal({
           formData.append('photo', blob, 'profile_photo.jpg');
 
           await AuthService.uploadPhoto(formData);
+          toast('Photo updated successfully', 'success');
           onSuccess();
           onClose();
         } catch (err: any) {
           console.error('[PhotoEditor] Upload failed:', err);
-          alert(err?.response?.data?.message || err?.message || 'Failed to save photo.');
+          dialog.alert({ title: 'Save Failed', message: err?.response?.data?.message || err?.message || 'Failed to save photo.', variant: 'error' });
         } finally {
           setIsSaving(false);
         }

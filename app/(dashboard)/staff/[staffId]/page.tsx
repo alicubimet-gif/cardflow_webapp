@@ -43,6 +43,8 @@ export default function StaffDetailPage() {
     handleAssignBranches,
     handleAssignDepartments,
     handleRemoveStaffAssignment,
+    handleOpenEdit,
+    handleDeleteStaff,
     
     getClassName,
     getDivName,
@@ -131,6 +133,13 @@ export default function StaffDetailPage() {
         onOpenAssignDivision={() => setIsAssignDivisionOpen(true)}
         onOpenAssignBranch={() => setIsAssignBranchOpen(true)}
         onOpenAssignDepartment={() => setIsAssignDepartmentOpen(true)}
+        onEdit={async (staffItem) => {
+          await handleOpenEdit(staffItem);
+        }}
+        onDelete={async (id) => {
+          await handleDeleteStaff(id);
+          router.push('/staff');
+        }}
         onRemoveAssignment={async (id, name) => {
           await handleRemoveStaffAssignment(id, name);
           const assignments = await AuthService.getStaffAssignments(staffId).catch(() => []);

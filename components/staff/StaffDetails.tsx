@@ -12,6 +12,8 @@ interface StaffDetailsProps {
   divisionsList: any[];
   branchesList: any[];
   departmentsList: any[];
+  onEdit?: (staff: any) => void;
+  onDelete?: (id: string) => void;
   onRemoveAssignment: (id: string, name: string) => Promise<void>;
   onOpenAssignClass: () => void;
   onOpenAssignDivision: () => void;
@@ -32,6 +34,8 @@ export function StaffDetails({
   divisionsList,
   branchesList,
   departmentsList,
+  onEdit,
+  onDelete,
   onRemoveAssignment,
   onOpenAssignClass,
   onOpenAssignDivision,
@@ -73,16 +77,38 @@ export function StaffDetails({
         
         {/* Header */}
         <div className="px-6 py-4 border-b border-[#DFE4EA] flex items-center justify-between bg-slate-50/50 shrink-0">
-          <h3 className="font-bold text-base text-[#0B0F19]" style={{ fontFamily: 'Sora, sans-serif' }}>
-            Staff Details
-          </h3>
-          <button 
-            type="button" 
-            onClick={onClose} 
-            className="p-1.5 rounded-lg text-[#64748B] hover:bg-slate-100 transition-colors cursor-pointer"
-          >
-            <XCircle size={20} />
-          </button>
+          <div className="flex items-center gap-3">
+            <h3 className="font-bold text-base text-[#0B0F19]" style={{ fontFamily: 'Sora, sans-serif' }}>
+              Staff Details
+            </h3>
+          </div>
+          <div className="flex items-center gap-2">
+            {onEdit && (
+              <button 
+                type="button" 
+                onClick={() => onEdit(staff)}
+                className="px-3 py-1.5 text-xs font-semibold text-slate-700 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 transition-colors"
+              >
+                ✏️ Edit Staff
+              </button>
+            )}
+            {onDelete && (
+              <button 
+                type="button" 
+                onClick={() => onDelete(staff.id)}
+                className="px-3 py-1.5 text-xs font-semibold text-red-600 bg-white border border-red-200 rounded-lg hover:bg-red-50 transition-colors"
+              >
+                🗑 Delete Staff
+              </button>
+            )}
+            <button 
+              type="button" 
+              onClick={onClose} 
+              className="p-1.5 rounded-lg text-[#64748B] hover:bg-slate-100 transition-colors cursor-pointer ml-1"
+            >
+              <XCircle size={20} />
+            </button>
+          </div>
         </div>
 
         {/* Content */}

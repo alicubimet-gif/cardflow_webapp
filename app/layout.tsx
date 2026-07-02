@@ -28,6 +28,9 @@ export const viewport: Viewport = {
   maximumScale: 1,
 };
 
+import { DialogProvider } from "@/components/ui/DialogProvider";
+import { ToastProvider } from "@/components/ui/ToastProvider";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -39,7 +42,11 @@ export default function RootLayout({
       className={`${plusJakarta.variable} ${sora.variable} h-full`}
     >
       <body className="min-h-full flex flex-col bg-white text-[#0B0F19] antialiased">
-        <AuthProvider>{children}</AuthProvider>
+        <ToastProvider>
+          <DialogProvider>
+            <AuthProvider>{children}</AuthProvider>
+          </DialogProvider>
+        </ToastProvider>
       </body>
     </html>
   );

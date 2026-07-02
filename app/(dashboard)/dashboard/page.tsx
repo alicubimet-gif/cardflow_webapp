@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/auth-context';
 import { useDashboard } from '@/context/dashboard-context';
-import { Briefcase, X, Loader2 } from 'lucide-react';
+import { Briefcase, X, Loader2, AlertCircle } from 'lucide-react';
 import { AuthService } from '@/services/auth-service';
 
 // Subcomponents
@@ -80,6 +80,7 @@ export default function DashboardPage() {
   const [viewingPreviewRecord, setViewingPreviewRecord] = useState<any | null>(null);
   const [cardPreviewData, setCardPreviewData] = useState<any | null>(null);
   const [cardPreviewLoading, setCardPreviewLoading] = useState(false);
+  const [cardPreviewError, setCardPreviewError] = useState<string | null>(null);
 
   // Auto-fit routing navigation depth on initialization for non-admins (Case 1, Case 2, Case 3)
   useEffect(() => {
@@ -120,17 +121,27 @@ export default function DashboardPage() {
   useEffect(() => {
     if (!viewingPreviewRecord) {
       setCardPreviewData(null);
+      setCardPreviewError(null);
       return;
     }
     const loadPreview = async () => {
       setCardPreviewLoading(true);
+      setCardPreviewError(null);
       try {
         const recordType = viewingPreviewRecord.record_type || (isSchool ? 'student' : 'employee');
         const mappedType = recordType === 'staff' ? 'school-staff' : recordType;
         const data = await AuthService.getCardPreview(mappedType as any, viewingPreviewRecord.id);
         setCardPreviewData(data);
-      } catch (err) {
+        if (!data || !data.template_version) {
+          setCardPreviewError('No template assigned.');
+        }
+      } catch (err: any) {
         console.error('[CardPreview] Failed to load card preview:', err);
+        if (err?.response?.status === 404) {
+          setCardPreviewError('Record not found.');
+        } else {
+          setCardPreviewError('No template assigned.');
+        }
       } finally {
         setCardPreviewLoading(false);
       }
@@ -717,9 +728,14 @@ export default function DashboardPage() {
 
             {/* Canvas side by side */}
             {cardPreviewLoading ? (
-              <div className="flex flex-col items-center justify-center py-12 text-slate-500">
+              <div className="flex flex-col items-center justify-center py-16 text-slate-550 min-h-[300px]">
                 <Loader2 className="w-8 h-8 animate-spin text-blue-600 mb-3" />
                 <p className="text-xs font-bold uppercase tracking-wider">Rendering ID Card Preview...</p>
+              </div>
+            ) : cardPreviewError ? (
+              <div className="flex flex-col items-center justify-center py-16 text-slate-400 text-center font-sans min-h-[300px]">
+                <AlertCircle className="w-8 h-8 text-slate-350 mb-2" />
+                <span className="text-xs font-bold">{cardPreviewError}</span>
               </div>
             ) : cardPreviewData?.template_version ? (() => {
               const templateVersion = cardPreviewData.template_version;
@@ -735,7 +751,7 @@ export default function DashboardPage() {
                       <span className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">Front View</span>
                       <div className="p-2 bg-white rounded-2xl shadow-sm border border-slate-150 shrink-0">
                         <IdCardPreview
-                          record={viewingPreviewRecord}
+                          record={cardPreviewData?.record_data || viewingPreviewRecord}
                           templateVersion={templateVersion}
                           side="FRONT"
                           scale={0.45}
@@ -749,7 +765,7 @@ export default function DashboardPage() {
                         <span className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">Back View</span>
                         <div className="p-2 bg-white rounded-2xl shadow-sm border border-slate-150 shrink-0">
                           <IdCardPreview
-                            record={viewingPreviewRecord}
+                            record={cardPreviewData?.record_data || viewingPreviewRecord}
                             templateVersion={templateVersion}
                             side="BACK"
                             scale={0.45}
@@ -765,8 +781,9 @@ export default function DashboardPage() {
                 </div>
               );
             })() : (
-              <div className="text-center py-12 text-slate-550 italic text-xs">
-                No active card template layout is assigned to this division or class.
+              <div className="flex flex-col items-center justify-center py-16 text-slate-400 text-center font-sans min-h-[300px]">
+                <AlertCircle className="w-8 h-8 text-slate-350 mb-2" />
+                <span className="text-xs font-bold">No template assigned.</span>
               </div>
             )}
 

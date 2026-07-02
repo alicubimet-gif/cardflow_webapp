@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
 import * as classService from '@/services/class-service';
+import { logApiError } from '@/services/api';
 
 export function useClasses() {
   const [classesList, setClassesList] = useState<any[]>([]);
@@ -14,7 +15,7 @@ export function useClasses() {
       setClassesList(data || []);
       return data;
     } catch (err: any) {
-      console.error(err);
+      logApiError('[useClasses] fetchClasses:', err);
       setError(err?.response?.data?.message || err?.message || 'Failed to fetch classes.');
     } finally {
       setLoading(false);

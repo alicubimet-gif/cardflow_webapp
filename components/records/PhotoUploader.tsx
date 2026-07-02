@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Camera, Upload, RotateCw, RotateCcw, ZoomIn, Sun, RotateCcw as ResetIcon, VideoOff } from 'lucide-react';
+import { Camera, Upload, RotateCw, RotateCcw, ZoomIn, Sun, RotateCcw as ResetIcon, VideoOff, SwitchCamera } from 'lucide-react';
+import { useDialog } from '@/hooks/useDialog';
 
 interface PhotoUploaderProps {
   initialPhotoUrl?: string;
@@ -12,6 +13,7 @@ export function PhotoUploader({
   canvasRef,
   onPhotoSelected
 }: PhotoUploaderProps) {
+  const dialog = useDialog();
   const [isCameraActive, setIsCameraActive] = useState(false);
   const [previewImageUrl, setPreviewImageUrl] = useState<string>(initialPhotoUrl);
   const [zoom, setZoom] = useState<number>(1.0);
@@ -19,6 +21,7 @@ export function PhotoUploader({
   const [brightness, setBrightness] = useState<number>(100);
   const [isFlipped, setIsFlipped] = useState(false);
   const [isOptionsOpen, setIsOptionsOpen] = useState(false);
+  const [facingMode, setFacingMode] = useState<'user' | 'environment'>('environment');
   
   // New States for Panning / Dragging (Crop translation)
   const [panX, setPanX] = useState<number>(0);
@@ -150,16 +153,25 @@ export function PhotoUploader({
     setIsCameraActive(true);
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ 
-        video: { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 640 } } 
+        video: { facingMode: facingMode, width: { ideal: 640 }, height: { ideal: 640 } } 
       });
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
       }
     } catch (err) {
-      console.error('Camera access failed:', err);
-      alert('Could not access camera. Please check permissions.');
+      console.error('Error accessing camera:', err);
+      dialog.alert({ title: 'Camera Error', message: 'Could not access camera. Please check permissions.', variant: 'error' });
       setIsCameraActive(false);
     }
+  };
+
+  const switchCamera = async () => {
+    stopCamera();
+    setFacingMode(prev => prev === 'user' ? 'environment' : 'user');
+    // We delay slightly to allow the previous stream to stop before requesting the new one.
+    setTimeout(() => {
+      startCamera();
+    }, 100);
   };
 
   const stopCamera = () => {
@@ -276,15 +288,30 @@ export function PhotoUploader({
               ref={videoRef} 
               autoPlay 
               playsInline 
-              className="w-full h-full object-cover scale-x-[-1]"
+              className={`w-full h-full object-cover ${facingMode === 'user' ? 'scale-x-[-1]' : ''}`}
             />
-            <button
-              type="button"
-              onClick={capturePhoto}
-              className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-blue-600 hover:bg-blue-700 text-white rounded-full p-3 shadow-lg cursor-pointer transition-transform hover:scale-105"
-            >
-              <Camera size={20} />
-            </button>
+            
+            <div className="absolute bottom-4 inset-x-0 flex items-center justify-center gap-6">
+              <button
+                type="button"
+                onClick={switchCamera}
+                className="bg-black/50 hover:bg-black/70 backdrop-blur-sm text-white rounded-full p-2.5 shadow-lg cursor-pointer transition-transform hover:scale-105"
+                title="Switch Camera"
+              >
+                <SwitchCamera size={18} />
+              </button>
+              
+              <button
+                type="button"
+                onClick={capturePhoto}
+                className="bg-blue-600 hover:bg-blue-700 text-white rounded-full p-4 shadow-lg cursor-pointer transition-transform hover:scale-105 border-2 border-white/20"
+                title="Capture Photo"
+              >
+                <Camera size={22} />
+              </button>
+              
+              <div className="w-10"></div> {/* Spacer for symmetry */}
+            </div>
           </div>
         ) : (
           <div className="flex flex-col items-center justify-center">

@@ -12,6 +12,8 @@ import { RecordForm } from './RecordForm';
 import { PhotoEditorModal } from './PhotoEditorModal';
 import * as recordService from '@/services/record-service';
 import { useDashboard } from '@/context/dashboard-context';
+import { useDialog } from '@/hooks/useDialog';
+import { useToast } from '@/hooks/useToast';
 
 interface RecordDetailsPageProps {
   record: any;
@@ -45,6 +47,7 @@ export function RecordDetailsPage({
   const [record, setRecord] = useState(initialRecord);
   const [previewData, setPreviewData] = useState<any>(null);
   const [previewLoading, setPreviewLoading] = useState(false);
+  const [previewError, setPreviewError] = useState<string | null>(null);
 
   const { 
     setIsSubscriberModalOpen, 
@@ -56,13 +59,18 @@ export function RecordDetailsPage({
     fetchDashboardData
   } = useDashboard();
 
+  const dialog = useDialog();
+  const { toast } = useToast();
+
   const handleLocalError = (err: any, fallbackMsg: string) => {
     if (err?.response?.data?.code === 'SUBSCRIBER_ACTION_REQUIRED') {
       setSubscriberInfo(err.response.data.subscriber);
       setIsSubscriberModalOpen(true);
     } else {
       const msg = err?.response?.data?.detail || err?.response?.data?.message || fallbackMsg;
-      alert(msg);
+      if (msg) {
+        dialog.alert({ title: 'Action Failed', message: msg, variant: 'error' });
+      }
     }
   };
   
@@ -95,7 +103,26 @@ export function RecordDetailsPage({
 
   // Teacher-friendly inline form/editor modals
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isEditModalLoading, setIsEditModalLoading] = useState(false);
   const [isPhotoEditorOpen, setIsPhotoEditorOpen] = useState(false);
+
+  // Container ref + state for container-width-driven responsive card scaling
+  const previewContainerRef = useRef<HTMLDivElement>(null);
+  const [containerDisplayWidth, setContainerDisplayWidth] = useState<number>(320);
+
+  const handleOpenEditModal = async () => {
+    setIsEditModalLoading(true);
+    try {
+      const fullRecord = await recordService.getRecord(record.id);
+      setRecord(fullRecord);
+      setIsEditModalOpen(true);
+    } catch (err) {
+      console.error('Failed to fetch full record', err);
+      dialog.alert({ title: 'Error', message: 'Unable to load the record. Please try again.', variant: 'error' });
+    } finally {
+      setIsEditModalLoading(false);
+    }
+  };
 
   const handleSaveEdit = async (payload: any, processedBlob: Blob | null) => {
     try {
@@ -112,9 +139,10 @@ export function RecordDetailsPage({
       await loadPreview();
       setIsEditModalOpen(false);
       await fetchDashboardData();
+      toast('Record updated successfully.', 'success');
     } catch (err: any) {
       console.error('Failed to update record details:', err);
-      alert(err?.response?.data?.message || err?.message || 'Failed to save changes.');
+      dialog.alert({ title: 'Save Failed', message: err?.response?.data?.message || err?.message || 'Failed to save changes.', variant: 'error' });
     }
   };
 
@@ -124,11 +152,20 @@ export function RecordDetailsPage({
     const mappedType = recordType === 'staff' ? 'school-staff' : recordType;
     
     setPreviewLoading(true);
+    setPreviewError(null);
     try {
       const data = await AuthService.getCardPreview(mappedType as any, record.id);
       setPreviewData(data);
-    } catch (err) {
+      if (!data || !data.template_version) {
+        setPreviewError('No template assigned.');
+      }
+    } catch (err: any) {
       console.error('[Preview] Failed to load card preview:', err);
+      if (err?.response?.status === 404) {
+        setPreviewError('Record not found.');
+      } else {
+        setPreviewError('No template assigned.');
+      }
     } finally {
       setPreviewLoading(false);
     }
@@ -139,6 +176,20 @@ export function RecordDetailsPage({
       loadPreview();
     }
   }, [record, isSchool]);
+
+  // ResizeObserver: keep containerDisplayWidth in sync with the card preview container
+  useEffect(() => {
+    const el = previewContainerRef.current;
+    if (!el) return;
+    const ro = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        // Subtract inner white-card border padding (p-2 = 8px × 2 = 16px)
+        setContainerDisplayWidth(Math.max(180, entry.contentRect.width - 16));
+      }
+    });
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
 
   const handleRefresh = async () => {
     try {
@@ -172,14 +223,16 @@ export function RecordDetailsPage({
       await handleRefresh();
     } catch (err) {
       console.error('Failed to upload photo:', err);
-      alert('Failed to upload/replace photo.');
+      dialog.alert({ title: 'Upload Failed', message: 'Failed to upload/replace photo.', variant: 'error' });
     } finally {
       setIsPhotoUploading(false);
     }
   };
 
   const handlePhotoRemove = async () => {
-    if (!confirm('Are you sure you want to remove the photo?')) return;
+    const confirmed = await dialog.confirm({ title: 'Remove Photo', message: 'Are you sure you want to remove the photo?', variant: 'danger' });
+    if (!confirmed) return;
+    
     setIsPhotoUploading(true);
     try {
       // Send empty string for photo to clear it via partial PATCH update
@@ -188,7 +241,7 @@ export function RecordDetailsPage({
       await handleRefresh();
     } catch (err) {
       console.error('Failed to remove photo:', err);
-      alert('Failed to remove photo.');
+      dialog.alert({ title: 'Remove Failed', message: 'Failed to remove photo.', variant: 'error' });
     } finally {
       setIsPhotoUploading(false);
     }
@@ -248,7 +301,7 @@ export function RecordDetailsPage({
         window.URL.revokeObjectURL(url);
         await handleRefresh();
       } else {
-        alert('Failed to get download URL.');
+        dialog.alert({ title: 'Download Failed', message: 'Failed to get download URL.', variant: 'error' });
       }
     } catch (err: any) {
       console.error('Failed to download PDF:', err);
@@ -291,88 +344,112 @@ export function RecordDetailsPage({
 
   if (!isAdmin) {
     const templateVersion = previewData?.template_version;
-    const isSingleSided = templateVersion 
+    const isSingleSided = templateVersion
       ? String(templateVersion.canvas_json?.sides || templateVersion.sides || '2') === '1' ||
         String(templateVersion.canvas_json?.sides || templateVersion.sides || '').toLowerCase() === 'single' ||
-        String(templateVersion.cardSides || templateVersion.cardSides || '').toLowerCase() === 'single'
+        String(templateVersion.cardSides || '').toLowerCase() === 'single'
       : true;
 
     return (
-      <div className="flex flex-col items-center justify-center min-h-[70vh] w-full py-6 px-4 md:px-8 space-y-6" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
-        
-        {/* Navigation back */}
-        <div className="w-full max-w-2xl flex items-center justify-start mb-2">
-          <button
-            onClick={onBack}
-            className="inline-flex items-center gap-2 text-xs font-bold text-slate-550 hover:text-slate-700 transition-colors cursor-pointer"
-          >
-            <ArrowLeft size={16} />
-            <span>Back to Dashboard</span>
-          </button>
+      <div className="flex flex-col items-center w-full" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
+
+        {/* ── Sticky top bar: back navigation + name + status ──────────── */}
+        <div className="w-full bg-white/95 backdrop-blur-sm border-b border-slate-100 sticky top-0 z-20" style={{ boxShadow: '0 1px 4px 0 rgba(0,0,0,0.06)' }}>
+          <div className="max-w-lg mx-auto px-[10px] py-3 flex items-center gap-3">
+            <button
+              onClick={onBack}
+              className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-600 hover:text-slate-900 transition-colors cursor-pointer shrink-0"
+            >
+              <ArrowLeft size={15} />
+              <span>Back</span>
+            </button>
+            <div className="flex-1 min-w-0 flex items-center gap-2 overflow-hidden">
+              <span className="font-extrabold text-sm text-slate-900 truncate">{name}</span>
+              <StatusBadge status={status} />
+            </div>
+          </div>
         </div>
 
-        {/* Card Preview Area */}
-        {previewLoading ? (
-          <div className="flex flex-col items-center justify-center py-20 text-slate-500 w-full max-w-2xl bg-slate-50 rounded-3xl border border-slate-150 shadow-inner">
-            <Loader2 className="w-8 h-8 animate-spin text-blue-600 mb-3" />
-            <p className="text-xs font-bold uppercase tracking-wider">Rendering ID Card Preview...</p>
-          </div>
-        ) : templateVersion ? (
-          <div className="w-full max-w-2xl flex flex-col md:flex-row gap-8 justify-center items-center py-8 px-6 bg-slate-55 rounded-3xl border border-slate-150 shadow-inner overflow-hidden">
-            {/* Front View */}
-            <div className="flex flex-col items-center gap-2">
-              <span className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">Front View</span>
-              <div className="p-2 bg-white rounded-2xl shadow-sm border border-slate-150 shrink-0">
-                <IdCardPreview
-                  record={record}
-                  templateVersion={templateVersion}
-                  side="FRONT"
-                  scale={0.45}
-                />
-              </div>
-            </div>
+        {/* ── Page content ─────────────────────────────────────────────── */}
+        <div className="w-full max-w-lg mx-auto px-[10px] pt-5 pb-16 space-y-4">
 
-            {/* Back View */}
-            {!isSingleSided && (
-              <div className="flex flex-col items-center gap-2">
-                <span className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">Back View</span>
-                <div className="p-2 bg-white rounded-2xl shadow-sm border border-slate-150 shrink-0">
-                  <IdCardPreview
-                    record={record}
-                    templateVersion={templateVersion}
-                    side="BACK"
-                    scale={0.45}
-                  />
+          {/* Section label + action buttons row */}
+          <div className="flex items-center justify-between">
+            <span className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest">
+              {isSchool ? 'Student Card' : 'Employee Card'}
+            </span>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={handleOpenEditModal}
+                disabled={isEditModalLoading}
+                className="inline-flex items-center gap-1.5 px-3 py-2 bg-white border border-slate-200 hover:bg-slate-50 active:scale-[0.97] text-slate-800 text-[11px] font-extrabold rounded-xl transition-all shadow-sm cursor-pointer disabled:opacity-75 disabled:cursor-wait"
+              >
+                {isEditModalLoading ? <Loader2 size={14} className="animate-spin" /> : <span>✏️</span>}
+                <span>{isEditModalLoading ? 'Loading...' : 'Edit Details'}</span>
+              </button>
+              <button
+                onClick={() => setIsPhotoEditorOpen(true)}
+                className="inline-flex items-center gap-1.5 px-3 py-2 bg-blue-600 hover:bg-blue-700 active:scale-[0.97] text-white text-[11px] font-extrabold rounded-xl transition-all shadow-md cursor-pointer"
+              >
+                <span>📷</span>
+                <span>Update Photo</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Card preview — ref always present for ResizeObserver measurement */}
+          <div ref={previewContainerRef} className="w-full">
+            {previewLoading ? (
+              <div className="flex flex-col items-center justify-center py-20 text-slate-500 w-full bg-white rounded-3xl border border-slate-100" style={{ boxShadow: '0 1px 3px 0 rgba(0,0,0,0.06)' }}>
+                <Loader2 className="w-8 h-8 animate-spin text-blue-600 mb-3" />
+                <p className="text-[10px] font-bold uppercase tracking-wider">Rendering ID Card...</p>
+              </div>
+            ) : previewError ? (
+              <div className="w-full flex flex-col items-center justify-center py-16 px-6 bg-white border border-slate-100 rounded-3xl text-slate-400 text-center">
+                <AlertCircle className="w-8 h-8 text-slate-300 mb-2" />
+                <span className="text-xs font-bold">{previewError}</span>
+              </div>
+            ) : templateVersion ? (
+              <div className="space-y-5">
+
+                {/* Front Card */}
+                <div className="flex flex-col items-center gap-2">
+                  <span className="text-[9px] font-extrabold text-slate-400 uppercase tracking-widest">Front View</span>
+                  <div className="w-full bg-white rounded-2xl border border-slate-150 p-2 flex justify-center overflow-hidden" style={{ boxShadow: '0 1px 4px 0 rgba(0,0,0,0.07)' }}>
+                    <IdCardPreview
+                      record={previewData?.record_data || record}
+                      templateVersion={templateVersion}
+                      side="FRONT"
+                      displayWidth={containerDisplayWidth}
+                    />
+                  </div>
                 </div>
+
+                {/* Back Card (if double-sided) */}
+                {!isSingleSided && (
+                  <div className="flex flex-col items-center gap-2">
+                    <span className="text-[9px] font-extrabold text-slate-400 uppercase tracking-widest">Back View</span>
+                    <div className="w-full bg-white rounded-2xl border border-slate-150 p-2 flex justify-center overflow-hidden" style={{ boxShadow: '0 1px 4px 0 rgba(0,0,0,0.07)' }}>
+                      <IdCardPreview
+                        record={previewData?.record_data || record}
+                        templateVersion={templateVersion}
+                        side="BACK"
+                        displayWidth={containerDisplayWidth}
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="w-full flex flex-col items-center justify-center py-16 bg-white border border-slate-100 rounded-3xl text-slate-400 text-center">
+                <AlertCircle className="w-8 h-8 text-slate-300 mb-2" />
+                <span className="text-xs font-bold">No template assigned.</span>
               </div>
             )}
           </div>
-        ) : (
-          <div className="w-full max-w-2xl text-center py-16 bg-slate-50 border border-slate-150 rounded-3xl text-slate-500 italic text-xs">
-            No active card template layout is assigned to this division or class.
-          </div>
-        )}
-
-        {/* Action Buttons */}
-        <div className="flex flex-col sm:flex-row gap-3 w-full max-w-md pt-2">
-          <button
-            onClick={() => setIsPhotoEditorOpen(true)}
-            className="flex-1 py-3 bg-blue-600 hover:bg-blue-700 text-white text-xs font-extrabold rounded-2xl transition-all shadow-md hover:shadow-lg cursor-pointer flex items-center justify-center gap-2 active:scale-[0.98]"
-          >
-            <span>📷</span>
-            <span>Edit Photo</span>
-          </button>
-          
-          <button
-            onClick={() => setIsEditModalOpen(true)}
-            className="flex-1 py-3 bg-white border border-slate-200 hover:bg-slate-50 text-slate-800 text-xs font-extrabold rounded-2xl transition-all shadow-sm cursor-pointer flex items-center justify-center gap-2 active:scale-[0.98]"
-          >
-            <span>✏️</span>
-            <span>Edit Details</span>
-          </button>
         </div>
 
-        {/* Modals */}
+        {/* ── MODALS ──────────────────────────────────────────────────────── */}
         {isEditModalOpen && (
           <RecordForm
             isOpen={isEditModalOpen}
@@ -614,29 +691,58 @@ export function RecordDetailsPage({
         <div className="w-full lg:w-[420px] space-y-6 order-1 lg:order-2 shrink-0">
           
           {/* Card Preview Card */}
-          {previewData?.template_version && (() => {
-            const templateVersion = previewData.template_version;
-            const isSingleSided = String(templateVersion.canvas_json?.sides || templateVersion.sides || '2') === '1' ||
-              String(templateVersion.canvas_json?.sides || templateVersion.sides || '').toLowerCase() === 'single' ||
-              String(templateVersion.cardSides || templateVersion.cardSides || '').toLowerCase() === 'single';
+          <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-3xs space-y-4">
+            <div className="flex items-start justify-between border-b border-slate-100 pb-3 gap-2">
+              <div>
+                <h4 className="text-[10px] font-extrabold uppercase tracking-widest text-slate-400">
+                  Real Card Preview
+                </h4>
+                <span className="text-[9px] font-bold text-slate-400 block mt-0.5">
+                  {previewData?.template_name || 'Assigned Layout'}
+                </span>
+              </div>
+              <div className="flex items-center gap-1.5 shrink-0">
+                <button
+                  onClick={handleOpenEditModal}
+                  disabled={isEditModalLoading}
+                  className="inline-flex items-center gap-1 px-2.5 py-1.5 bg-white border border-slate-200 hover:bg-slate-50 active:scale-[0.97] text-slate-800 text-[10px] font-extrabold rounded-lg transition-all cursor-pointer disabled:opacity-75 disabled:cursor-wait"
+                >
+                  {isEditModalLoading ? <Loader2 size={12} className="animate-spin" /> : <span>✏️</span>}
+                  <span>{isEditModalLoading ? '...' : 'Edit'}</span>
+                </button>
+                <button
+                  onClick={() => setIsPhotoEditorOpen(true)}
+                  className="inline-flex items-center gap-1 px-2.5 py-1.5 bg-blue-600 hover:bg-blue-700 active:scale-[0.97] text-white text-[10px] font-extrabold rounded-lg transition-all cursor-pointer"
+                >
+                  <span>📷</span>
+                  <span>Photo</span>
+                </button>
+              </div>
+            </div>
+            
+            {previewLoading ? (
+              <div className="flex flex-col items-center justify-center py-20 text-slate-500 w-full bg-slate-50 rounded-xl border border-slate-100 shadow-inner">
+                <Loader2 className="w-8 h-8 animate-spin text-blue-600 mb-3" />
+                <p className="text-[10px] font-bold uppercase tracking-wider">Rendering ID Card Preview...</p>
+              </div>
+            ) : previewError ? (
+              <div className="flex flex-col items-center justify-center py-16 text-slate-400 w-full bg-slate-50 rounded-xl border border-slate-100 shadow-inner text-center px-4">
+                <AlertCircle className="w-8 h-8 text-slate-350 mb-2" />
+                <span className="text-xs font-bold">{previewError}</span>
+              </div>
+            ) : previewData?.template_version ? (() => {
+              const templateVersion = previewData.template_version;
+              const isSingleSided = String(templateVersion.canvas_json?.sides || templateVersion.sides || '2') === '1' ||
+                String(templateVersion.canvas_json?.sides || templateVersion.sides || '').toLowerCase() === 'single' ||
+                String(templateVersion.cardSides || templateVersion.cardSides || '').toLowerCase() === 'single';
 
-            return (
-              <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-3xs space-y-4">
-                <div className="flex items-center justify-between border-b border-slate-100 pb-2">
-                  <h4 className="text-[10px] font-extrabold uppercase tracking-widest text-slate-400">
-                    Real Card Preview
-                  </h4>
-                  <span className="text-[10px] font-bold text-slate-500">
-                    {previewData?.template_name || "Assigned Layout"}
-                  </span>
-                </div>
-                
+              return (
                 <div className="flex flex-col gap-6 py-5 bg-slate-50 rounded-xl w-full border border-slate-100 shadow-inner items-center overflow-x-auto">
                   <div className="flex flex-col items-center gap-1.5 w-full">
                     <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Front View</span>
                     <div className="p-2 bg-white rounded-xl shadow-xs border border-slate-150 record-preview-wrapper">
                       <IdCardPreview
-                        record={record}
+                        record={previewData?.record_data || record}
                         templateVersion={previewData.template_version}
                         side="FRONT"
                         className="webapp-card-preview"
@@ -649,7 +755,7 @@ export function RecordDetailsPage({
                       <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Back View</span>
                       <div className="p-2 bg-white rounded-xl shadow-xs border border-slate-150 record-preview-wrapper">
                         <IdCardPreview
-                          record={record}
+                          record={previewData?.record_data || record}
                           templateVersion={previewData.template_version}
                           side="BACK"
                           className="webapp-card-preview"
@@ -658,9 +764,14 @@ export function RecordDetailsPage({
                     </div>
                   )}
                 </div>
+              );
+            })() : (
+              <div className="flex flex-col items-center justify-center py-16 text-slate-400 w-full bg-slate-50 rounded-xl border border-slate-100 shadow-inner text-center px-4">
+                <AlertCircle className="w-8 h-8 text-slate-350 mb-2" />
+                <span className="text-xs font-bold">No template assigned.</span>
               </div>
-            );
-          })()}
+            )}
+          </div>
 
           {/* Assigned Card Design Info & Actions */}
           <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-3xs space-y-4">
@@ -839,6 +950,37 @@ export function RecordDetailsPage({
             </div>
           </div>
         </div>
+      )}
+
+      {/* ── EDIT DETAILS MODAL (admin) ───────────────────────────────── */}
+      {isEditModalOpen && (
+        <RecordForm
+          isOpen={isEditModalOpen}
+          onClose={() => setIsEditModalOpen(false)}
+          onSubmit={handleSaveEdit}
+          editingRecord={record}
+          requiredFields={templateFields}
+          isSchool={isSchool}
+          classesList={classesList}
+          divisionsList={divisionsList}
+          branchesList={branchesList}
+          departmentsList={departmentsList}
+          hidePhoto={true}
+        />
+      )}
+
+      {/* ── UPDATE PHOTO MODAL (admin) ───────────────────────────────── */}
+      {isPhotoEditorOpen && (
+        <PhotoEditorModal
+          isOpen={isPhotoEditorOpen}
+          onClose={() => setIsPhotoEditorOpen(false)}
+          record={record}
+          isSchool={isSchool}
+          onSuccess={async () => {
+            await handleRefresh();
+            await loadPreview();
+          }}
+        />
       )}
     </div>
   );

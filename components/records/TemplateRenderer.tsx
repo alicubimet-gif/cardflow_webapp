@@ -299,8 +299,8 @@ export function TemplateRenderer({
             const minScale = el.minFontScale ?? el.style?.minFontScale ?? 0.5;
             const maxScale = el.maxFontScale ?? el.style?.maxFontScale ?? 2.5;
             const paddingX = el.paddingX ?? el.style?.paddingX ?? 1.5;
-            const padLeft = paddingX * MM_TO_PX;
-            const padRight = paddingX * MM_TO_PX;
+            const padLeft = el.paddingLeft !== undefined ? el.paddingLeft : paddingX * MM_TO_PX;
+            const padRight = el.paddingRight !== undefined ? el.paddingRight : paddingX * MM_TO_PX;
 
             // ── NESTED QR CODE GENERATION ──
             if (el.qr?.enabled) {
@@ -365,6 +365,7 @@ export function TemplateRenderer({
                 paddingX: padLeft,
                 designedFontSize: el.fontSize || 14,
                 minFontSize: el.minFontSize !== undefined ? el.minFontSize : (el.style?.minFontSize !== undefined ? el.style.minFontSize : (el.minFontScale ? (el.height * 0.8 * el.minFontScale) : 6)),
+                maxFontSize: el.maxFontSize !== undefined ? el.maxFontSize : (el.style?.maxFontSize !== undefined ? el.style.maxFontSize : (el.maxFontScale ? (el.height * 0.8 * el.maxFontScale) : 100)),
                 autoFit: el.autoFit !== false && el.autoScale !== false && el.style?.autoFit !== false && el.style?.autoScale !== false,
                 multiline: el.multiline || false,
                 lineHeight: el.lineHeight || el.style?.lineHeight || 1.2
@@ -523,6 +524,11 @@ export function TemplateRenderer({
               }
             }
 
+            if (!resolvedText || !resolvedText.trim()) {
+              const placeholderLabel = el.label || el.name || activeKey || 'Field';
+              resolvedText = `[${placeholderLabel.replace(/_/g, ' ').replace(/\b\w/g, (c: string) => c.toUpperCase())}]`;
+            }
+
             const calculatedFontSize = getAutoFitFontSize({
               text: resolvedText,
               width: el.width,
@@ -530,6 +536,7 @@ export function TemplateRenderer({
               paddingX: padLeft,
               designedFontSize: el.fontSize || 14,
               minFontSize: el.minFontSize !== undefined ? el.minFontSize : (el.style?.minFontSize !== undefined ? el.style.minFontSize : (el.minFontScale ? (el.height * 0.8 * el.minFontScale) : 6)),
+              maxFontSize: el.maxFontSize !== undefined ? el.maxFontSize : (el.style?.maxFontSize !== undefined ? el.style.maxFontSize : (el.maxFontScale ? (el.height * 0.8 * el.maxFontScale) : 100)),
               autoFit: el.autoFit !== false && el.autoScale !== false && el.style?.autoFit !== false && el.style?.autoScale !== false,
               multiline: el.multiline || false,
               lineHeight: el.lineHeight || el.style?.lineHeight || 1.2

@@ -44,8 +44,18 @@ export function RecordForm({
       setFieldErrors({});
       if (editingRecord) {
         const values: Record<string, any> = {};
+        
+        let recordData = editingRecord.data;
+        if (typeof recordData === 'string') {
+          try {
+            recordData = JSON.parse(recordData);
+          } catch (e) {
+            recordData = {};
+          }
+        }
+
         requiredFields.forEach(f => {
-          values[f.key] = editingRecord[f.key] ?? editingRecord.data?.[f.key] ?? editingRecord.field_values?.[f.key] ?? '';
+          values[f.key] = editingRecord[f.key] ?? recordData?.[f.key] ?? editingRecord.field_values?.[f.key] ?? '';
         });
         // Extra aliases
         if (isSchool) {
@@ -61,10 +71,10 @@ export function RecordForm({
         values['phone'] = editingRecord.phone || '';
         
         // Also load nested dictionary keys just in case
-        if (editingRecord.data && typeof editingRecord.data === 'object') {
-          Object.keys(editingRecord.data).forEach(k => {
+        if (recordData && typeof recordData === 'object') {
+          Object.keys(recordData).forEach(k => {
             if (values[k] === undefined || values[k] === '') {
-              values[k] = editingRecord.data[k];
+              values[k] = recordData[k];
             }
           });
         }
@@ -170,7 +180,7 @@ export function RecordForm({
           cleanedVal = rawVal.trim().toLowerCase();
           const err = validateEmail(cleanedVal);
           if (f.required && !cleanedVal) {
-            newErrors[f.key] = 'This field is required.';
+            newErrors[f.key] = `${f.label || f.key} is required.`;
           } else if (cleanedVal && err) {
             newErrors[f.key] = err;
           }
@@ -178,14 +188,14 @@ export function RecordForm({
           cleanedVal = rawVal.trim();
           const err = validateMobile(cleanedVal);
           if (f.required && !cleanedVal) {
-            newErrors[f.key] = 'This field is required.';
+            newErrors[f.key] = `${f.label || f.key} is required.`;
           } else if (cleanedVal && err) {
             newErrors[f.key] = err;
           }
         } else {
           cleanedVal = cleanText(rawVal);
           if (f.required && !cleanedVal && !isPhoto) {
-            newErrors[f.key] = 'This field is required.';
+            newErrors[f.key] = `${f.label || f.key} is required.`;
           } else if (cleanedVal && (f.key.includes('name') || f.key.includes('organization') || f.key.includes('school') || f.key.includes('department') || f.key.includes('class') || f.key.includes('designation'))) {
             if (cleanedVal.length < 2) {
               newErrors[f.key] = `${f.label} must be at least 2 characters.`;
@@ -195,7 +205,7 @@ export function RecordForm({
         formValues[f.key] = cleanedVal;
       } else {
         if (f.required && !rawVal && !isPhoto) {
-          newErrors[f.key] = 'This field is required.';
+          newErrors[f.key] = `${f.label || f.key} is required.`;
         }
       }
     }
@@ -478,6 +488,12 @@ export function RecordForm({
         </div>
 
         <form onSubmit={handleSubmit} className="p-6 space-y-4 max-h-[78vh] overflow-y-auto" noValidate>
+          {requiredFields.length === 0 && (
+            <div className="py-8 text-center text-slate-500 font-medium text-sm">
+              Template fields could not be loaded. Please ensure a valid template is assigned.
+            </div>
+          )}
+          
           {/* Dynamic input render */}
           {requiredFields
             .filter(f => !['qr_code', 'qrcode', 'barcode', 'photo', 'image', 'signature'].includes(f.type))

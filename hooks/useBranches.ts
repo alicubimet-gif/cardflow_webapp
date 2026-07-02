@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
 import * as branchService from '@/services/branch-service';
+import { logApiError } from '@/services/api';
 
 export function useBranches() {
   const [branchesList, setBranchesList] = useState<any[]>([]);
@@ -14,7 +15,7 @@ export function useBranches() {
       setBranchesList(data || []);
       return data;
     } catch (err: any) {
-      console.error(err);
+      logApiError('[useBranches] fetchBranches:', err);
       setError(err?.response?.data?.message || err?.message || 'Failed to fetch branches.');
     } finally {
       setLoading(false);

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { XCircle } from 'lucide-react';
 import { SearchableMultiSelect } from '@/components/ui/SearchableMultiSelect';
+import { PhoneInput } from '@/components/ui/PhoneInput';
 
 interface StaffFormProps {
   isOpen: boolean;
@@ -126,13 +127,11 @@ export function StaffForm({
 
           <div>
             <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Phone Number</label>
-            <input 
-              type="text" 
-              required
+            <PhoneInput
               value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              placeholder="e.g. +91 98765 43210"
-              className="w-full px-3 py-2 border border-slate-200 rounded-xl focus:outline-hidden focus:ring-1 focus:ring-blue-500 text-xs font-semibold text-slate-900"
+              onChange={setPhone}
+              placeholder="e.g. 19336012322"
+              className="text-xs py-2 h-10 px-3"
             />
           </div>
 

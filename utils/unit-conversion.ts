@@ -79,6 +79,66 @@ export function getResponsiveFontSize(
   }
 }
 
+export function doesTextFit(
+  text: string,
+  fontSize: number,
+  usableW: number,
+  height: number,
+  lineHeight: number,
+  multiline: boolean
+): boolean {
+  if (fontSize <= 0) return true;
+
+  if (!multiline) {
+    const ems = getEstimatedTextWidthInEMs(text);
+    const textWidth = ems * fontSize;
+    const textHeight = fontSize * lineHeight;
+    return textWidth <= usableW && textHeight <= height;
+  } else {
+    const paragraphs = text.split('\n');
+    let totalLines = 0;
+    const spaceW = getEstimatedTextWidthInEMs(' ') * fontSize;
+
+    for (const p of paragraphs) {
+      if (p.trim() === '') {
+        totalLines += 1;
+        continue;
+      }
+
+      const words = p.split(' ');
+      let currentLineW = 0;
+      let pLines = 1;
+
+      for (let i = 0; i < words.length; i++) {
+        const word = words[i];
+        const wordW = getEstimatedTextWidthInEMs(word) * fontSize;
+
+        if (wordW > usableW) {
+          if (currentLineW > 0) {
+            pLines++;
+            currentLineW = 0;
+          }
+          const wordLines = Math.ceil(wordW / usableW);
+          pLines += wordLines - 1;
+          currentLineW = wordW % usableW;
+        } else {
+          const addedW = currentLineW === 0 ? wordW : spaceW + wordW;
+          if (currentLineW + addedW <= usableW) {
+            currentLineW += addedW;
+          } else {
+            pLines++;
+            currentLineW = wordW;
+          }
+        }
+      }
+      totalLines += pLines;
+    }
+
+    const totalHeight = totalLines * fontSize * lineHeight;
+    return totalHeight <= height;
+  }
+}
+
 export function getAutoFitFontSize({
   text,
   width,
@@ -86,6 +146,7 @@ export function getAutoFitFontSize({
   paddingX,
   designedFontSize,
   minFontSize,
+  maxFontSize,
   autoFit,
   multiline,
   lineHeight = 1.2
@@ -96,53 +157,39 @@ export function getAutoFitFontSize({
   paddingX: number;
   designedFontSize: number;
   minFontSize: number;
+  maxFontSize?: number;
   autoFit: boolean;
   multiline: boolean;
   lineHeight?: number;
 }): number {
   if (!text) text = ' ';
   const usableW = Math.max(1, width - 2 * paddingX);
-  const ems = getEstimatedTextWidthInEMs(text);
+  const usableH = Math.max(1, height);
   
   if (!autoFit) {
     return Math.max(1, designedFontSize);
   }
 
-  let F = designedFontSize;
-  const minF = Math.max(4, minFontSize); // ensure at least 4px (approx 1mm)
-  
-  if (!multiline) {
-    // Single-line autofit
-    const heightLimit = height * 0.85;
-    const widthLimit = usableW / ems;
-    F = Math.min(heightLimit, widthLimit);
-    if (F < minF) {
-      F = minF;
+  const availableSpace = usableW * usableH;
+  const limitMax = maxFontSize || 300;
+  const computedStart = width + height + availableSpace;
+  const startFontSize = Math.min(computedStart, limitMax);
+
+  let low = 1;
+  let high = startFontSize;
+  let optimalSize = minFontSize || 6;
+
+  for (let iter = 0; iter < 40; iter++) {
+    const mid = (low + high) / 2;
+    if (doesTextFit(text, mid, usableW, usableH, lineHeight, multiline)) {
+      optimalSize = mid;
+      low = mid;
+    } else {
+      high = mid;
     }
-    F = Math.min(F, designedFontSize);
-    return F;
-  } else {
-    // Multiline autofit
-    const estimatedCharWidthFactor = 0.45;
-    
-    for (let currentF = designedFontSize; currentF >= minF; currentF -= 0.5) {
-      F = currentF;
-      const charWidth = currentF * estimatedCharWidthFactor;
-      const charsPerLine = Math.max(1, Math.floor(usableW / charWidth));
-      
-      const paragraphs = text.split('\n');
-      let totalLines = 0;
-      for (const p of paragraphs) {
-        totalLines += Math.max(1, Math.ceil(p.length / charsPerLine));
-      }
-      
-      const totalHeight = totalLines * currentF * lineHeight;
-      if (totalHeight <= height) {
-        break;
-      }
-    }
-    return F;
   }
+
+  return Number(optimalSize.toFixed(2));
 }
 
 export function pxToMm(px: number): number {
@@ -388,14 +435,33 @@ export function denormalizeCanvasToPX(canvasJson: any): any {
         } else {
           nextEl.minFontSize = unitToPx(1.5, unit);
         }
+        if (style.maxFontSize !== undefined) {
+          nextEl.maxFontSize = unitToPx(style.maxFontSize, unit);
+        } else if (el.maxFontSize !== undefined) {
+          nextEl.maxFontSize = unitToPx(el.maxFontSize, unit);
+        } else {
+          nextEl.maxFontSize = unitToPx(100.0, unit);
+        }
         nextEl.minFontScale = style.minFontScale ?? nextEl.minFontScale ?? 0.5;
         nextEl.maxFontScale = style.maxFontScale ?? nextEl.maxFontScale ?? 2.5;
+        
+        nextEl.padding = style.padding !== undefined ? unitToPx(style.padding, unit) : (el.padding !== undefined ? unitToPx(el.padding, unit) : undefined);
+        nextEl.alignment = style.alignment ?? el.alignment ?? el.textAlign ?? style.textAlign ?? 'center';
+        nextEl.textAlign = nextEl.alignment;
+
         nextEl.paddingX = style.paddingX ?? nextEl.paddingX ?? 1.5;
         nextEl.paddingY = style.paddingY ?? nextEl.paddingY ?? 0;
         nextEl.whiteSpace = style.whiteSpace ?? nextEl.whiteSpace ?? (el.multiline ? 'normal' : 'nowrap');
         
-        nextEl.paddingLeft = Math.round(unitToPx(nextEl.paddingX, unit));
-        nextEl.paddingRight = Math.round(unitToPx(nextEl.paddingX, unit));
+        if (nextEl.padding !== undefined) {
+          nextEl.paddingX = pxToUnit(nextEl.padding, unit);
+          nextEl.paddingLeft = Math.round(nextEl.padding);
+          nextEl.paddingRight = Math.round(nextEl.padding);
+        } else {
+          nextEl.padding = unitToPx(nextEl.paddingX, unit);
+          nextEl.paddingLeft = Math.round(nextEl.padding);
+          nextEl.paddingRight = Math.round(nextEl.padding);
+        }
         nextEl.paddingTop = 0;
         nextEl.paddingBottom = 0;
 
@@ -594,6 +660,19 @@ export function normalizeCanvasToMM(canvasState: any, targetUnit: 'mm' | 'cm' = 
         } else {
           style.minFontSize = 1.5;
         }
+        if (el.maxFontSize !== undefined) {
+          style.maxFontSize = Number(pxToUnit(el.maxFontSize, targetUnit).toFixed(6));
+        } else {
+          style.maxFontSize = 100.0;
+        }
+        if (el.padding !== undefined) {
+          style.padding = Number(pxToUnit(el.padding, targetUnit).toFixed(6));
+        } else {
+          style.padding = el.paddingX !== undefined ? el.paddingX : 1.5;
+        }
+        style.alignment = el.alignment ?? el.textAlign ?? 'center';
+        style.textAlign = style.alignment;
+
         style.minFontScale = el.minFontScale !== undefined ? el.minFontScale : 0.5;
         style.maxFontScale = el.maxFontScale !== undefined ? el.maxFontScale : 2.5;
         style.paddingX = el.paddingX !== undefined ? el.paddingX : 1.5;
@@ -604,6 +683,10 @@ export function normalizeCanvasToMM(canvasState: any, targetUnit: 'mm' | 'cm' = 
         el.autoFit = style.autoFit;
         el.autoScale = style.autoScale;
         el.minFontSize = style.minFontSize;
+        el.maxFontSize = style.maxFontSize;
+        el.padding = style.padding;
+        el.alignment = style.alignment;
+        el.textAlign = style.textAlign;
         el.minFontScale = style.minFontScale;
         el.maxFontScale = style.maxFontScale;
         el.paddingX = style.paddingX;
@@ -849,6 +932,7 @@ export function resolveRenderFontSize(el: any, customText?: string): number {
     paddingX: paddingXPx,
     designedFontSize: el.fontSize || 14,
     minFontSize: el.minFontSize !== undefined ? el.minFontSize : (el.minFontScale ? (el.height * 0.8 * el.minFontScale) : 6),
+    maxFontSize: el.maxFontSize !== undefined ? el.maxFontSize : (el.maxFontScale ? (el.height * 0.8 * el.maxFontScale) : 100),
     autoFit: el.autoFit !== false && el.autoScale !== false,
     multiline: el.multiline || false,
     lineHeight: el.lineHeight || 1.2

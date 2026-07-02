@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
 import * as departmentService from '@/services/department-service';
+import { logApiError } from '@/services/api';
 
 export function useDepartments() {
   const [departmentsList, setDepartmentsList] = useState<any[]>([]);
@@ -14,7 +15,7 @@ export function useDepartments() {
       setDepartmentsList(data || []);
       return data;
     } catch (err: any) {
-      console.error(err);
+      logApiError('[useDepartments] fetchDepartments:', err);
       setError(err?.response?.data?.message || err?.message || 'Failed to fetch departments.');
     } finally {
       setLoading(false);

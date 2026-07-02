@@ -210,7 +210,7 @@ export const AuthService = {
     return res.data;
   },
   updateRecord: async (id: string, data: any) => {
-    const res = await api.put(`/api/mobile/records/${id}/`, data);
+    const res = await api.patch(`/api/mobile/records/${id}/`, data);
     return res.data;
   },
   deleteRecord: async (id: string) => {

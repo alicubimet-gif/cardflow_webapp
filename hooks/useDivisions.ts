@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
 import * as divisionService from '@/services/division-service';
+import { logApiError } from '@/services/api';
 
 export function useDivisions() {
   const [divisionsList, setDivisionsList] = useState<any[]>([]);
@@ -14,7 +15,7 @@ export function useDivisions() {
       setDivisionsList(data || []);
       return data;
     } catch (err: any) {
-      console.error(err);
+      logApiError('[useDivisions] fetchDivisions:', err);
       setError(err?.response?.data?.message || err?.message || 'Failed to fetch divisions.');
     } finally {
       setLoading(false);
