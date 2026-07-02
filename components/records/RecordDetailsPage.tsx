@@ -14,6 +14,7 @@ import * as recordService from '@/services/record-service';
 import { useDashboard } from '@/context/dashboard-context';
 import { useDialog } from '@/hooks/useDialog';
 import { useToast } from '@/hooks/useToast';
+import { useAuth } from '@/context/auth-context';
 
 interface RecordDetailsPageProps {
   record: any;
@@ -61,6 +62,8 @@ export function RecordDetailsPage({
 
   const dialog = useDialog();
   const { toast } = useToast();
+  const { user } = useAuth();
+  const canApprove = isAdmin || user?.can_approve_records;
 
   const handleLocalError = (err: any, fallbackMsg: string) => {
     if (err?.response?.data?.code === 'SUBSCRIBER_ACTION_REQUIRED') {
@@ -787,8 +790,7 @@ export function RecordDetailsPage({
 
             {/* Workflow Actions */}
             <div className="flex flex-col gap-2.5 w-full pt-1">
-              
-              {status !== 'approved' && (
+              {status !== 'approved' && canApprove && (
                 <>
                   <button
                     onClick={() => setIsApproveConfirmOpen(true)}
@@ -804,9 +806,36 @@ export function RecordDetailsPage({
                     className="w-full py-2.5 bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold rounded-xl shadow-xs transition-colors flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50"
                   >
                     <Trash2 size={14} />
-                    <span>Reject Record</span>
+                    <span>Request Correction</span>
                   </button>
                 </>
+              )}
+              
+              {isAdmin && (
+                <button
+                  onClick={async () => {
+                    const confirmed = await dialog.confirm({
+                      title: 'Delete Record',
+                      message: 'Are you sure you want to delete this record? This action cannot be undone.',
+                      variant: 'danger',
+                      confirmText: 'Delete'
+                    });
+                    
+                    if (confirmed) {
+                      try {
+                        await recordService.deleteRecord(record.id);
+                        toast('Record deleted successfully.', 'success');
+                        onBack();
+                      } catch (err: any) {
+                        handleLocalError(err, 'Failed to delete record.');
+                      }
+                    }
+                  }}
+                  className="w-full py-2.5 bg-rose-50 hover:bg-rose-100 text-rose-600 text-xs font-bold rounded-xl shadow-xs transition-colors flex items-center justify-center gap-1.5 cursor-pointer mt-2"
+                >
+                  <Trash2 size={14} />
+                  <span>Delete Record</span>
+                </button>
               )}
             </div>
           </div>

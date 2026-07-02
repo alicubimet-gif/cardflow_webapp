@@ -8,6 +8,7 @@ export interface WebAppUser {
   id: string;
   email: string;
   name: string;
+  can_approve_records?: boolean;
   role: 'organization_admin' | 'organization_staff' | string;
   organization_id?: string;
   organization_name?: string;
@@ -57,6 +58,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       phone: userPayload.phone || userPayload.mobile_number || '',
       first_login: userPayload.first_login || data?.first_login || data?.data?.first_login || false,
       temp_password: userPayload.temp_password || data?.temp_password || data?.data?.temp_password || '',
+      can_approve_records: userPayload.can_approve_records || false,
     };
     
     setUser(mapped);
