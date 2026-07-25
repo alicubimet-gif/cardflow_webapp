@@ -3,7 +3,7 @@
 import React, { useState, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { Lock, Loader2, AlertCircle, CheckCircle, Eye, EyeOff, ArrowLeft } from 'lucide-react';
-import axios from 'axios';
+import { apiClient } from '@/api/client';
 import AuthLayout from '@/components/auth/auth-layout';
 
 function ResetPasswordInner() {
@@ -72,7 +72,7 @@ function ResetPasswordInner() {
 
     setIsSubmitting(true);
     try {
-      await axios.post('/server/auth/reset-password/', {
+      await apiClient.post('/api/auth/reset-password/', {
         uidb64,
         token,
         password,

@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { Mail, Loader2, CheckCircle, ArrowLeft, AlertCircle } from 'lucide-react';
-import axios from 'axios';
+import { apiClient } from '@/api/client';
 import { validateEmail } from '@/utils/validation';
 import { getApiErrorMessage } from '@/utils/error';
 
@@ -36,7 +36,7 @@ export default function ForgotPasswordForm() {
 
     setIsSubmitting(true);
     try {
-      const response = await axios.post('/server/auth/forgot-password/', { email: trimmed });
+      const response = await apiClient.post('/api/auth/forgot-password/', { email: trimmed });
       const msg = response?.data?.detail || response?.data?.message || 'If an account exists for this email, password reset instructions have been sent.';
       setSuccessMessage(msg);
     } catch (err: any) {

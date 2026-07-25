@@ -83,18 +83,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const checkSession = async () => {
     try {
-      const sessionResponse = await fetch('/server/auth/session', {
-        credentials: 'include',
-      });
-      const session = await sessionResponse.json().catch(() => ({ isAuthenticated: false }));
-
-      if (!session?.isAuthenticated) {
+      const profile = await AuthService.getProfile();
+      if (!profile) {
         setUser(null);
         setLoading(false);
         return;
       }
 
-      const profile = await AuthService.getProfile();
       // Block subscriber_admin and super_admin from WebApp
       if (['subscriber_admin', 'super_admin', 'SUPER_ADMIN', 'SUBSCRIBER_ADMIN'].includes(profile?.role)) {
         setUser(null);
@@ -171,6 +166,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } catch (e) {
       // ignore
     } finally {
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem('webapp_access_token');
+        localStorage.removeItem('webapp_refresh_token');
+      }
       setUser(null);
       setLoading(false);
       router.push('/login');

@@ -4,7 +4,7 @@ import React, { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { Lock, Loader2, AlertCircle, CheckCircle, Eye, EyeOff } from 'lucide-react';
-import axios from 'axios';
+import { apiClient } from '@/api/client';
 import { useAuth } from '@/context/auth-context';
 import AuthLayout from '@/components/auth/auth-layout';
 
@@ -34,8 +34,8 @@ function SetupPasswordInner() {
 
     const validateToken = async () => {
       try {
-        const response = await axios.get(
-          `/server/auth/setup-password/validate/?token=${encodeURIComponent(token)}&uid=${encodeURIComponent(uid)}`
+        const response = await apiClient.get(
+          `/api/auth/setup-password/validate/?token=${encodeURIComponent(token)}&uid=${encodeURIComponent(uid)}`
         );
         if (response.data.status === 'valid') {
           setEmail(response.data.email || '');
@@ -91,7 +91,7 @@ function SetupPasswordInner() {
 
     setIsSubmitting(true);
     try {
-      await axios.post('/server/auth/setup-password/', {
+      await apiClient.post('/api/auth/setup-password/', {
         uid,
         token,
         password,
