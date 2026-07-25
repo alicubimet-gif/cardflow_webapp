@@ -1,0 +1,111 @@
+{
+  "id": "school_blue",
+  "name": "School Blue",
+  "category": "School",
+  "description": "Professional academic theme with wave details.",
+  "orientation": "vertical",
+  "frontBackground": {
+    "type": "gradient",
+    "color": "#1E3A8A",
+    "gradientFrom": "#1E3A8A",
+    "gradientTo": "#3B82F6",
+    "gradientDirection": "to-br"
+  },
+  "backBackground": {
+    "type": "solid",
+    "color": "#1E3A8A"
+  },
+  "elements": [
+    {
+      "id": "header_accent",
+      "type": "shape",
+      "asset": "geometric-block",
+      "x": 0,
+      "y": 0,
+      "width": 638,
+      "height": 180,
+      "fill": "#1E3A8A",
+      "secondaryFill": "#3B82F6",
+      "opacity": 0.8,
+      "layerIndex": 0,
+      "side": "FRONT"
+    },
+    {
+      "id": "org_title",
+      "type": "text",
+      "text": "ST. AUGUSTINE SCHOOL",
+      "x": 50,
+      "y": 50,
+      "width": 538,
+      "height": 40,
+      "fontFamily": "Outfit",
+      "fontWeight": "bold",
+      "color": "#ffffff",
+      "textAlign": "center",
+      "layerIndex": 1,
+      "side": "FRONT"
+    },
+    {
+      "id": "photo_frame",
+      "type": "image",
+      "name": "photo",
+      "field_key": "photo",
+      "x": 199,
+      "y": 220,
+      "width": 240,
+      "height": 240,
+      "imageShape": "circle",
+      "borderRadius": 999,
+      "borderWidth": 4,
+      "borderColor": "#ffffff",
+      "borderStyle": "solid",
+      "layerIndex": 2,
+      "side": "FRONT"
+    },
+    {
+      "id": "student_name",
+      "type": "field",
+      "name": "full_name",
+      "text": "Alexander Wright",
+      "x": 50,
+      "y": 500,
+      "width": 538,
+      "height": 50,
+      "fontFamily": "Outfit",
+      "fontWeight": "bold",
+      "color": "#ffffff",
+      "textAlign": "center",
+      "layerIndex": 3,
+      "side": "FRONT"
+    },
+    {
+      "id": "class_label",
+      "type": "text",
+      "text": "Grade 10 - A",
+      "x": 50,
+      "y": 560,
+      "width": 538,
+      "height": 30,
+      "fontFamily": "Outfit",
+      "fontWeight": "semibold",
+      "color": "#93C5FD",
+      "textAlign": "center",
+      "layerIndex": 4,
+      "side": "FRONT"
+    },
+    {
+      "id": "bottom_wave",
+      "type": "shape",
+      "asset": "wave",
+      "x": 0,
+      "y": 800,
+      "width": 638,
+      "height": 213,
+      "fill": "#3B82F6",
+      "secondaryFill": "#1D4ED8",
+      "opacity": 0.9,
+      "layerIndex": 5,
+      "side": "FRONT"
+    }
+  ]
+}

@@ -1,0 +1,701 @@
+[
+  {
+    "id": "modern-rounded",
+    "name": "Modern Rounded",
+    "category": "Modern",
+    "thumbnail": "",
+    "frameAsset": "",
+    "editable": true,
+    "supportsColor": true,
+    "supportsBorder": true,
+    "clipPathType": "rect",
+    "clipPathProps": { "x": 5, "y": 5, "width": 90, "height": 90, "rx": 10, "ry": 10 },
+    "shapes": [
+      {
+        "type": "rect",
+        "x": 5,
+        "y": 5,
+        "width": 90,
+        "height": 90,
+        "rx": 10,
+        "ry": 10,
+        "fill": "none",
+        "stroke": "primaryColor",
+        "strokeWidth": "borderWidth"
+      },
+      {
+        "type": "rect",
+        "x": 8,
+        "y": 8,
+        "width": 84,
+        "height": 84,
+        "rx": 7,
+        "ry": 7,
+        "fill": "none",
+        "stroke": "accentColor",
+        "strokeWidth": 1,
+        "opacity": 0.6
+      }
+    ]
+  },
+  {
+    "id": "soft-rounded",
+    "name": "Soft Rounded",
+    "category": "Modern",
+    "thumbnail": "",
+    "frameAsset": "",
+    "editable": true,
+    "supportsColor": true,
+    "supportsBorder": true,
+    "clipPathType": "rect",
+    "clipPathProps": { "x": 6, "y": 6, "width": 88, "height": 88, "rx": 20, "ry": 20 },
+    "shapes": [
+      {
+        "type": "rect",
+        "x": 6,
+        "y": 6,
+        "width": 88,
+        "height": 88,
+        "rx": 20,
+        "ry": 20,
+        "fill": "none",
+        "stroke": "primaryColor",
+        "strokeWidth": "borderWidth"
+      },
+      {
+        "type": "rect",
+        "x": 9,
+        "y": 9,
+        "width": 82,
+        "height": 82,
+        "rx": 17,
+        "ry": 17,
+        "fill": "none",
+        "stroke": "secondaryColor",
+        "strokeWidth": 1.5,
+        "opacity": 0.8
+      }
+    ]
+  },
+  {
+    "id": "premium-circle",
+    "name": "Premium Circle",
+    "category": "Classic",
+    "thumbnail": "",
+    "frameAsset": "",
+    "editable": true,
+    "supportsColor": true,
+    "supportsBorder": true,
+    "clipPathType": "circle",
+    "clipPathProps": { "cx": 50, "cy": 50, "r": 44 },
+    "shapes": [
+      {
+        "type": "circle",
+        "cx": 50,
+        "cy": 50,
+        "r": 44,
+        "fill": "none",
+        "stroke": "primaryColor",
+        "strokeWidth": "borderWidth"
+      },
+      {
+        "type": "circle",
+        "cx": 50,
+        "cy": 50,
+        "r": 41,
+        "fill": "none",
+        "stroke": "accentColor",
+        "strokeWidth": 1.5,
+        "opacity": 0.7
+      }
+    ]
+  },
+  {
+    "id": "luxury-double",
+    "name": "Luxury Double Border",
+    "category": "Luxury",
+    "thumbnail": "",
+    "frameAsset": "",
+    "editable": true,
+    "supportsColor": true,
+    "supportsBorder": true,
+    "clipPathType": "rect",
+    "clipPathProps": { "x": 8, "y": 8, "width": 84, "height": 84, "rx": 8, "ry": 8 },
+    "shapes": [
+      {
+        "type": "rect",
+        "x": 5,
+        "y": 5,
+        "width": 90,
+        "height": 90,
+        "rx": 11,
+        "ry": 11,
+        "fill": "none",
+        "stroke": "primaryColor",
+        "strokeWidth": 1.5
+      },
+      {
+        "type": "rect",
+        "x": 8,
+        "y": 8,
+        "width": 84,
+        "height": 84,
+        "rx": 8,
+        "ry": 8,
+        "fill": "none",
+        "stroke": "secondaryColor",
+        "strokeWidth": "borderWidth"
+      }
+    ]
+  },
+  {
+    "id": "corporate",
+    "name": "Corporate Square",
+    "category": "Classic",
+    "thumbnail": "",
+    "frameAsset": "",
+    "editable": true,
+    "supportsColor": true,
+    "supportsBorder": true,
+    "clipPathType": "rect",
+    "clipPathProps": { "x": 5, "y": 5, "width": 90, "height": 90 },
+    "shapes": [
+      {
+        "type": "rect",
+        "x": 5,
+        "y": 5,
+        "width": 90,
+        "height": 90,
+        "fill": "none",
+        "stroke": "primaryColor",
+        "strokeWidth": "borderWidth"
+      },
+      {
+        "type": "rect",
+        "x": 8,
+        "y": 8,
+        "width": 84,
+        "height": 84,
+        "fill": "none",
+        "stroke": "accentColor",
+        "strokeWidth": 1,
+        "opacity": 0.5
+      }
+    ]
+  },
+  {
+    "id": "modern-diagonal",
+    "name": "Modern Diagonal Cut",
+    "category": "Modern",
+    "thumbnail": "",
+    "frameAsset": "",
+    "editable": true,
+    "supportsColor": true,
+    "supportsBorder": true,
+    "clipPathType": "polygon",
+    "clipPathProps": { "points": "5,5 95,5 95,80 80,95 5,95" },
+    "shapes": [
+      {
+        "type": "polygon",
+        "points": "5,5 95,5 95,80 80,95 5,95",
+        "fill": "none",
+        "stroke": "primaryColor",
+        "strokeWidth": "borderWidth"
+      },
+      {
+        "type": "polygon",
+        "points": "8,8 92,8 92,78 78,92 8,92",
+        "fill": "none",
+        "stroke": "accentColor",
+        "strokeWidth": 1,
+        "opacity": 0.6
+      }
+    ]
+  },
+  {
+    "id": "glass",
+    "name": "Glass Frame",
+    "category": "Modern",
+    "thumbnail": "",
+    "frameAsset": "",
+    "editable": true,
+    "supportsColor": true,
+    "supportsBorder": true,
+    "clipPathType": "rect",
+    "clipPathProps": { "x": 6, "y": 6, "width": 88, "height": 88, "rx": 12, "ry": 12 },
+    "shapes": [
+      {
+        "type": "rect",
+        "x": 4,
+        "y": 4,
+        "width": 92,
+        "height": 92,
+        "rx": 14,
+        "ry": 14,
+        "fill": "none",
+        "stroke": "accentColor",
+        "strokeWidth": "borderWidth",
+        "opacity": 0.4
+      },
+      {
+        "type": "rect",
+        "x": 6,
+        "y": 6,
+        "width": 88,
+        "height": 88,
+        "rx": 12,
+        "ry": 12,
+        "fill": "none",
+        "stroke": "primaryColor",
+        "strokeWidth": 1.5,
+        "opacity": 0.8
+      }
+    ]
+  },
+  {
+    "id": "gradient",
+    "name": "Gradient Border",
+    "category": "Modern",
+    "thumbnail": "",
+    "frameAsset": "",
+    "editable": true,
+    "supportsColor": true,
+    "supportsBorder": true,
+    "clipPathType": "rect",
+    "clipPathProps": { "x": 7, "y": 7, "width": 86, "height": 86, "rx": 16, "ry": 16 },
+    "shapes": [
+      {
+        "type": "rect",
+        "x": 5,
+        "y": 5,
+        "width": 90,
+        "height": 90,
+        "rx": 18,
+        "ry": 18,
+        "fill": "none",
+        "stroke": "primaryColor",
+        "strokeWidth": "borderWidth"
+      },
+      {
+        "type": "rect",
+        "x": 8,
+        "y": 8,
+        "width": 84,
+        "height": 84,
+        "rx": 15,
+        "ry": 15,
+        "fill": "none",
+        "stroke": "secondaryColor",
+        "strokeWidth": 2,
+        "opacity": 0.9
+      }
+    ]
+  },
+  {
+    "id": "hexagon",
+    "name": "Hexagon",
+    "category": "Shapes",
+    "thumbnail": "",
+    "frameAsset": "",
+    "editable": true,
+    "supportsColor": true,
+    "supportsBorder": true,
+    "clipPathType": "polygon",
+    "clipPathProps": { "points": "50,5 90,28 90,72 50,95 10,72 10,28" },
+    "shapes": [
+      {
+        "type": "polygon",
+        "points": "50,5 90,28 90,72 50,95 10,72 10,28",
+        "fill": "none",
+        "stroke": "primaryColor",
+        "strokeWidth": "borderWidth"
+      },
+      {
+        "type": "polygon",
+        "points": "50,9 86,30 86,70 50,91 14,70 14,30",
+        "fill": "none",
+        "stroke": "accentColor",
+        "strokeWidth": 1.5,
+        "opacity": 0.7
+      }
+    ]
+  },
+  {
+    "id": "shield",
+    "name": "Shield",
+    "category": "Shapes",
+    "thumbnail": "",
+    "frameAsset": "",
+    "editable": true,
+    "supportsColor": true,
+    "supportsBorder": true,
+    "clipPathType": "polygon",
+    "clipPathProps": { "points": "10,10 90,10 90,55 50,90 10,55" },
+    "shapes": [
+      {
+        "type": "polygon",
+        "points": "10,10 90,10 90,55 50,90 10,55",
+        "fill": "none",
+        "stroke": "primaryColor",
+        "strokeWidth": "borderWidth"
+      },
+      {
+        "type": "polygon",
+        "points": "14,14 86,14 86,53 50,85 14,53",
+        "fill": "none",
+        "stroke": "secondaryColor",
+        "strokeWidth": 1.5,
+        "opacity": 0.8
+      }
+    ]
+  },
+  {
+    "id": "badge",
+    "name": "Premium Badge",
+    "category": "Shapes",
+    "thumbnail": "",
+    "frameAsset": "",
+    "editable": true,
+    "supportsColor": true,
+    "supportsBorder": true,
+    "clipPathType": "polygon",
+    "clipPathProps": { "points": "15,5 85,5 95,35 95,65 85,95 15,95 5,65 5,35" },
+    "shapes": [
+      {
+        "type": "polygon",
+        "points": "15,5 85,5 95,35 95,65 85,95 15,95 5,65 5,35",
+        "fill": "none",
+        "stroke": "primaryColor",
+        "strokeWidth": "borderWidth"
+      },
+      {
+        "type": "polygon",
+        "points": "17,8 83,8 92,36 92,64 83,92 17,92 8,64 8,36",
+        "fill": "none",
+        "stroke": "accentColor",
+        "strokeWidth": 1.5,
+        "opacity": 0.7
+      }
+    ]
+  },
+  {
+    "id": "ribbon",
+    "name": "Ribbon Style",
+    "category": "Modern",
+    "thumbnail": "",
+    "frameAsset": "",
+    "editable": true,
+    "supportsColor": true,
+    "supportsBorder": true,
+    "clipPathType": "rect",
+    "clipPathProps": { "x": 5, "y": 10, "width": 90, "height": 80, "rx": 4, "ry": 4 },
+    "shapes": [
+      {
+        "type": "rect",
+        "x": 5,
+        "y": 10,
+        "width": 90,
+        "height": 80,
+        "rx": 4,
+        "ry": 4,
+        "fill": "none",
+        "stroke": "primaryColor",
+        "strokeWidth": "borderWidth"
+      },
+      {
+        "type": "path",
+        "d": "M0,35 L12,45 L0,55 L0,35 Z",
+        "fill": "secondaryColor"
+      },
+      {
+        "type": "path",
+        "d": "M100,35 L88,45 L100,55 L100,35 Z",
+        "fill": "secondaryColor"
+      }
+    ]
+  },
+  {
+    "id": "curve",
+    "name": "Elegant Curve",
+    "category": "Modern",
+    "thumbnail": "",
+    "frameAsset": "",
+    "editable": true,
+    "supportsColor": true,
+    "supportsBorder": true,
+    "clipPathType": "rect",
+    "clipPathProps": { "x": 6, "y": 6, "width": 88, "height": 88, "rx": 30, "ry": 10 },
+    "shapes": [
+      {
+        "type": "rect",
+        "x": 6,
+        "y": 6,
+        "width": 88,
+        "height": 88,
+        "rx": 30,
+        "ry": 10,
+        "fill": "none",
+        "stroke": "primaryColor",
+        "strokeWidth": "borderWidth"
+      },
+      {
+        "type": "rect",
+        "x": 9,
+        "y": 9,
+        "width": 82,
+        "height": 82,
+        "rx": 27,
+        "ry": 7,
+        "fill": "none",
+        "stroke": "accentColor",
+        "strokeWidth": 1.5,
+        "opacity": 0.6
+      }
+    ]
+  },
+  {
+    "id": "wave",
+    "name": "Modern Wave",
+    "category": "Modern",
+    "thumbnail": "",
+    "frameAsset": "",
+    "editable": true,
+    "supportsColor": true,
+    "supportsBorder": true,
+    "clipPathType": "rect",
+    "clipPathProps": { "x": 5, "y": 5, "width": 90, "height": 90, "rx": 15, "ry": 15 },
+    "shapes": [
+      {
+        "type": "rect",
+        "x": 5,
+        "y": 5,
+        "width": 90,
+        "height": 90,
+        "rx": 15,
+        "ry": 15,
+        "fill": "none",
+        "stroke": "primaryColor",
+        "strokeWidth": "borderWidth"
+      },
+      {
+        "type": "path",
+        "d": "M5,75 Q25,85 50,75 T95,75 L95,95 L5,95 Z",
+        "fill": "secondaryColor",
+        "opacity": 0.35
+      }
+    ]
+  },
+  {
+    "id": "diamond",
+    "name": "Diamond",
+    "category": "Shapes",
+    "thumbnail": "",
+    "frameAsset": "",
+    "editable": true,
+    "supportsColor": true,
+    "supportsBorder": true,
+    "clipPathType": "polygon",
+    "clipPathProps": { "points": "50,5 95,50 50,95 5,50" },
+    "shapes": [
+      {
+        "type": "polygon",
+        "points": "50,5 95,50 50,95 5,50",
+        "fill": "none",
+        "stroke": "primaryColor",
+        "strokeWidth": "borderWidth"
+      },
+      {
+        "type": "polygon",
+        "points": "50,9 91,50 50,91 9,50",
+        "fill": "none",
+        "stroke": "accentColor",
+        "strokeWidth": 1.5,
+        "opacity": 0.7
+      }
+    ]
+  },
+  {
+    "id": "corner",
+    "name": "Abstract Corner",
+    "category": "Luxury",
+    "thumbnail": "",
+    "frameAsset": "",
+    "editable": true,
+    "supportsColor": true,
+    "supportsBorder": true,
+    "clipPathType": "rect",
+    "clipPathProps": { "x": 8, "y": 8, "width": 84, "height": 84, "rx": 12, "ry": 12 },
+    "shapes": [
+      {
+        "type": "rect",
+        "x": 8,
+        "y": 8,
+        "width": 84,
+        "height": 84,
+        "rx": 12,
+        "ry": 12,
+        "fill": "none",
+        "stroke": "primaryColor",
+        "strokeWidth": "borderWidth"
+      },
+      {
+        "type": "path",
+        "d": "M5,25 L5,5 L25,5",
+        "fill": "none",
+        "stroke": "secondaryColor",
+        "strokeWidth": 3,
+        "strokeLinecap": "round"
+      },
+      {
+        "type": "path",
+        "d": "M95,75 L95,95 L75,95",
+        "fill": "none",
+        "stroke": "secondaryColor",
+        "strokeWidth": 3,
+        "strokeLinecap": "round"
+      }
+    ]
+  },
+  {
+    "id": "minimal",
+    "name": "Minimal Border",
+    "category": "Classic",
+    "thumbnail": "",
+    "frameAsset": "",
+    "editable": true,
+    "supportsColor": true,
+    "supportsBorder": true,
+    "clipPathType": "rect",
+    "clipPathProps": { "x": 4, "y": 4, "width": 92, "height": 92, "rx": 6, "ry": 6 },
+    "shapes": [
+      {
+        "type": "rect",
+        "x": 4,
+        "y": 4,
+        "width": 92,
+        "height": 92,
+        "rx": 6,
+        "ry": 6,
+        "fill": "none",
+        "stroke": "primaryColor",
+        "strokeWidth": "borderWidth"
+      }
+    ]
+  },
+  {
+    "id": "neon",
+    "name": "Neon Glow",
+    "category": "Luxury",
+    "thumbnail": "",
+    "frameAsset": "",
+    "editable": true,
+    "supportsColor": true,
+    "supportsBorder": true,
+    "clipPathType": "rect",
+    "clipPathProps": { "x": 6, "y": 6, "width": 88, "height": 88, "rx": 14, "ry": 14 },
+    "shapes": [
+      {
+        "type": "rect",
+        "x": 6,
+        "y": 6,
+        "width": 88,
+        "height": 88,
+        "rx": 14,
+        "ry": 14,
+        "fill": "none",
+        "stroke": "primaryColor",
+        "strokeWidth": "borderWidth"
+      },
+      {
+        "type": "rect",
+        "x": 4,
+        "y": 4,
+        "width": 92,
+        "height": 92,
+        "rx": 16,
+        "ry": 16,
+        "fill": "none",
+        "stroke": "glowColor",
+        "strokeWidth": 1.5,
+        "opacity": 0.8
+      }
+    ]
+  },
+  {
+    "id": "metallic",
+    "name": "Premium Metallic",
+    "category": "Luxury",
+    "thumbnail": "",
+    "frameAsset": "",
+    "editable": true,
+    "supportsColor": true,
+    "supportsBorder": true,
+    "clipPathType": "rect",
+    "clipPathProps": { "x": 7, "y": 7, "width": 86, "height": 86, "rx": 10, "ry": 10 },
+    "shapes": [
+      {
+        "type": "rect",
+        "x": 7,
+        "y": 7,
+        "width": 86,
+        "height": 86,
+        "rx": 10,
+        "ry": 10,
+        "fill": "none",
+        "stroke": "primaryColor",
+        "strokeWidth": "borderWidth"
+      },
+      {
+        "type": "rect",
+        "x": 4,
+        "y": 4,
+        "width": 92,
+        "height": 92,
+        "rx": 13,
+        "ry": 13,
+        "fill": "none",
+        "stroke": "accentColor",
+        "strokeWidth": 1,
+        "opacity": 0.7
+      }
+    ]
+  },
+  {
+    "id": "luxury-gold",
+    "name": "Luxury Gold Style",
+    "category": "Luxury",
+    "thumbnail": "",
+    "frameAsset": "",
+    "editable": true,
+    "supportsColor": true,
+    "supportsBorder": true,
+    "clipPathType": "rect",
+    "clipPathProps": { "x": 8, "y": 8, "width": 84, "height": 84, "rx": 8, "ry": 8 },
+    "shapes": [
+      {
+        "type": "rect",
+        "x": 5,
+        "y": 5,
+        "width": 90,
+        "height": 90,
+        "rx": 11,
+        "ry": 11,
+        "fill": "none",
+        "stroke": "primaryColor",
+        "strokeWidth": 2
+      },
+      {
+        "type": "rect",
+        "x": 9,
+        "y": 9,
+        "width": 82,
+        "height": 82,
+        "rx": 7,
+        "ry": 7,
+        "fill": "none",
+        "stroke": "secondaryColor",
+        "strokeWidth": 1
+      }
+    ]
+  }
+]

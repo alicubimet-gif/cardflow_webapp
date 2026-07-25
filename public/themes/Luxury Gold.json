@@ -1,0 +1,79 @@
+{
+  "id": "luxury_gold",
+  "name": "Luxury Gold",
+  "category": "Corporate",
+  "description": "Elegant gold-accented VIP access pass.",
+  "orientation": "vertical",
+  "frontBackground": {
+    "type": "solid",
+    "color": "#0B0F19"
+  },
+  "backBackground": {
+    "type": "solid",
+    "color": "#05070B"
+  },
+  "elements": [
+    {
+      "id": "gold_badge",
+      "type": "shape",
+      "asset": "badge",
+      "x": 244,
+      "y": 40,
+      "width": 150,
+      "height": 150,
+      "fill": "#D97706",
+      "secondaryFill": "#FBBF24",
+      "opacity": 0.9,
+      "layerIndex": 0,
+      "side": "FRONT"
+    },
+    {
+      "id": "vip_title",
+      "type": "text",
+      "text": "GOLD MEMBER PASS",
+      "x": 50,
+      "y": 210,
+      "width": 538,
+      "height": 35,
+      "fontFamily": "Outfit",
+      "fontWeight": "bold",
+      "color": "#FBBF24",
+      "textAlign": "center",
+      "layerIndex": 1,
+      "side": "FRONT"
+    },
+    {
+      "id": "photo_frame",
+      "type": "image",
+      "name": "photo",
+      "field_key": "photo",
+      "x": 219,
+      "y": 280,
+      "width": 200,
+      "height": 200,
+      "imageShape": "rounded",
+      "borderRadius": 12,
+      "borderWidth": 4,
+      "borderColor": "#FBBF24",
+      "borderStyle": "solid",
+      "layerIndex": 2,
+      "side": "FRONT"
+    },
+    {
+      "id": "vip_name",
+      "type": "field",
+      "name": "full_name",
+      "text": "Lady Genevieve",
+      "x": 50,
+      "y": 520,
+      "width": 538,
+      "height": 45,
+      "fontFamily": "Outfit",
+      "fontWeight": "bold",
+      "color": "#FFFFFF",
+      "textAlign": "center",
+      "layerIndex": 3,
+      "side": "FRONT"
+    }
+  ]
+}

@@ -1,0 +1,1228 @@
+[
+  {
+    "id": "corner_modern_01",
+    "name": "Modern Corner Accent",
+    "category": "Corners",
+    "defaultWidth": 50,
+    "defaultHeight": 50,
+    "shapes": [
+      {
+        "type": "polygon",
+        "points": "0,0 100,0 0,100",
+        "fill": "primaryColor"
+      },
+      {
+        "type": "path",
+        "d": "M 15 85 L 85 15",
+        "fill": "none",
+        "stroke": "secondaryColor",
+        "strokeWidth": 4
+      }
+    ]
+  },
+  {
+    "id": "corner_premium_01",
+    "name": "Premium Corner Accent",
+    "category": "Corners",
+    "defaultWidth": 60,
+    "defaultHeight": 60,
+    "shapes": [
+      {
+        "type": "polygon",
+        "points": "0,0 100,0 0,100",
+        "fill": "primaryColor"
+      },
+      {
+        "type": "polygon",
+        "points": "0,0 70,0 0,70",
+        "fill": "secondaryColor",
+        "opacity": 0.8
+      },
+      {
+        "type": "circle",
+        "cx": 12,
+        "cy": 12,
+        "r": 4,
+        "fill": "#ffffff"
+      }
+    ]
+  },
+  {
+    "id": "corner_double_01",
+    "name": "Double Corner",
+    "category": "Corners",
+    "defaultWidth": 50,
+    "defaultHeight": 50,
+    "shapes": [
+      {
+        "type": "path",
+        "d": "M 0 0 L 100 0 L 100 8 L 8 8 L 8 100 L 0 100 Z",
+        "fill": "primaryColor"
+      },
+      {
+        "type": "path",
+        "d": "M 14 14 L 80 14 L 80 20 L 20 20 L 20 80 L 14 80 Z",
+        "fill": "secondaryColor"
+      }
+    ]
+  },
+  {
+    "id": "corner_soft_curve_01",
+    "name": "Soft Corner Curve",
+    "category": "Corners",
+    "defaultWidth": 60,
+    "defaultHeight": 60,
+    "shapes": [
+      {
+        "type": "path",
+        "d": "M 0 0 L 100 0 C 100 50, 50 100, 0 100 Z",
+        "fill": "url(#grad)"
+      }
+    ]
+  },
+  {
+    "id": "corner_split_01",
+    "name": "Split Corner",
+    "category": "Corners",
+    "defaultWidth": 50,
+    "defaultHeight": 50,
+    "shapes": [
+      {
+        "type": "polygon",
+        "points": "0,0 90,0 0,90",
+        "fill": "primaryColor"
+      },
+      {
+        "type": "polygon",
+        "points": "95,0 100,0 0,100 0,95",
+        "fill": "secondaryColor"
+      }
+    ]
+  },
+  {
+    "id": "corner_ribbon_01",
+    "name": "Rounded Corner Ribbon",
+    "category": "Corners",
+    "defaultWidth": 55,
+    "defaultHeight": 55,
+    "shapes": [
+      {
+        "type": "path",
+        "d": "M 0 0 C 30 0, 100 20, 100 50 C 100 70, 70 100, 50 100 C 20 100, 0 30, 0 0 Z",
+        "fill": "primaryColor"
+      },
+      {
+        "type": "circle",
+        "cx": 35,
+        "cy": 35,
+        "r": 6,
+        "fill": "secondaryColor"
+      }
+    ]
+  },
+  {
+    "id": "corner_angular_01",
+    "name": "Angular Corner",
+    "category": "Corners",
+    "defaultWidth": 50,
+    "defaultHeight": 50,
+    "shapes": [
+      {
+        "type": "polygon",
+        "points": "0,0 100,0 50,50 0,100",
+        "fill": "primaryColor"
+      },
+      {
+        "type": "polygon",
+        "points": "15,15 80,15 45,50 15,80",
+        "fill": "secondaryColor",
+        "opacity": 0.7
+      }
+    ]
+  },
+  {
+    "id": "corner_corporate_01",
+    "name": "Corporate Corner",
+    "category": "Corners",
+    "defaultWidth": 65,
+    "defaultHeight": 65,
+    "shapes": [
+      {
+        "type": "path",
+        "d": "M 0 0 L 100 0 L 0 100 Z",
+        "fill": "primaryColor"
+      },
+      {
+        "type": "path",
+        "d": "M 0 92 L 92 0 L 100 0 L 0 100 Z",
+        "fill": "secondaryColor"
+      }
+    ]
+  },
+  {
+    "id": "corner_minimal_01",
+    "name": "Minimal Corner",
+    "category": "Corners",
+    "defaultWidth": 40,
+    "defaultHeight": 40,
+    "shapes": [
+      {
+        "type": "path",
+        "d": "M 0,0 L 100,0 L 0,100 Z",
+        "fill": "none",
+        "stroke": "primaryColor",
+        "strokeWidth": 6
+      }
+    ]
+  },
+  {
+    "id": "corner_glass_01",
+    "name": "Glass Corner",
+    "category": "Corners",
+    "defaultWidth": 55,
+    "defaultHeight": 55,
+    "shapes": [
+      {
+        "type": "polygon",
+        "points": "0,0 100,0 0,100",
+        "fill": "#ffffff",
+        "opacity": 0.2
+      },
+      {
+        "type": "path",
+        "d": "M 0 98 L 98 0",
+        "fill": "none",
+        "stroke": "primaryColor",
+        "strokeWidth": 2
+      }
+    ]
+  },
+  {
+    "id": "wave_single_01",
+    "name": "Single Wave",
+    "category": "Waves",
+    "defaultWidth": 120,
+    "defaultHeight": 40,
+    "shapes": [
+      {
+        "type": "path",
+        "d": "M 0 20 Q 25 5, 50 20 T 100 20 L 100 100 L 0 100 Z",
+        "fill": "primaryColor"
+      }
+    ]
+  },
+  {
+    "id": "wave_double_01",
+    "name": "Double Wave",
+    "category": "Waves",
+    "defaultWidth": 130,
+    "defaultHeight": 45,
+    "shapes": [
+      {
+        "type": "path",
+        "d": "M 0 25 Q 25 10, 50 25 T 100 25 L 100 100 L 0 100 Z",
+        "fill": "primaryColor",
+        "opacity": 0.6
+      },
+      {
+        "type": "path",
+        "d": "M 0 35 Q 25 20, 50 35 T 100 35 L 100 100 L 0 100 Z",
+        "fill": "secondaryColor"
+      }
+    ]
+  },
+  {
+    "id": "wave_triple_01",
+    "name": "Triple Wave",
+    "category": "Waves",
+    "defaultWidth": 140,
+    "defaultHeight": 50,
+    "shapes": [
+      {
+        "type": "path",
+        "d": "M 0 15 Q 25 0, 50 15 T 100 15 L 100 100 L 0 100 Z",
+        "fill": "primaryColor",
+        "opacity": 0.3
+      },
+      {
+        "type": "path",
+        "d": "M 0 25 Q 25 10, 50 25 T 100 25 L 100 100 L 0 100 Z",
+        "fill": "secondaryColor",
+        "opacity": 0.6
+      },
+      {
+        "type": "path",
+        "d": "M 0 35 Q 25 20, 50 35 T 100 35 L 100 100 L 0 100 Z",
+        "fill": "primaryColor"
+      }
+    ]
+  },
+  {
+    "id": "wave_soft_01",
+    "name": "Soft Wave",
+    "category": "Waves",
+    "defaultWidth": 120,
+    "defaultHeight": 35,
+    "shapes": [
+      {
+        "type": "path",
+        "d": "M 0 20 Q 35 35, 70 10 T 100 20 L 100 100 L 0 100 Z",
+        "fill": "url(#grad)"
+      }
+    ]
+  },
+  {
+    "id": "wave_ribbon_01",
+    "name": "Ribbon Wave",
+    "category": "Waves",
+    "defaultWidth": 130,
+    "defaultHeight": 30,
+    "shapes": [
+      {
+        "type": "path",
+        "d": "M 0 10 Q 25 25, 50 10 T 100 10 L 100 20 Q 75 35, 50 20 T 0 20 Z",
+        "fill": "primaryColor"
+      },
+      {
+        "type": "path",
+        "d": "M 0 20 Q 25 35, 50 20 T 100 20 L 100 25 Q 75 40, 50 25 T 0 25 Z",
+        "fill": "secondaryColor"
+      }
+    ]
+  },
+  {
+    "id": "wave_layer_01",
+    "name": "Layer Wave",
+    "category": "Waves",
+    "defaultWidth": 140,
+    "defaultHeight": 55,
+    "shapes": [
+      {
+        "type": "path",
+        "d": "M 0 20 C 30 5, 70 35, 100 20 L 100 100 L 0 100 Z",
+        "fill": "primaryColor"
+      },
+      {
+        "type": "path",
+        "d": "M 0 35 C 30 20, 70 50, 100 35 L 100 100 L 0 100 Z",
+        "fill": "secondaryColor",
+        "opacity": 0.8
+      }
+    ]
+  },
+  {
+    "id": "wave_premium_01",
+    "name": "Premium Wave",
+    "category": "Waves",
+    "defaultWidth": 140,
+    "defaultHeight": 60,
+    "shapes": [
+      {
+        "type": "path",
+        "d": "M 0 30 Q 30 10, 60 40 T 100 25 L 100 100 L 0 100 Z",
+        "fill": "primaryColor"
+      },
+      {
+        "type": "path",
+        "d": "M 0 25 Q 30 5, 60 35 T 100 20",
+        "fill": "none",
+        "stroke": "secondaryColor",
+        "strokeWidth": 3
+      }
+    ]
+  },
+  {
+    "id": "wave_bottom_01",
+    "name": "Bottom Wave",
+    "category": "Waves",
+    "defaultWidth": 120,
+    "defaultHeight": 30,
+    "shapes": [
+      {
+        "type": "path",
+        "d": "M 0 0 C 40 40, 80 -20, 100 20 L 100 100 L 0 100 Z",
+        "fill": "url(#grad)"
+      }
+    ]
+  },
+  {
+    "id": "wave_header_01",
+    "name": "Header Wave",
+    "category": "Waves",
+    "defaultWidth": 120,
+    "defaultHeight": 35,
+    "shapes": [
+      {
+        "type": "path",
+        "d": "M 0 0 L 100 0 L 100 20 Q 50 40, 0 15 Z",
+        "fill": "primaryColor"
+      },
+      {
+        "type": "path",
+        "d": "M 0 0 L 100 0 L 100 12 Q 50 32, 0 8 Z",
+        "fill": "secondaryColor",
+        "opacity": 0.7
+      }
+    ]
+  },
+  {
+    "id": "wave_side_01",
+    "name": "Side Wave",
+    "category": "Waves",
+    "defaultWidth": 30,
+    "defaultHeight": 120,
+    "shapes": [
+      {
+        "type": "path",
+        "d": "M 0 0 L 15 0 C 35 40, -5 80, 20 120 L 0 120 Z",
+        "fill": "primaryColor"
+      }
+    ]
+  },
+  {
+    "id": "bg_dots_01",
+    "name": "Dot Pattern",
+    "category": "Backgrounds",
+    "defaultWidth": 100,
+    "defaultHeight": 100,
+    "shapes": [
+      { "type": "circle", "cx": 10, "cy": 10, "r": 2, "fill": "primaryColor", "opacity": 0.4 },
+      { "type": "circle", "cx": 30, "cy": 10, "r": 2, "fill": "primaryColor", "opacity": 0.4 },
+      { "type": "circle", "cx": 50, "cy": 10, "r": 2, "fill": "primaryColor", "opacity": 0.4 },
+      { "type": "circle", "cx": 70, "cy": 10, "r": 2, "fill": "primaryColor", "opacity": 0.4 },
+      { "type": "circle", "cx": 90, "cy": 10, "r": 2, "fill": "primaryColor", "opacity": 0.4 },
+      { "type": "circle", "cx": 10, "cy": 30, "r": 2, "fill": "primaryColor", "opacity": 0.4 },
+      { "type": "circle", "cx": 30, "cy": 30, "r": 2, "fill": "primaryColor", "opacity": 0.4 },
+      { "type": "circle", "cx": 50, "cy": 30, "r": 2, "fill": "primaryColor", "opacity": 0.4 },
+      { "type": "circle", "cx": 70, "cy": 30, "r": 2, "fill": "primaryColor", "opacity": 0.4 },
+      { "type": "circle", "cx": 90, "cy": 30, "r": 2, "fill": "primaryColor", "opacity": 0.4 },
+      { "type": "circle", "cx": 10, "cy": 50, "r": 2, "fill": "primaryColor", "opacity": 0.4 },
+      { "type": "circle", "cx": 30, "cy": 50, "r": 2, "fill": "primaryColor", "opacity": 0.4 },
+      { "type": "circle", "cx": 50, "cy": 50, "r": 2, "fill": "primaryColor", "opacity": 0.4 },
+      { "type": "circle", "cx": 70, "cy": 50, "r": 2, "fill": "primaryColor", "opacity": 0.4 },
+      { "type": "circle", "cx": 90, "cy": 50, "r": 2, "fill": "primaryColor", "opacity": 0.4 },
+      { "type": "circle", "cx": 10, "cy": 70, "r": 2, "fill": "primaryColor", "opacity": 0.4 },
+      { "type": "circle", "cx": 30, "cy": 70, "r": 2, "fill": "primaryColor", "opacity": 0.4 },
+      { "type": "circle", "cx": 50, "cy": 70, "r": 2, "fill": "primaryColor", "opacity": 0.4 },
+      { "type": "circle", "cx": 70, "cy": 70, "r": 2, "fill": "primaryColor", "opacity": 0.4 },
+      { "type": "circle", "cx": 90, "cy": 70, "r": 2, "fill": "primaryColor", "opacity": 0.4 },
+      { "type": "circle", "cx": 10, "cy": 90, "r": 2, "fill": "primaryColor", "opacity": 0.4 },
+      { "type": "circle", "cx": 30, "cy": 90, "r": 2, "fill": "primaryColor", "opacity": 0.4 },
+      { "type": "circle", "cx": 50, "cy": 90, "r": 2, "fill": "primaryColor", "opacity": 0.4 },
+      { "type": "circle", "cx": 70, "cy": 90, "r": 2, "fill": "primaryColor", "opacity": 0.4 },
+      { "type": "circle", "cx": 90, "cy": 90, "r": 2, "fill": "primaryColor", "opacity": 0.4 }
+    ]
+  },
+  {
+    "id": "bg_circles_01",
+    "name": "Circle Pattern",
+    "category": "Backgrounds",
+    "defaultWidth": 100,
+    "defaultHeight": 100,
+    "shapes": [
+      { "type": "circle", "cx": 50, "cy": 50, "r": 45, "fill": "none", "stroke": "primaryColor", "strokeWidth": 1, "opacity": 0.15 },
+      { "type": "circle", "cx": 50, "cy": 50, "r": 35, "fill": "none", "stroke": "primaryColor", "strokeWidth": 1, "opacity": 0.15 },
+      { "type": "circle", "cx": 50, "cy": 50, "r": 25, "fill": "none", "stroke": "secondaryColor", "strokeWidth": 1, "opacity": 0.2 }
+    ]
+  },
+  {
+    "id": "bg_grid_01",
+    "name": "Grid Pattern",
+    "category": "Backgrounds",
+    "defaultWidth": 100,
+    "defaultHeight": 100,
+    "shapes": [
+      { "type": "path", "d": "M 0,20 L 100,20 M 0,40 L 100,40 M 0,60 L 100,60 M 0,80 L 100,80", "fill": "none", "stroke": "primaryColor", "strokeWidth": 0.5, "opacity": 0.2 },
+      { "type": "path", "d": "M 20,0 L 20,100 M 40,0 L 40,100 M 60,0 L 60,100 M 80,0 L 80,100", "fill": "none", "stroke": "primaryColor", "strokeWidth": 0.5, "opacity": 0.2 }
+    ]
+  },
+  {
+    "id": "bg_mesh_01",
+    "name": "Abstract Mesh",
+    "category": "Backgrounds",
+    "defaultWidth": 100,
+    "defaultHeight": 100,
+    "shapes": [
+      { "type": "path", "d": "M 0,0 C 40,60 60,40 100,100 M 100,0 C 60,60 40,40 0,100", "fill": "none", "stroke": "primaryColor", "strokeWidth": 1, "opacity": 0.15 },
+      { "type": "path", "d": "M 50,0 C 20,50 80,50 50,100", "fill": "none", "stroke": "secondaryColor", "strokeWidth": 1, "opacity": 0.15 }
+    ]
+  },
+  {
+    "id": "bg_gradient_01",
+    "name": "Gradient Block",
+    "category": "Backgrounds",
+    "defaultWidth": 100,
+    "defaultHeight": 100,
+    "shapes": [
+      {
+        "type": "rect",
+        "x": 0,
+        "y": 0,
+        "width": 100,
+        "height": 100,
+        "fill": "url(#grad)"
+      }
+    ]
+  },
+  {
+    "id": "bg_floating_01",
+    "name": "Floating Shapes",
+    "category": "Backgrounds",
+    "defaultWidth": 100,
+    "defaultHeight": 100,
+    "shapes": [
+      { "type": "circle", "cx": 20, "cy": 30, "r": 8, "fill": "primaryColor", "opacity": 0.25 },
+      { "type": "circle", "cx": 80, "cy": 70, "r": 14, "fill": "secondaryColor", "opacity": 0.15 },
+      { "type": "rect", "x": 65, "y": 20, "width": 10, "height": 10, "rx": 2, "fill": "primaryColor", "opacity": 0.2, "transform": "rotate(15, 70, 25)" }
+    ]
+  },
+  {
+    "id": "bg_glass_01",
+    "name": "Glass Effect",
+    "category": "Backgrounds",
+    "defaultWidth": 100,
+    "defaultHeight": 100,
+    "shapes": [
+      {
+        "type": "rect",
+        "x": 0,
+        "y": 0,
+        "width": 100,
+        "height": 100,
+        "fill": "#ffffff",
+        "opacity": 0.15,
+        "stroke": "#ffffff",
+        "strokeWidth": 1
+      }
+    ]
+  },
+  {
+    "id": "bg_tech_01",
+    "name": "Tech Background",
+    "category": "Backgrounds",
+    "defaultWidth": 100,
+    "defaultHeight": 100,
+    "shapes": [
+      { "type": "path", "d": "M 0 0 L 20 0 L 20 20 L 0 20 Z", "fill": "primaryColor", "opacity": 0.1 },
+      { "type": "path", "d": "M 80 80 L 100 80 L 100 100 L 80 100 Z", "fill": "primaryColor", "opacity": 0.1 },
+      { "type": "path", "d": "M 10 10 L 90 90 M 90 10 L 10 90", "fill": "none", "stroke": "secondaryColor", "strokeWidth": 0.5, "opacity": 0.15 }
+    ]
+  },
+  {
+    "id": "bg_curves_01",
+    "name": "Abstract Curves",
+    "category": "Backgrounds",
+    "defaultWidth": 100,
+    "defaultHeight": 100,
+    "shapes": [
+      { "type": "path", "d": "M 0 100 C 30 70, 40 30, 100 0", "fill": "none", "stroke": "primaryColor", "strokeWidth": 1.5, "opacity": 0.3 },
+      { "type": "path", "d": "M 0 85 C 30 55, 45 25, 100 10", "fill": "none", "stroke": "secondaryColor", "strokeWidth": 1, "opacity": 0.25 }
+    ]
+  },
+  {
+    "id": "bg_overlay_01",
+    "name": "Premium Overlay",
+    "category": "Backgrounds",
+    "defaultWidth": 100,
+    "defaultHeight": 100,
+    "shapes": [
+      {
+        "type": "rect",
+        "x": 0,
+        "y": 0,
+        "width": 100,
+        "height": 100,
+        "fill": "url(#grad)",
+        "opacity": 0.15
+      }
+    ]
+  },
+  {
+    "id": "geo_polygon_strip_01",
+    "name": "Polygon Strip",
+    "category": "Geometric",
+    "defaultWidth": 120,
+    "defaultHeight": 35,
+    "shapes": [
+      {
+        "type": "polygon",
+        "points": "0,0 80,0 100,100 20,100",
+        "fill": "primaryColor"
+      },
+      {
+        "type": "polygon",
+        "points": "85,0 95,0 115,100 105,100",
+        "fill": "secondaryColor"
+      }
+    ]
+  },
+  {
+    "id": "geo_triangle_pat_01",
+    "name": "Triangle Pattern",
+    "category": "Geometric",
+    "defaultWidth": 80,
+    "defaultHeight": 80,
+    "shapes": [
+      { "type": "polygon", "points": "0,0 50,0 25,43", "fill": "primaryColor", "opacity": 0.7 },
+      { "type": "polygon", "points": "50,0 100,0 75,43", "fill": "secondaryColor", "opacity": 0.7 },
+      { "type": "polygon", "points": "25,43 75,43 50,86", "fill": "primaryColor", "opacity": 0.8 }
+    ]
+  },
+  {
+    "id": "geo_hexagon_pat_01",
+    "name": "Hexagon Pattern",
+    "category": "Geometric",
+    "defaultWidth": 80,
+    "defaultHeight": 80,
+    "shapes": [
+      { "type": "polygon", "points": "30,10 70,10 90,45 70,80 30,80 10,45", "fill": "none", "stroke": "primaryColor", "strokeWidth": 2 },
+      { "type": "polygon", "points": "35,18 65,18 80,45 65,72 35,72 20,45", "fill": "none", "stroke": "secondaryColor", "strokeWidth": 1.5 }
+    ]
+  },
+  {
+    "id": "geo_circle_cluster_01",
+    "name": "Circle Cluster",
+    "category": "Geometric",
+    "defaultWidth": 90,
+    "defaultHeight": 90,
+    "shapes": [
+      { "type": "circle", "cx": 30, "cy": 30, "r": 20, "fill": "primaryColor", "opacity": 0.8 },
+      { "type": "circle", "cx": 65, "cy": 35, "r": 22, "fill": "secondaryColor", "opacity": 0.75 },
+      { "type": "circle", "cx": 45, "cy": 65, "r": 18, "fill": "primaryColor", "opacity": 0.9 }
+    ]
+  },
+  {
+    "id": "geo_diagonal_block_01",
+    "name": "Diagonal Block",
+    "category": "Geometric",
+    "defaultWidth": 120,
+    "defaultHeight": 40,
+    "shapes": [
+      {
+        "type": "polygon",
+        "points": "0,0 100,0 70,100 0,100",
+        "fill": "url(#grad)"
+      }
+    ]
+  },
+  {
+    "id": "geo_abstract_poly_01",
+    "name": "Abstract Polygon",
+    "category": "Geometric",
+    "defaultWidth": 80,
+    "defaultHeight": 80,
+    "shapes": [
+      {
+        "type": "polygon",
+        "points": "10,20 80,10 95,65 50,90 5,60",
+        "fill": "primaryColor"
+      },
+      {
+        "type": "polygon",
+        "points": "20,28 75,20 86,60 50,80 16,56",
+        "fill": "secondaryColor"
+      }
+    ]
+  },
+  {
+    "id": "geo_diamond_layout_01",
+    "name": "Diamond Layout",
+    "category": "Geometric",
+    "defaultWidth": 80,
+    "defaultHeight": 80,
+    "shapes": [
+      { "type": "polygon", "points": "50,5 95,50 50,95 5,50", "fill": "none", "stroke": "primaryColor", "strokeWidth": 2.5 },
+      { "type": "polygon", "points": "50,18 82,50 50,82 18,50", "fill": "none", "stroke": "secondaryColor", "strokeWidth": 1.5 }
+    ]
+  },
+  {
+    "id": "geo_tech_poly_01",
+    "name": "Tech Polygon",
+    "category": "Geometric",
+    "defaultWidth": 80,
+    "defaultHeight": 80,
+    "shapes": [
+      { "type": "polygon", "points": "15,15 85,15 85,60 60,85 15,85", "fill": "none", "stroke": "primaryColor", "strokeWidth": 2.5 },
+      { "type": "polygon", "points": "22,22 78,22 78,57 57,78 22,78", "fill": "secondaryColor", "opacity": 0.8 }
+    ]
+  },
+  {
+    "id": "geo_overlay_01",
+    "name": "Geometric Overlay",
+    "category": "Geometric",
+    "defaultWidth": 100,
+    "defaultHeight": 100,
+    "shapes": [
+      { "type": "polygon", "points": "0,0 100,0 50,50", "fill": "primaryColor", "opacity": 0.2 },
+      { "type": "polygon", "points": "0,100 100,100 50,50", "fill": "secondaryColor", "opacity": 0.2 }
+    ]
+  },
+  {
+    "id": "geo_modern_strip_01",
+    "name": "Modern Strip",
+    "category": "Geometric",
+    "defaultWidth": 120,
+    "defaultHeight": 20,
+    "shapes": [
+      {
+        "type": "rect",
+        "x": 0,
+        "y": 0,
+        "width": 100,
+        "height": 20,
+        "fill": "primaryColor"
+      },
+      {
+        "type": "rect",
+        "x": 90,
+        "y": 0,
+        "width": 10,
+        "height": 20,
+        "fill": "secondaryColor"
+      }
+    ]
+  },
+  {
+    "id": "corp_ribbon_banner_01",
+    "name": "Ribbon Banner",
+    "category": "Corporate",
+    "defaultWidth": 130,
+    "defaultHeight": 35,
+    "shapes": [
+      {
+        "type": "path",
+        "d": "M 10 5 L 90 5 L 80 30 L 20 30 Z",
+        "fill": "primaryColor"
+      },
+      {
+        "type": "polygon",
+        "points": "10,5 20,30 5,20",
+        "fill": "secondaryColor"
+      },
+      {
+        "type": "polygon",
+        "points": "90,5 80,30 95,20",
+        "fill": "secondaryColor"
+      }
+    ]
+  },
+  {
+    "id": "corp_premium_header_01",
+    "name": "Premium Header",
+    "category": "Corporate",
+    "defaultWidth": 140,
+    "defaultHeight": 45,
+    "shapes": [
+      {
+        "type": "rect",
+        "x": 0,
+        "y": 0,
+        "width": 100,
+        "height": 30,
+        "fill": "primaryColor"
+      },
+      {
+        "type": "rect",
+        "x": 0,
+        "y": 30,
+        "width": 100,
+        "height": 4,
+        "fill": "secondaryColor"
+      },
+      { "type": "circle", "cx": 10, "cy": 15, "r": 2.5, "fill": "#ffffff" },
+      { "type": "circle", "cx": 90, "cy": 15, "r": 2.5, "fill": "#ffffff" }
+    ]
+  },
+  {
+    "id": "corp_footer_strip_01",
+    "name": "Footer Strip",
+    "category": "Corporate",
+    "defaultWidth": 140,
+    "defaultHeight": 25,
+    "shapes": [
+      {
+        "type": "rect",
+        "x": 0,
+        "y": 6,
+        "width": 100,
+        "height": 14,
+        "fill": "primaryColor"
+      },
+      {
+        "type": "rect",
+        "x": 0,
+        "y": 0,
+        "width": 100,
+        "height": 3,
+        "fill": "secondaryColor"
+      }
+    ]
+  },
+  {
+    "id": "corp_identity_strip_01",
+    "name": "Identity Strip",
+    "category": "Corporate",
+    "defaultWidth": 120,
+    "defaultHeight": 30,
+    "shapes": [
+      {
+        "type": "rect",
+        "x": 8,
+        "y": 0,
+        "width": 84,
+        "height": 28,
+        "rx": 4,
+        "fill": "primaryColor"
+      },
+      {
+        "type": "rect",
+        "x": 12,
+        "y": 4,
+        "width": 2,
+        "height": 20,
+        "fill": "secondaryColor"
+      }
+    ]
+  },
+  {
+    "id": "corp_accent_line_01",
+    "name": "Accent Line",
+    "category": "Corporate",
+    "defaultWidth": 140,
+    "defaultHeight": 10,
+    "shapes": [
+      {
+        "type": "line",
+        "x1": 0,
+        "y1": 50,
+        "x2": 70,
+        "y2": 50,
+        "stroke": "primaryColor",
+        "strokeWidth": 6
+      },
+      {
+        "type": "line",
+        "x1": 73,
+        "y1": 50,
+        "x2": 100,
+        "y2": 50,
+        "stroke": "secondaryColor",
+        "strokeWidth": 6
+      }
+    ]
+  },
+  {
+    "id": "corp_badge_shape_01",
+    "name": "Badge Shape",
+    "category": "Corporate",
+    "defaultWidth": 65,
+    "defaultHeight": 65,
+    "shapes": [
+      {
+        "type": "path",
+        "d": "M 50 4 C 75 4, 96 20, 96 45 C 96 70, 70 94, 50 96 C 30 94, 4 70, 4 45 C 4 20, 25 4, 50 4 Z",
+        "fill": "primaryColor"
+      },
+      {
+        "type": "path",
+        "d": "M 50 10 C 70 10, 88 23, 88 45 C 88 65, 66 86, 50 88 C 34 86, 12 65, 12 45 C 12 23, 30 10, 50 10 Z",
+        "fill": "secondaryColor"
+      }
+    ]
+  },
+  {
+    "id": "corp_shield_bg_01",
+    "name": "Shield Background",
+    "category": "Corporate",
+    "defaultWidth": 70,
+    "defaultHeight": 75,
+    "shapes": [
+      {
+        "type": "polygon",
+        "points": "50,5 92,20 85,75 50,95 15,75 8,20",
+        "fill": "primaryColor"
+      },
+      {
+        "type": "polygon",
+        "points": "50,11 86,24 80,71 50,89 20,71 14,24",
+        "fill": "secondaryColor"
+      }
+    ]
+  },
+  {
+    "id": "corp_divider_01",
+    "name": "Corporate Divider",
+    "category": "Corporate",
+    "defaultWidth": 120,
+    "defaultHeight": 12,
+    "shapes": [
+      {
+        "type": "line",
+        "x1": 0,
+        "y1": 50,
+        "x2": 100,
+        "y2": 50,
+        "stroke": "primaryColor",
+        "strokeWidth": 2
+      },
+      { "type": "circle", "cx": 50, "cy": 50, "r": 4, "fill": "secondaryColor" }
+    ]
+  },
+  {
+    "id": "corp_label_banner_01",
+    "name": "Label Banner",
+    "category": "Corporate",
+    "defaultWidth": 110,
+    "defaultHeight": 35,
+    "shapes": [
+      {
+        "type": "rect",
+        "x": 10,
+        "y": 6,
+        "width": 80,
+        "height": 28,
+        "rx": 6,
+        "fill": "primaryColor"
+      },
+      {
+        "type": "polygon",
+        "points": "10,12 10,28 2,20",
+        "fill": "secondaryColor"
+      },
+      {
+        "type": "polygon",
+        "points": "90,12 90,28 98,20",
+        "fill": "secondaryColor"
+      }
+    ]
+  },
+  {
+    "id": "corp_modern_highlight_01",
+    "name": "Modern Highlight",
+    "category": "Corporate",
+    "defaultWidth": 130,
+    "defaultHeight": 25,
+    "shapes": [
+      {
+        "type": "polygon",
+        "points": "0,0 95,0 100,100 5,100",
+        "fill": "url(#grad)"
+      }
+    ]
+  },
+  {
+    "id": "dec_sparkle_01",
+    "name": "Sparkle",
+    "category": "Decorative",
+    "defaultWidth": 45,
+    "defaultHeight": 45,
+    "shapes": [
+      {
+        "type": "path",
+        "d": "M 50 0 Q 50 50, 100 50 Q 50 50, 50 100 Q 50 50, 0 50 Q 50 50, 50 0 Z",
+        "fill": "primaryColor"
+      }
+    ]
+  },
+  {
+    "id": "dec_glow_01",
+    "name": "Glow Accent",
+    "category": "Decorative",
+    "defaultWidth": 60,
+    "defaultHeight": 60,
+    "shapes": [
+      { "type": "circle", "cx": 50, "cy": 50, "r": 35, "fill": "url(#grad)", "opacity": 0.4 }
+    ]
+  },
+  {
+    "id": "dec_abstract_lines_01",
+    "name": "Abstract Lines",
+    "category": "Decorative",
+    "defaultWidth": 80,
+    "defaultHeight": 80,
+    "shapes": [
+      { "type": "line", "x1": 10, "y1": 90, "x2": 90, "y2": 10, "stroke": "primaryColor", "strokeWidth": 3 },
+      { "type": "line", "x1": 25, "y1": 90, "x2": 90, "y2": 25, "stroke": "secondaryColor", "strokeWidth": 2 },
+      { "type": "line", "x1": 40, "y1": 90, "x2": 90, "y2": 40, "stroke": "primaryColor", "strokeWidth": 1, "opacity": 0.6 }
+    ]
+  },
+  {
+    "id": "dec_curve_01",
+    "name": "Curve Accent",
+    "category": "Decorative",
+    "defaultWidth": 80,
+    "defaultHeight": 80,
+    "shapes": [
+      { "type": "path", "d": "M 10 90 A 80 80 0 0 1 90 10", "fill": "none", "stroke": "primaryColor", "strokeWidth": 4 },
+      { "type": "path", "d": "M 25 90 A 65 65 0 0 1 90 25", "fill": "none", "stroke": "secondaryColor", "strokeWidth": 2 }
+    ]
+  },
+  {
+    "id": "dec_organic_01",
+    "name": "Organic Shape",
+    "category": "Decorative",
+    "defaultWidth": 80,
+    "defaultHeight": 80,
+    "shapes": [
+      {
+        "type": "path",
+        "d": "M 50,5 C 80,10, 95,40, 90,65 C 85,90, 55,95, 30,90 C 10,85, 5,55, 10,35 C 15,15, 30,5, 50,5 Z",
+        "fill": "url(#grad)",
+        "opacity": 0.8
+      }
+    ]
+  },
+  {
+    "id": "dec_blob_01",
+    "name": "Blob Shape",
+    "category": "Decorative",
+    "defaultWidth": 80,
+    "defaultHeight": 80,
+    "shapes": [
+      {
+        "type": "path",
+        "d": "M 45 10 C 65 5, 90 20, 95, 45 C 100, 70, 75, 95, 50, 95 C 25, 95, 10, 75, 10, 50 C 10, 25, 25, 15, 45, 10 Z",
+        "fill": "primaryColor",
+        "opacity": 0.85
+      }
+    ]
+  },
+  {
+    "id": "dec_premium_accent_01",
+    "name": "Premium Accent",
+    "category": "Decorative",
+    "defaultWidth": 70,
+    "defaultHeight": 70,
+    "shapes": [
+      { "type": "polygon", "points": "50,15 60,40 85,50 60,60 50,85 40,60 15,50 40,40", "fill": "primaryColor" },
+      { "type": "circle", "cx": 50, "cy": 50, "r": 6, "fill": "secondaryColor" }
+    ]
+  },
+  {
+    "id": "dec_brush_stroke_01",
+    "name": "Brush Stroke",
+    "category": "Decorative",
+    "defaultWidth": 110,
+    "defaultHeight": 30,
+    "shapes": [
+      {
+        "type": "path",
+        "d": "M 10,15 C 30,10, 50,22, 70,14 C 85,8, 95,18, 100,16 C 90,20, 75,18, 60,24 C 40,28, 20,18, 10,20 Z",
+        "fill": "primaryColor"
+      }
+    ]
+  },
+  {
+    "id": "dec_frame_accent_01",
+    "name": "Modern Frame Accent",
+    "category": "Decorative",
+    "defaultWidth": 65,
+    "defaultHeight": 65,
+    "shapes": [
+      {
+        "type": "rect",
+        "x": 6,
+        "y": 6,
+        "width": 88,
+        "height": 88,
+        "fill": "none",
+        "stroke": "primaryColor",
+        "strokeWidth": 2
+      },
+      { "type": "circle", "cx": 6, "cy": 6, "r": 3, "fill": "secondaryColor" },
+      { "type": "circle", "cx": 94, "cy": 6, "r": 3, "fill": "secondaryColor" },
+      { "type": "circle", "cx": 6, "cy": 94, "r": 3, "fill": "secondaryColor" },
+      { "type": "circle", "cx": 94, "cy": 94, "r": 3, "fill": "secondaryColor" }
+    ]
+  },
+  {
+    "id": "dec_ribbon_01",
+    "name": "Decorative Ribbon",
+    "category": "Decorative",
+    "defaultWidth": 120,
+    "defaultHeight": 35,
+    "shapes": [
+      {
+        "type": "path",
+        "d": "M 0 10 L 100 10 L 90 25 L 10 25 Z",
+        "fill": "primaryColor"
+      }
+    ]
+  },
+  {
+    "id": "premium_shield_accent_01",
+    "name": "Premium Crest",
+    "category": "Premium",
+    "defaultWidth": 70,
+    "defaultHeight": 80,
+    "shapes": [
+      {
+        "type": "polygon",
+        "points": "50,5 92,20 85,75 50,95 15,75 8,20",
+        "fill": "primaryColor"
+      },
+      {
+        "type": "polygon",
+        "points": "50,11 86,24 80,71 50,89 20,71 14,24",
+        "fill": "secondaryColor"
+      },
+      {
+        "type": "path",
+        "d": "M 35 40 L 50 25 L 65 40 L 50 55 Z",
+        "fill": "#ffffff",
+        "opacity": 0.9
+      }
+    ]
+  },
+  {
+    "id": "premium_academic_star_01",
+    "name": "Academic Star Emblem",
+    "category": "Premium",
+    "defaultWidth": 75,
+    "defaultHeight": 75,
+    "shapes": [
+      { "type": "circle", "cx": 50, "cy": 50, "r": 44, "fill": "none", "stroke": "primaryColor", "strokeWidth": 3 },
+      { "type": "circle", "cx": 50, "cy": 50, "r": 38, "fill": "none", "stroke": "secondaryColor", "strokeWidth": 1.5 },
+      {
+        "type": "polygon",
+        "points": "50,22 57,37 73,37 60,47 65,63 50,53 35,63 40,47 27,37 43,37",
+        "fill": "secondaryColor"
+      }
+    ]
+  },
+  {
+    "id": "premium_retro_badge_01",
+    "name": "Retro Starburst",
+    "category": "Premium",
+    "defaultWidth": 80,
+    "defaultHeight": 80,
+    "shapes": [
+      {
+        "type": "path",
+        "d": "M 50 5 L 59 22 L 78 18 L 72 36 L 90 42 L 78 55 L 86 73 L 68 72 L 64 90 L 50 80 L 36 90 L 32 72 L 14 73 L 22 55 L 10 42 L 28 36 L 22 18 L 41 22 Z",
+        "fill": "url(#grad)"
+      },
+      { "type": "circle", "cx": 50, "cy": 50, "r": 20, "fill": "#ffffff", "opacity": 0.95 }
+    ]
+  },
+  {
+    "id": "premium_laurel_crest_01",
+    "name": "Laurel Wreath Crest",
+    "category": "Premium",
+    "defaultWidth": 80,
+    "defaultHeight": 80,
+    "shapes": [
+      { "type": "circle", "cx": 50, "cy": 50, "r": 26, "fill": "primaryColor" },
+      {
+        "type": "path",
+        "d": "M 20,50 C 20,70 35,80 50,80 C 65,80 80,70 80,50 C 80,35 70,24 50,24",
+        "fill": "none",
+        "stroke": "secondaryColor",
+        "strokeWidth": 3.5
+      },
+      {
+        "type": "polygon",
+        "points": "45,40 55,40 50,55",
+        "fill": "#ffffff"
+      }
+    ]
+  },
+  {
+    "id": "premium_seal_01",
+    "name": "Guaranty Seal",
+    "category": "Premium",
+    "defaultWidth": 75,
+    "defaultHeight": 75,
+    "shapes": [
+      { "type": "circle", "cx": 50, "cy": 50, "r": 42, "fill": "primaryColor" },
+      { "type": "circle", "cx": 50, "cy": 50, "r": 36, "fill": "none", "stroke": "#ffffff", "strokeWidth": 1, "strokeDasharray": "3 2" },
+      {
+        "type": "polygon",
+        "points": "50,25 55,35 66,35 58,42 61,53 50,46 39,53 42,42 34,35 45,35",
+        "fill": "secondaryColor"
+      }
+    ]
+  },
+  {
+    "id": "abstract_shape_01",
+    "name": "Modern Fluid Shape",
+    "category": "Abstract",
+    "defaultWidth": 85,
+    "defaultHeight": 80,
+    "shapes": [
+      {
+        "type": "path",
+        "d": "M 50,10 Q 90,-10 85,45 Q 80,100 45,85 Q 10,70 15,40 Q 20,10 50,10 Z",
+        "fill": "url(#grad)"
+      }
+    ]
+  },
+  {
+    "id": "abstract_splat_01",
+    "name": "Dynamic Splat",
+    "category": "Abstract",
+    "defaultWidth": 80,
+    "defaultHeight": 80,
+    "shapes": [
+      {
+        "type": "path",
+        "d": "M 50 15 C 65 5, 80 10, 85, 30 C 90, 50, 75, 65, 80, 80 C 65, 85, 50, 70, 35, 80 C 20, 80, 15, 60, 10, 45 C 5, 30, 20, 20, 35, 25 Z",
+        "fill": "primaryColor",
+        "opacity": 0.8
+      },
+      { "type": "circle", "cx": 70, "cy": 25, "r": 3, "fill": "secondaryColor" },
+      { "type": "circle", "cx": 25, "cy": 65, "r": 4, "fill": "secondaryColor" }
+    ]
+  },
+  {
+    "id": "abstract_wave_stripe_01",
+    "name": "Fluid Wave Stripe",
+    "category": "Abstract",
+    "defaultWidth": 120,
+    "defaultHeight": 35,
+    "shapes": [
+      {
+        "type": "path",
+        "d": "M 0 10 C 30 -5, 60 25, 100 10 L 100 22 C 60 37, 30 7, 0 22 Z",
+        "fill": "url(#grad)"
+      }
+    ]
+  },
+  {
+    "id": "abstract_half_tone_01",
+    "name": "Halftone Dots Grid",
+    "category": "Abstract",
+    "defaultWidth": 90,
+    "defaultHeight": 90,
+    "shapes": [
+      { "type": "circle", "cx": 10, "cy": 10, "r": 5, "fill": "primaryColor", "opacity": 0.7 },
+      { "type": "circle", "cx": 35, "cy": 10, "r": 4.5, "fill": "primaryColor", "opacity": 0.6 },
+      { "type": "circle", "cx": 60, "cy": 10, "r": 4, "fill": "primaryColor", "opacity": 0.5 },
+      { "type": "circle", "cx": 85, "cy": 10, "r": 3.5, "fill": "primaryColor", "opacity": 0.4 },
+      { "type": "circle", "cx": 10, "cy": 35, "r": 4.5, "fill": "primaryColor", "opacity": 0.6 },
+      { "type": "circle", "cx": 35, "cy": 35, "r": 4, "fill": "primaryColor", "opacity": 0.5 },
+      { "type": "circle", "cx": 60, "cy": 35, "r": 3.5, "fill": "primaryColor", "opacity": 0.4 },
+      { "type": "circle", "cx": 85, "cy": 35, "r": 3, "fill": "primaryColor", "opacity": 0.3 },
+      { "type": "circle", "cx": 10, "cy": 60, "r": 4, "fill": "primaryColor", "opacity": 0.5 },
+      { "type": "circle", "cx": 35, "cy": 60, "r": 3.5, "fill": "primaryColor", "opacity": 0.4 },
+      { "type": "circle", "cx": 60, "cy": 60, "r": 3, "fill": "primaryColor", "opacity": 0.3 },
+      { "type": "circle", "cx": 85, "cy": 60, "r": 2.5, "fill": "primaryColor", "opacity": 0.2 },
+      { "type": "circle", "cx": 10, "cy": 85, "r": 3.5, "fill": "primaryColor", "opacity": 0.4 },
+      { "type": "circle", "cx": 35, "cy": 85, "r": 3, "fill": "primaryColor", "opacity": 0.3 },
+      { "type": "circle", "cx": 60, "cy": 85, "r": 2.5, "fill": "primaryColor", "opacity": 0.2 },
+      { "type": "circle", "cx": 85, "cy": 85, "r": 2, "fill": "primaryColor", "opacity": 0.1 }
+    ]
+  },
+  {
+    "id": "abstract_curves_cluster_01",
+    "name": "Curves Cluster",
+    "category": "Abstract",
+    "defaultWidth": 80,
+    "defaultHeight": 80,
+    "shapes": [
+      { "type": "path", "d": "M 0 50 Q 50 0, 100 50", "fill": "none", "stroke": "primaryColor", "strokeWidth": 3, "opacity": 0.6 },
+      { "type": "path", "d": "M 0 65 Q 50 15, 100 65", "fill": "none", "stroke": "secondaryColor", "strokeWidth": 2, "opacity": 0.5 },
+      { "type": "path", "d": "M 0 80 Q 50 30, 100 80", "fill": "none", "stroke": "primaryColor", "strokeWidth": 1, "opacity": 0.4 }
+    ]
+  }
+]

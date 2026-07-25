@@ -1,0 +1,107 @@
+{
+  "id": "corporate_black",
+  "name": "Corporate Black",
+  "category": "Corporate",
+  "description": "Sleek and professional dark executive theme.",
+  "orientation": "vertical",
+  "frontBackground": {
+    "type": "solid",
+    "color": "#111827"
+  },
+  "backBackground": {
+    "type": "solid",
+    "color": "#030712"
+  },
+  "elements": [
+    {
+      "id": "top_bar",
+      "type": "shape",
+      "asset": "rectangle",
+      "x": 0,
+      "y": 0,
+      "width": 638,
+      "height": 25,
+      "fill": "#EF4444",
+      "layerIndex": 0,
+      "side": "FRONT"
+    },
+    {
+      "id": "company_logo",
+      "type": "text",
+      "text": "ACME CORPORATION",
+      "x": 50,
+      "y": 60,
+      "width": 538,
+      "height": 35,
+      "fontFamily": "Inter",
+      "fontWeight": "bold",
+      "color": "#ffffff",
+      "textAlign": "center",
+      "layerIndex": 1,
+      "side": "FRONT"
+    },
+    {
+      "id": "photo_frame",
+      "type": "image",
+      "name": "photo",
+      "field_key": "photo",
+      "x": 209,
+      "y": 180,
+      "width": 220,
+      "height": 220,
+      "imageShape": "rounded",
+      "borderRadius": 16,
+      "borderWidth": 3,
+      "borderColor": "#EF4444",
+      "borderStyle": "solid",
+      "layerIndex": 2,
+      "side": "FRONT"
+    },
+    {
+      "id": "employee_name",
+      "type": "field",
+      "name": "full_name",
+      "text": "Marcus Sterling",
+      "x": 50,
+      "y": 460,
+      "width": 538,
+      "height": 45,
+      "fontFamily": "Inter",
+      "fontWeight": "bold",
+      "color": "#ffffff",
+      "textAlign": "center",
+      "layerIndex": 3,
+      "side": "FRONT"
+    },
+    {
+      "id": "employee_role",
+      "type": "field",
+      "name": "designation",
+      "text": "VP of Security",
+      "x": 50,
+      "y": 510,
+      "width": 538,
+      "height": 30,
+      "fontFamily": "Inter",
+      "fontWeight": "medium",
+      "color": "#EF4444",
+      "textAlign": "center",
+      "layerIndex": 4,
+      "side": "FRONT"
+    },
+    {
+      "id": "accent_diagonal",
+      "type": "shape",
+      "asset": "diagonal-strip",
+      "x": 100,
+      "y": 700,
+      "width": 438,
+      "height": 80,
+      "fill": "#374151",
+      "secondaryFill": "#1F2937",
+      "opacity": 0.5,
+      "layerIndex": 5,
+      "side": "FRONT"
+    }
+  ]
+}
