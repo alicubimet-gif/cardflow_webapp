@@ -23,6 +23,9 @@ import { ServiceWorkerRegistration } from "@/components/pwa/service-worker-regis
 import { NetworkStatus } from "@/components/pwa/network-status";
 import { PwaUpdatePrompt } from "@/components/pwa/pwa-update-prompt";
 
+export const dynamic = "force-static";
+export const revalidate = false;
+
 export const metadata: Metadata = {
   applicationName: "CardFlow",
   title: {
