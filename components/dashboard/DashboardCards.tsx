@@ -1,6 +1,7 @@
 import React from 'react';
 import { Calendar, Building2, Upload, FolderOpen, FileText, Plus } from 'lucide-react';
 import { WebAppUser } from '@/context/auth-context';
+import { buildRecordViewPath } from '@/lib/utils/route-helpers';
 
 interface DashboardCardsProps {
   user: WebAppUser;
@@ -76,6 +77,7 @@ export function DashboardCards({
                 const f1 = isSchool ? (rec.class_name || 'Class') : (rec.branch_name || 'Branch');
                 const f2 = isSchool ? (rec.division_name || 'Division') : (rec.department_name || 'Dept');
                 const status = rec.approval_status || 'draft';
+                const canNavigate = Boolean(buildRecordViewPath(rec));
                 return (
                   <div
                     key={rec.id}
@@ -92,8 +94,9 @@ export function DashboardCards({
                     <div className="flex shrink-0 flex-col items-end gap-2">
                       <StatusPill status={status} />
                       <button
+                        disabled={!canNavigate}
                         onClick={() => onOpenViewRecord(rec)}
-                        className="h-auto p-0 text-[10px] font-medium leading-none text-[#2563EB] hover:underline cursor-pointer"
+                        className="h-auto p-0 text-[10px] font-medium leading-none text-[#2563EB] hover:underline cursor-pointer disabled:opacity-40 disabled:no-underline disabled:cursor-not-allowed"
                       >
                         View
                       </button>

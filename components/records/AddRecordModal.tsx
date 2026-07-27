@@ -9,6 +9,8 @@ import { useSubgroups } from '@/hooks/queries/useSubgroups';
 import { useQueryClient, useMutation, useQuery } from '@tanstack/react-query';
 import { apiClient } from '@/api/client';
 import { PhotoUploader } from './PhotoUploader';
+import { BulkUploadCard } from './BulkUploadCard';
+import { BulkUpdateCard } from './BulkUpdateCard';
 
 // 1. Types & Interfaces
 interface TemplateField {
@@ -41,7 +43,7 @@ interface AddRecordModalProps {
   preselectedSubgroupId?: string;
   lockGroup?: boolean;
   lockSubgroup?: boolean;
-  initialMode?: 'selector' | 'single' | 'bulk';
+  initialMode?: 'selector' | 'single' | 'bulk' | 'bulk-update';
 }
 
 // Normalize column name for matching heuristic
@@ -193,12 +195,19 @@ export function AddRecordModal({
 
       if (initialMode === 'single') {
         setRecordType('single');
+        setUploadMode('create');
         setWorkflowStep(2);
       } else if (initialMode === 'bulk') {
         setRecordType('bulk');
+        setUploadMode('create');
+        setWorkflowStep(2);
+      } else if (initialMode === 'bulk-update') {
+        setRecordType('bulk');
+        setUploadMode('update');
         setWorkflowStep(2);
       } else {
         setRecordType('single');
+        setUploadMode('create');
         setWorkflowStep(1);
       }
       reset({
@@ -944,7 +953,7 @@ export function AddRecordModal({
             )
           )}
 
-          {/* BULK UPLOAD STEP 2: Download Template & Drop File */}
+          {/* BULK UPLOAD / UPDATE STEP 2: Download Template & Drop File */}
           {recordType === 'bulk' && workflowStep === 2 && (
             showStatusOverlay ? (
               renderTemplateStatus()
@@ -976,56 +985,29 @@ export function AddRecordModal({
                     </div>
                   </div>
                 )}
-                <div className="flex justify-center bg-slate-50 border border-slate-100 rounded-xl p-2.5">
-                  <button
-                    type="button"
-                    onClick={handleDownloadTemplate}
-                    className="h-11 w-full rounded-xl bg-emerald-600 px-4 text-sm font-semibold text-white hover:bg-emerald-700 sm:w-auto flex items-center justify-center gap-1.5 shadow-sm cursor-pointer animate-in fade-in"
-                  >
-                    <FileSpreadsheet size={16} />
-                    <span>Download Template</span>
-                  </button>
-                </div>
 
-                <div className="space-y-2">
-                  <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">
-                    Upload Filled Template
-                  </label>
-                  {!bulkFile ? (
-                    <label
-                      htmlFor="bulk-upload-file"
-                      className="flex w-full cursor-pointer items-center gap-3 rounded-xl border border-slate-200 bg-white px-4 py-4 transition hover:border-blue-300 hover:bg-blue-50/40 active:scale-[0.99]"
-                    >
-                      <Upload className="h-5 w-5 shrink-0 text-blue-600" />
-                      <div className="min-w-0 flex-1">
-                        <p className="text-sm font-semibold text-slate-800">Upload Filled Template</p>
-                        <p className="mt-0.5 text-xs text-slate-500 font-medium">Excel (.xlsx, .xls) or CSV</p>
-                      </div>
-                      <span className="text-xs font-semibold text-blue-600">Browse</span>
-                    </label>
-                  ) : (
-                    <label
-                      htmlFor="bulk-upload-file"
-                      className="flex w-full cursor-pointer items-center gap-3 rounded-xl border border-blue-200 bg-blue-50/50 px-4 py-4"
-                    >
-                      <FileSpreadsheet className="h-5 w-5 shrink-0 text-blue-600" />
-                      <div className="min-w-0 flex-1">
-                        <p className="truncate text-sm font-semibold text-slate-800" title={bulkFile.name}>
-                          {bulkFile.name}
-                        </p>
-                        <p className="mt-0.5 text-xs text-slate-500 font-medium">
-                          {formatFileSize(bulkFile.size)}
-                        </p>
-                      </div>
-                      <span className="shrink-0 text-xs font-semibold text-blue-600">Change File</span>
-                    </label>
-                  )}
-                  <input
-                    id="bulk-upload-file"
-                    type="file"
-                    accept=".xlsx,.xls,.csv"
-                    className="hidden"
-                    onChange={handleFileChange}
+                {/* Two equal-width cards for Create vs Update */}
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                  <BulkUploadCard
+                    recordLabelPlural={labels.recordLabelPlural}
+                    onDownloadTemplate={handleDownloadTemplate}
+                    onFileSelect={(e) => {
+                      setUploadMode('create');
+                      handleFileChange(e);
+                    }}
+                    selectedFile={uploadMode === 'create' ? bulkFile : null}
+                    fileSizeFormatted={uploadMode === 'create' && bulkFile ? formatFileSize(bulkFile.size) : undefined}
+                  />
+
+                  <BulkUpdateCard
+                    recordLabelPlural={labels.recordLabelPlural}
+                    onDownloadUpdateTemplate={handleDownloadTemplate}
+                    onFileSelect={(e) => {
+                      setUploadMode('update');
+                      handleFileChange(e);
+                    }}
+                    selectedFile={uploadMode === 'update' ? bulkFile : null}
+                    fileSizeFormatted={uploadMode === 'update' && bulkFile ? formatFileSize(bulkFile.size) : undefined}
                   />
                 </div>
 

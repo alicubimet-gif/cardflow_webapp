@@ -116,7 +116,7 @@ export default function SubgroupClient() {
   const [selectedAssignment, setSelectedAssignment] = useState<any | null>(null);
   
   const [isAddRecordOpen, setIsAddRecordOpen] = useState(false);
-  const [modalRecordType, setModalRecordType] = useState<'single' | 'bulk'>('single');
+  const [modalRecordType, setModalRecordType] = useState<'single' | 'bulk' | 'bulk-update'>('single');
   const [isPhotoEditorOpen, setIsPhotoEditorOpen] = useState(false);
   const [selectedRecordForPhoto, setSelectedRecordForPhoto] = useState<any | null>(null);
 
@@ -274,6 +274,11 @@ export default function SubgroupClient() {
 
   const handleOpenBulkUpload = () => {
     setModalRecordType('bulk');
+    setIsAddRecordOpen(true);
+  };
+
+  const handleOpenBulkUpdate = () => {
+    setModalRecordType('bulk-update');
     setIsAddRecordOpen(true);
   };
 
@@ -461,6 +466,16 @@ export default function SubgroupClient() {
                     <span>Bulk Upload</span>
                   </button>
                 )}
+                {canUploadPhoto && (
+                  <button
+                    type="button"
+                    onClick={handleOpenBulkUpdate}
+                    className="h-11 w-full rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-xs font-semibold text-slate-700 transition-colors flex items-center justify-center gap-1.5 touch-manipulation pointer-events-auto cursor-pointer"
+                  >
+                    <Upload size={16} />
+                    <span>Bulk Update {terminology.recordPlural}</span>
+                  </button>
+                )}
                 {canCreateRecord && (
                   <button
                     type="button"
@@ -493,6 +508,16 @@ export default function SubgroupClient() {
                   >
                     <Upload size={16} />
                     <span>Bulk Upload</span>
+                  </button>
+                )}
+                {canUploadPhoto && (
+                  <button
+                    type="button"
+                    onClick={handleOpenBulkUpdate}
+                    className="h-11 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 px-4 text-sm font-semibold text-slate-700 transition-colors flex items-center gap-2 cursor-pointer shadow-xs"
+                  >
+                    <Upload size={16} />
+                    <span>Bulk Update {terminology.recordPlural}</span>
                   </button>
                 )}
                  {canCreateRecord && (

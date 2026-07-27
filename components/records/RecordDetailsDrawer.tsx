@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { X, ShieldCheck, Trash2, Edit, Loader2 } from 'lucide-react';
-import { AuthApi, RecordApi, GroupApi, SubgroupApi, ClassesApi, UserApi, OrganizationApi, DashboardApi, ApprovalLogsApi } from '@/api';
-import { StatusBadge } from '@/components/ui/StatusBadge';
+import { RecordApi } from '@/api';
 import { IdCardPreview } from './IdCardPreview';
+import { SharedCardRenderer } from '@/components/record/SharedCardRenderer';
+import { RecordStatusBadge } from '@/components/record/RecordStatusBadge';
 import { useAuth } from '@/context/auth-context';
 
 interface RecordDetailsDrawerProps {
@@ -120,7 +121,7 @@ export function RecordDetailsDrawer({
             <div className="flex items-center gap-2 mt-1">
               <span className="text-xs font-bold text-slate-600">{name}</span>
               <span className="text-[10px] text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full font-mono">{idNumber}</span>
-              <StatusBadge status={status} />
+              <RecordStatusBadge status={status} />
             </div>
           </div>
           <button 
@@ -173,9 +174,9 @@ export function RecordDetailsDrawer({
                   <div className="flex flex-col items-center gap-1.5 w-full">
                     <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider hidden lg:block">Front View</span>
                     <div className="p-2 record-preview-wrapper flex justify-center items-center mx-auto">
-                      <IdCardPreview
+                      <SharedCardRenderer
                         record={previewData?.record_data || record}
-                        templateVersion={templateVersion}
+                        effectiveTemplate={templateVersion}
                         side="FRONT"
                         displayWidth={displayWidth}
                       />
@@ -188,9 +189,9 @@ export function RecordDetailsDrawer({
                   <div className="flex flex-col items-center gap-1.5 w-full">
                     <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider hidden lg:block">Back View</span>
                     <div className="p-2 record-preview-wrapper flex justify-center items-center mx-auto">
-                      <IdCardPreview
+                      <SharedCardRenderer
                         record={previewData?.record_data || record}
-                        templateVersion={templateVersion}
+                        effectiveTemplate={templateVersion}
                         side="BACK"
                         displayWidth={displayWidth}
                       />

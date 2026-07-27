@@ -19,6 +19,9 @@ import { apiClient, getApiErrorMessage } from '@/api/client';
 import { RecordForm } from '@/components/records/RecordForm';
 import { IdCardPreview } from '@/components/records/IdCardPreview';
 import { PhotoEditorModal } from '@/components/records/PhotoEditorModal';
+import {
+  RecordStatusBadge,
+} from '@/components/record';
 
 // Reusable custom Button matching styling specs
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
@@ -41,32 +44,7 @@ function Button({ children, variant = 'primary', className = '', ...props }: But
   );
 }
 
-// Compact Status Badge
-function RecordStatusBadge({ status }: { status?: string }) {
-  const cleanStatus = String(status || 'draft').toLowerCase().replace(/\s+/g, '_');
-  let statusClass = 'bg-slate-100 text-slate-600';
-  let label = status || 'Draft';
 
-  if (cleanStatus === 'pending_review' || cleanStatus === 'pending') {
-    statusClass = 'bg-amber-100 text-amber-700';
-    label = 'Pending';
-  } else if (cleanStatus === 'approved') {
-    statusClass = 'bg-emerald-100 text-emerald-700';
-    label = 'Approved';
-  } else if (cleanStatus === 'rejected') {
-    statusClass = 'bg-red-100 text-red-700';
-    label = 'Rejected';
-  } else if (cleanStatus === 'draft') {
-    statusClass = 'bg-slate-100 text-slate-600';
-    label = 'Draft';
-  }
-
-  return (
-    <span className={`inline-flex h-6 items-center rounded-md px-2 text-[10px] font-semibold uppercase tracking-wide ${statusClass}`}>
-      {label}
-    </span>
-  );
-}
 
 // Normalize the Record Response Once
 function normalizeRecordDetailResponse(response: any) {
@@ -186,21 +164,36 @@ export default function RecordClient() {
 
   // Main Record Detail Query
   const recordQuery = useQuery({
-    queryKey: ["record-detail", recordId],
+    queryKey: ["mobile-record", recordId],
     queryFn: async () => {
-      const res = await apiClient.get(`/mobile/records/${recordId}/`);
+      const res = await apiClient.get(`/api/mobile/records/${recordId}/`);
       return normalizeRecordDetailResponse(res);
     },
-    enabled: Boolean(groupIdParam && subgroupIdParam && recordIdParam),
+    enabled: Boolean(user && recordIdParam),
     staleTime: 5 * 60 * 1000,
     refetchOnWindowFocus: false,
+    retry: (failureCount, error: any) => {
+      if (error?.response?.status === 404 || error?.response?.status === 401 || error?.response?.status === 403) return false;
+      return failureCount < 1;
+    },
   });
 
   const record = recordQuery.data;
 
-  const normalizedRole = user?.role === 'organization_staff' ? 'staff' : (user?.role === 'organization_admin' ? 'admin' : user?.role);
+  const hasApprovePermission = Boolean(
+    user?.can_approve_records ||
+    user?.role === 'organization_admin' ||
+    user?.role === 'admin' ||
+    user?.role === 'organization_staff' ||
+    user?.role === 'staff' ||
+    user?.role === 'school_admin' ||
+    user?.role === 'office_admin' ||
+    user?.role === 'subscriber_admin' ||
+    user?.role === 'super_admin'
+  );
+
   const canApprove =
-    normalizedRole === "staff" &&
+    hasApprovePermission &&
     record !== undefined &&
     record !== null &&
     [
@@ -218,7 +211,7 @@ export default function RecordClient() {
       record?.subgroupId,
     ],
     queryFn: async () => {
-      const res = await apiClient.get(`/studio/organizations/${record?.organizationId}/template-fields/`, {
+      const res = await apiClient.get(`/api/studio/organizations/${record?.organizationId}/template-fields/`, {
         params: { group: record?.groupId, subgroup: record?.subgroupId }
       });
       return normalizeTemplateFieldsResponse(res);
@@ -229,6 +222,7 @@ export default function RecordClient() {
       record?.subgroupId
     ),
     staleTime: 5 * 60 * 1000,
+    retry: 1,
   });
 
   // Action states
@@ -243,15 +237,17 @@ export default function RecordClient() {
     queryKey: [
       "record-template",
       record?.templateId,
+      recordId,
     ],
     queryFn: async () => {
-      const res = await apiClient.get(`/mobile/cards/preview/record/${recordId}/`);
+      const res = await apiClient.get(`/api/mobile/cards/preview/record/${recordId}/`);
       const payload = res.data ?? res;
       return payload.template_version ?? payload;
     },
     enabled: Boolean(record?.templateId && recordId),
     staleTime: 5 * 60 * 1000,
     refetchOnWindowFocus: false,
+    retry: 1,
   });
 
   // Other loading states
@@ -281,7 +277,7 @@ export default function RecordClient() {
   // Mutations
   const updateMutation = useMutation({
     mutationFn: async (values: Record<string, unknown>) => {
-      return apiClient.patch(`/mobile/records/${recordId}/`, {
+      return apiClient.patch(`/api/mobile/records/${recordId}/`, {
         group: record!.groupId,
         sub_group: record!.subgroupId,
         template: record!.templateId,
@@ -289,7 +285,7 @@ export default function RecordClient() {
       });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["record-detail", recordId] });
+      queryClient.invalidateQueries({ queryKey: ["mobile-record", recordId] });
       queryClient.invalidateQueries({ queryKey: ["subgroup-records", groupId, subgroupId] });
       queryClient.invalidateQueries({ queryKey: ["subgroup-detail", subgroupId] });
       queryClient.invalidateQueries({ queryKey: ["dashboard"] });
@@ -303,7 +299,7 @@ export default function RecordClient() {
 
   const deleteMutation = useMutation({
     mutationFn: async () => {
-      return apiClient.delete(`/mobile/records/${recordId}/`);
+      return apiClient.delete(`/api/mobile/records/${recordId}/`);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["subgroup-records", groupId, subgroupId] });
@@ -318,7 +314,7 @@ export default function RecordClient() {
     }
   });
 
-  if (!groupIdParam || !subgroupIdParam || !recordIdParam) {
+  if (!recordIdParam) {
     return <div className="p-6 text-sm text-slate-600">Invalid route parameters.</div>;
   }
 
@@ -360,10 +356,10 @@ export default function RecordClient() {
 
   const approveMutation = useMutation({
     mutationFn: async (comment?: string) => {
-      return apiClient.post(`/mobile/records/${recordId}/approve/`, { comment });
+      return apiClient.post(`/api/mobile/records/${recordId}/approve/`, { comment });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["record-detail", recordId] });
+      queryClient.invalidateQueries({ queryKey: ["mobile-record", recordId] });
       queryClient.invalidateQueries({ queryKey: ["subgroup-records", groupId, subgroupId] });
       queryClient.invalidateQueries({ queryKey: ["approval-logs"] });
       queryClient.invalidateQueries({ queryKey: ["dashboard"] });
@@ -380,10 +376,10 @@ export default function RecordClient() {
 
   const rejectMutation = useMutation({
     mutationFn: async (reason: string) => {
-      return apiClient.post(`/mobile/records/${recordId}/reject/`, { reason, rejection_reason: reason });
+      return apiClient.post(`/api/mobile/records/${recordId}/reject/`, { reason, rejection_reason: reason });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["record-detail", recordId] });
+      queryClient.invalidateQueries({ queryKey: ["mobile-record", recordId] });
       queryClient.invalidateQueries({ queryKey: ["subgroup-records", groupId, subgroupId] });
       queryClient.invalidateQueries({ queryKey: ["approval-logs"] });
       queryClient.invalidateQueries({ queryKey: ["dashboard"] });
@@ -413,11 +409,11 @@ export default function RecordClient() {
       formData.append('record_id', recordId);
       formData.append('photo', file);
 
-      await apiClient.post('/mobile/photos/upload/', formData, {
+      await apiClient.post('/api/mobile/photos/upload/', formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
 
-      queryClient.invalidateQueries({ queryKey: ["record-detail", recordId] });
+      queryClient.invalidateQueries({ queryKey: ["mobile-record", recordId] });
       queryClient.invalidateQueries({ queryKey: ["subgroup-records", groupId, subgroupId] });
       toast('Photo updated successfully', 'success');
     } catch (err: any) {
@@ -434,7 +430,7 @@ export default function RecordClient() {
         formData.append('record_type', orgType === 'institution' ? 'student' : 'employee');
         formData.append('record_id', recordId);
         formData.append('photo', processedBlob, 'processed_profile_photo.jpg');
-        await apiClient.post('/mobile/photos/upload/', formData, {
+        await apiClient.post('/api/mobile/photos/upload/', formData, {
           headers: { 'Content-Type': 'multipart/form-data' }
         });
       } catch (err: any) {
@@ -559,6 +555,17 @@ export default function RecordClient() {
                   <Button type="button" variant="outline" onClick={() => router.push(`/groups/record/edit?groupId=${encodeURIComponent(groupId)}&subgroupId=${encodeURIComponent(subgroupId)}&recordId=${encodeURIComponent(recordId)}`)}>
                     Edit
                   </Button>
+                  {canApprove && (
+                    <Button
+                      type="button"
+                      variant="primary"
+                      disabled={approveMutation.isPending || rejectMutation.isPending}
+                      onClick={() => setApproveOpen(true)}
+                    >
+                      <CheckCircle2 className="mr-1.5 h-4 w-4" />
+                      {approveMutation.isPending ? 'Approving…' : 'Approve Record'}
+                    </Button>
+                  )}
                   <Button type="button" variant="danger" onClick={() => setIsDeleteOpen(true)}>
                     Delete
                   </Button>
@@ -576,6 +583,17 @@ export default function RecordClient() {
                   <Button type="button" variant="outline" onClick={() => router.push(`/groups/record/edit?groupId=${encodeURIComponent(groupId)}&subgroupId=${encodeURIComponent(subgroupId)}&recordId=${encodeURIComponent(recordId)}`)}>
                     Edit Record
                   </Button>
+                  {canApprove && (
+                    <Button
+                      type="button"
+                      variant="primary"
+                      disabled={approveMutation.isPending || rejectMutation.isPending}
+                      onClick={() => setApproveOpen(true)}
+                    >
+                      <CheckCircle2 className="mr-1.5 h-4 w-4" />
+                      {approveMutation.isPending ? 'Approving…' : 'Approve Record'}
+                    </Button>
+                  )}
                   <Button type="button" variant="danger" onClick={() => setIsDeleteOpen(true)}>
                     Delete
                   </Button>
@@ -698,7 +716,7 @@ export default function RecordClient() {
               </div>
             </div>
           ) : (
-            normalizedRole === "staff" && (
+            user?.role && (
               <div className="mt-6 border-t border-slate-100 pt-5 text-center">
                 {record.status === "approved" && (
                   <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-700 shadow-2xs">
@@ -783,10 +801,10 @@ export default function RecordClient() {
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
           <div className="bg-white w-[calc(100vw-24px)] max-w-md rounded-2xl shadow-2xl p-6 animate-in fade-in zoom-in-95 duration-200">
             <h3 className="text-base font-bold text-slate-900">
-              Approve this {terminology.recordSingular.toLowerCase()} record?
+              Approve this record?
             </h3>
-            <p className="mt-2 text-xs text-slate-500 leading-relaxed">
-              This will mark the record as approved.
+            <p className="mt-2 text-xs text-slate-600 leading-relaxed">
+              Are you sure you want to approve <span className="font-bold text-slate-900">{recordName}</span>? This record will become available for printing after approval.
             </p>
             <div className="mt-6 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
               <Button
@@ -803,7 +821,7 @@ export default function RecordClient() {
                 onClick={() => approveMutation.mutate("Approved")}
                 className="h-10 text-xs bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs"
               >
-                {approveMutation.isPending ? 'Approving...' : 'Approve Record'}
+                {approveMutation.isPending ? 'Approving…' : 'Approve Record'}
               </Button>
             </div>
           </div>

@@ -7,6 +7,7 @@ import { useQuery } from '@tanstack/react-query';
 import { getDashboard } from '@/api/dashboard.api';
 import { getTemplateFields } from '@/api/organization.api';
 import { apiClient } from '@/api/client';
+import { buildRecordViewPath } from '@/lib/utils/route-helpers';
 import { Loader2 } from 'lucide-react';
 
 // Subcomponents
@@ -239,7 +240,10 @@ export default function DashboardPage() {
           loading={isDashboardLoading}
           onNavigateToSetup={() => router.push('/groups')}
           onOpenBulkUpload={() => setIsAddRecordModalOpen(true)}
-          onOpenViewRecord={(record) => router.push(`/records/${record.id}/preview`)}
+          onOpenViewRecord={(record) => {
+            const path = buildRecordViewPath(record);
+            if (path) router.push(path);
+          }}
           hasTemplate={hasTemplate}
           onAddRecord={() => setIsAddRecordModalOpen(true)}
         />

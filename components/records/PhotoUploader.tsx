@@ -6,7 +6,7 @@ import { useDialog } from '@/hooks/useDialog';
 
 interface PhotoUploaderProps {
   initialPhotoUrl?: string;
-  canvasRef: React.RefObject<HTMLCanvasElement | null>;
+  canvasRef: React.RefObject<any>;
   onPhotoSelected?: (file: File) => void;
   overlayFrame?: string;
   isSchool?: boolean;
