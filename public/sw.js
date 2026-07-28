@@ -1,4 +1,4 @@
-const CACHE_VERSION = "v1.0.0-1785236118616";
+const CACHE_VERSION = "v1.0.0-1785239024063";
 const STATIC_CACHE = `cardflow-static-${CACHE_VERSION}`;
 const PAGE_CACHE = `cardflow-pages-${CACHE_VERSION}`;
 
